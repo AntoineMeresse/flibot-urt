@@ -1,5 +1,3 @@
-github.com/AntoineMeresse/quake3-rcon-go v1.0.0 h1:mWE/aW2Npx/x94qcJCkwOL9hkaRR/rgjaAnjYs9admI=
-github.com/AntoineMeresse/quake3-rcon-go v1.0.0/go.mod h1:QMu7tLWAgsnhpHhevOaovGDRWv8E3/owFDu6jgQaGso=
 github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
 github.com/nxadm/tail v1.4.11 h1:8feyoE3OzPrcshW5/MJ4sGESc5cqmGkGCWlco4l0bqY=
