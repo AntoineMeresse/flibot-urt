@@ -1,11 +1,15 @@
 package actions
 
-import "fmt"
+import (
+	"fmt"
 
-func HandleAction(workerId int, action string, action_params []string) {
+	"github.com/AntoineMeresse/flibot-urt/src/models"
+)
+
+func HandleAction(workerId int, action string, action_params []string, server models.Server) {
 	// fmt.Printf("\n[Worker %d] ", workerId)
 	if val, ok := Actions[action]; ok {
-		val.(func([]string))(action_params)
+		val.(func([]string, models.Server))(action_params, server)
 	} else {
 		fmt.Printf("  ----> Not a known action: %s", action)
 	}

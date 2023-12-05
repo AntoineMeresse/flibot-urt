@@ -2,6 +2,8 @@ package commands
 
 import (
 	"strings"
+
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
 type Command struct {
@@ -41,10 +43,10 @@ func checkPlayerRights(playerNumber string,command Command) bool {
 	return playerRights >= command.Level;
 }
 
-func HandleCommand(action_params []string) {
+func HandleCommand(action_params []string, server models.Server) {
 	playerNumber := action_params[0]
 	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand && checkPlayerRights(playerNumber, command) {
-		command.Function.(func(string, []string, bool))(playerNumber, command_params, isGlobal)
+		command.Function.(func(models.Server, string, []string, bool))(server, playerNumber, command_params, isGlobal)
 	}
 }
