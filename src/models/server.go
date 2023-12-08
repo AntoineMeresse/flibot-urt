@@ -64,3 +64,11 @@ func (server *Server) initNextMapName() {
 	}
 	fmt.Printf("Nexmap is: %s\n", server.Nextmap)
 }
+
+func (server Server) RconTextInfo(text string, isGlobal bool, playerNumber string) {
+	if isGlobal {
+		server.Rcon.RconCommand(fmt.Sprintf("say %s", text))
+	} else {
+		server.Rcon.RconCommand(fmt.Sprintf("tell %s [PM] %s", playerNumber, text))
+	}
+}

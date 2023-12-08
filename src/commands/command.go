@@ -13,7 +13,7 @@ type Command struct {
 }
 
 func isCommand(text string) (bool) {
-	return len(text) > 1 && (text[0] == '!' || text[1] == '@')
+	return len(text) > 1 && (text[0] == '!' || text[0] == '@')
 }
 
 func isCommandGlobal(text string) bool {

@@ -11,6 +11,6 @@ func HandleAction(workerId int, action string, action_params []string, server mo
 	if val, ok := Actions[action]; ok {
 		val.(func([]string, models.Server))(action_params, server)
 	} else {
-		fmt.Printf("  ----> Not a known action: %s", action)
+		fmt.Printf("\n  ----> Not a known action: %s", action)
 	}
 }
