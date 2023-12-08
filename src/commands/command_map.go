@@ -7,6 +7,7 @@ var Commands map[string]Command = map[string]Command {
 	"spec" : {commandslist.Spec, 0, ""},
 	"currentmap" : {commandslist.CurrentMap, 0, ""},
 	"nextmap" : {commandslist.NextMap, 0, ""},
+	"setgoto" : {commandslist.SetGoto, 80, ""},
 }
 
 var CommandsShortcut map[string]string = map[string]string {

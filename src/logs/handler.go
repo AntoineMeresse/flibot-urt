@@ -10,7 +10,7 @@ import (
 
 func HandleLogsWorker(myLogChannel <-chan string, id int, server models.Server) {
 	for log := range myLogChannel {
-		logSplit := utils.CleanEmptyElements(strings.Split(log, " "))
+		logSplit := utils.CleanEmptyElements(strings.Split(strings.TrimSpace(log), " "))
 		if len(logSplit) >= 4 {
 			actions.HandleAction(id, logSplit[1], logSplit[2:], server)
 		}
