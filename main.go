@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
@@ -30,6 +29,7 @@ func main() {
 		defer rcon.CloseConnection()
 
 		server := models.Server{Rcon : rcon}
+		server.Init()
 
 		// Initialize tail
 		go logparser.InitLogparser(myLogChannel, Logfile)
@@ -49,14 +49,12 @@ func main() {
 func getRcon() (quake3_rcon.Rcon, error) {
 	err := godotenv.Load()
 	if err != nil {
-		return quake3_rcon.Rcon{}, errors.New("Could not load .env file")
+		return quake3_rcon.Rcon{}, errors.New("could not load .env file")
 	}
 
 	serverIp := os.Getenv("serverip") 
 	serverPort := os.Getenv("serverport") 
-	port, err := strconv.Atoi(serverPort)
 	password := os.Getenv("password") 
 	
-
-	return quake3_rcon.Rcon{ServerIp: serverIp, ServerPort: port, Password: password}, nil
+	return quake3_rcon.Rcon{ServerIp: serverIp, ServerPort: serverPort, Password: password}, nil
 }

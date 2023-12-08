@@ -3,7 +3,7 @@ module github.com/AntoineMeresse/flibot-urt
 go 1.21.2
 
 require (
-	github.com/AntoineMeresse/quake3-rcon-go v1.0.0
+	github.com/AntoineMeresse/quake3-rcon-go v1.0.1
 	github.com/joho/godotenv v1.5.1
 	github.com/nxadm/tail v1.4.11
 )
