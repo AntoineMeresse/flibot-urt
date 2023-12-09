@@ -7,16 +7,16 @@ import (
 )
 
 type UrtPath struct {
-	basePath string
-	downloadPath string
-	gotosPath string
+	BasePath string
+	DownloadPath string
+	GotosPath string
 }
 
 func (urtPath *UrtPath) init() {
-	urtPath.basePath = os.Getenv("urtPath")
-	if urtPath.basePath != "" {
-		path := strings.TrimSuffix(urtPath.basePath, "/")
-		urtPath.downloadPath = fmt.Sprintf("%s/%s", path, "q3ut4/download")
-		urtPath.gotosPath = fmt.Sprintf("%s/%s", path, "q3ut4/gotos")
+	urtPath.BasePath = os.Getenv("urtPath")
+	if urtPath.BasePath != "" {
+		path := strings.TrimSuffix(urtPath.BasePath, "/")
+		urtPath.DownloadPath = fmt.Sprintf("%s/%s", path, "q3ut4/download")
+		urtPath.GotosPath = fmt.Sprintf("%s/%s", path, "q3ut4/gotos")
 	}
 }

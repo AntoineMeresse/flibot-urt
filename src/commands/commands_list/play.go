@@ -7,5 +7,5 @@ import (
 )
 
 func Play(server models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.Rcon.RconCommand(fmt.Sprintf("forceteam %s red", playerNumber))
+	server.Rcon.RconCommand(fmt.Sprintf("forceteam %s free", playerNumber))
 }

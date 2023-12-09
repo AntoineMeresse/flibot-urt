@@ -28,7 +28,7 @@ func (server *Server) Init() {
 func (server *Server) SetMapList() {
 	res := []string{}
 	
-	file, err := os.Open(server.UrtPath.downloadPath)
+	file, err := os.Open(server.UrtPath.DownloadPath)
 	
 	if err == nil {
 		names, err := file.Readdirnames(0)
@@ -65,10 +65,16 @@ func (server *Server) initNextMapName() {
 	fmt.Printf("Nexmap is: %s\n", server.Nextmap)
 }
 
-func (server Server) RconTextInfo(text string, isGlobal bool, playerNumber string) {
+func (server Server) RconText(text string, isGlobal bool, playerNumber string) {
 	if isGlobal {
-		server.Rcon.RconCommand(fmt.Sprintf("say %s", text))
+		server.Rcon.RconCommand(fmt.Sprintf("say ^3%s", text))
 	} else {
-		server.Rcon.RconCommand(fmt.Sprintf("tell %s [PM] %s", playerNumber, text))
+		server.Rcon.RconCommand(fmt.Sprintf("tell %s ^6[PM] ^3%s", playerNumber, text))
+	}
+}
+
+func (server Server) RconList(list []string, isGlobal bool, playerNumber string) {
+	for _, text := range list {
+		server.RconText(text, isGlobal, playerNumber)
 	}
 }

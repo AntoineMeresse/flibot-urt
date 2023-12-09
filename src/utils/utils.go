@@ -1,6 +1,9 @@
 package utils
 
-import "math/rand"
+import (
+	"math/rand"
+	"sort"
+)
 
 func CleanEmptyElements(datas []string) []string { 
 	var res []string
@@ -19,4 +22,15 @@ func RandomValueFromSlice(list []string) string {
 	} else {
 		return list[rand.Intn(length)]
 	}
+}
+
+func GetKeysSorted(myMap map[string][]string) (sortedKeys []string) {
+	keys := make([]string, 0, len(myMap))
+ 
+    for k := range myMap{
+        keys = append(keys, k)
+    }
+
+    sort.Strings(keys)
+	return keys
 }

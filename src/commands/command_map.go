@@ -10,6 +10,7 @@ var Commands map[string]Command = map[string]Command {
 	"nextmap" : {commandslist.NextMap, 0, ""},
 	"stamina" : {commandslist.Stamina, 0, ""},
 	"ready" : {commandslist.Ready, 0, "!ready"},
+	"goto" : {commandslist.Goto, 0, "!goto"},
 
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},

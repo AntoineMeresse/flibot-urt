@@ -5,5 +5,5 @@ import (
 )
 
 func CurrentMap(server models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.RconTextInfo(server.Mapname, isGlobal, playerNumber)
+	server.RconText(server.Mapname, isGlobal, playerNumber)
 }

@@ -5,5 +5,5 @@ import (
 )
 
 func NextMap(server models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.RconTextInfo(server.Nextmap, isGlobal, playerNumber)
+	server.RconText(server.Nextmap, isGlobal, playerNumber)
 }
