@@ -11,11 +11,10 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func DoesPositionExist(server models.Server, jumpName string) bool {
+func DoesPositionExist(server models.Server, jumpName string) (exists bool, path string) {
 	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtPath.GotosPath, server.Mapname, jumpName)
-	print(locationPath)
 	_, err := os.Stat(locationPath)
-	return !os.IsNotExist(err)
+	return !os.IsNotExist(err), locationPath
 }
 
 func getGotosList(server models.Server) []string {
@@ -118,4 +117,13 @@ func GetJumpNameForSavePos(server models.Server, jumpName string) string {
 		} 
 	}
 	return jumpName
+}
+
+func RemovePosition(server models.Server, jumpName string) bool {
+	exists, path := DoesPositionExist(server, jumpName)
+	err := os.Remove(path)
+	if err != nil {
+		return false
+	}
+	return exists
 }

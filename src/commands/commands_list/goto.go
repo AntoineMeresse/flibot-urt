@@ -13,11 +13,11 @@ func Goto(server models.Server, playerNumber string, params []string, isGlobal b
 		server.RconList(locationDisplayList, isGlobal, playerNumber)
 	} else {
 		jumpName := params[0]
-		if goto_shared.DoesPositionExist(server, jumpName) {
+		if exists, _  := goto_shared.DoesPositionExist(server, jumpName); exists {
 			server.Rcon.RconCommand(fmt.Sprintf("forceteam %s free", playerNumber))
 			server.Rcon.RconCommand(fmt.Sprintf("loadJumpPos %s %s", playerNumber, jumpName))
 		} else {
-			server.RconText(fmt.Sprintf("^3Location (^5%s^3) ^1doesn't^3 exist.", jumpName), isGlobal, playerNumber)
+			server.RconText(fmt.Sprintf("Location (^5%s^3) ^1doesn't^3 exist.", jumpName), isGlobal, playerNumber)
 		}
 	}
 }
