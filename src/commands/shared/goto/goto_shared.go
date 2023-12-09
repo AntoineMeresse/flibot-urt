@@ -3,7 +3,7 @@ package goto_shared
 import (
 	"fmt"
 	"os"
-	"sort"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -38,9 +38,7 @@ func getGotosList(server models.Server) []string {
 		res = append(res, strings.TrimSuffix(v, ".pos"))
 	}
 
-	sort.Strings(res)
-
-	return res
+	return utils.NaturalSort(res)
 }
 
 
@@ -104,4 +102,20 @@ func GetDisplayLocation(server models.Server) []string {
 		}
 	}
 	return res
+}
+
+func GetJumpNameForSavePos(server models.Server, jumpName string) string {
+	if len(jumpName) == 1 {
+		if unicode.IsLetter(rune(jumpName[0])) {
+			gotos := getGotosList(server)
+			i := 1
+			startPos := fmt.Sprintf("%s%d", jumpName, i)
+			for slices.Contains(gotos, startPos) {
+				i+=1
+				startPos = fmt.Sprintf("%s%d", jumpName, i)
+			}
+			return startPos
+		} 
+	}
+	return jumpName
 }

@@ -3,6 +3,8 @@ package utils
 import (
 	"math/rand"
 	"sort"
+
+	"github.com/maruel/natural"
 )
 
 func CleanEmptyElements(datas []string) []string { 
@@ -33,4 +35,10 @@ func GetKeysSorted(myMap map[string][]string) (sortedKeys []string) {
 
     sort.Strings(keys)
 	return keys
+}
+
+func NaturalSort(stringSlice []string) []string { 
+	cpy := append([]string{}, stringSlice...)
+	sort.Sort(natural.StringSlice(cpy))
+	return cpy
 }
