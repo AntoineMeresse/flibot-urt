@@ -22,7 +22,9 @@ func (server *Server) Init() {
 	server.UrtPath.init()
 	server.SetMapList()
 	server.initMapName()
-	server.initNextMapName()	
+	server.initNextMapName()
+	
+	fmt.Printf("\n-------> Flibot started (%s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
 }
 
 func (server *Server) SetMapList() {

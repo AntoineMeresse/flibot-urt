@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -16,7 +15,6 @@ const Logfile = "/home/antoine/UrbanTerror43/q3ut4/games.log"
 const WorkerNumber = 3 // Param ?
 
 func main() {
-	fmt.Printf("Flibot starting\n")
 
 	// Variables
 	myLogChannel := make(chan string)

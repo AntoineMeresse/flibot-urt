@@ -11,6 +11,7 @@ var Commands map[string]Command = map[string]Command {
 	"stamina" : {commandslist.Stamina, 0, ""},
 	"ready" : {commandslist.Ready, 0, "!ready"},
 	"goto" : {commandslist.Goto, 0, "!goto"},
+	"invisible" : {commandslist.Invisible, 0, "!invisible"},
 
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},
@@ -21,4 +22,5 @@ var CommandsShortcut map[string]string = map[string]string {
 	"pl" : "play",
 	"sp" : "spec",
 	"rmgoto" : "removegoto",
+	"invi" : "invisible",
 }
