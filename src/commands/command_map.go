@@ -12,6 +12,7 @@ var Commands map[string]Command = map[string]Command {
 	"ready" : {commandslist.Ready, 0, "!ready"},
 	"goto" : {commandslist.Goto, 0, "!goto"},
 	"invisible" : {commandslist.Invisible, 0, "!invisible"},
+	"loadonce" : {commandslist.Loadonce, 0, "!loadonce"},
 
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},
@@ -23,4 +24,6 @@ var CommandsShortcut map[string]string = map[string]string {
 	"sp" : "spec",
 	"rmgoto" : "removegoto",
 	"invi" : "invisible",
+	"l1" : "loadonce",
+	"lo" : "loadonce",
 }
