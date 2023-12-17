@@ -6,6 +6,7 @@ require (
 	github.com/AntoineMeresse/quake3-rcon-go v1.0.2
 	github.com/joho/godotenv v1.5.1
 	github.com/maruel/natural v1.1.1
+	github.com/mattn/go-sqlite3 v1.14.19
 	github.com/nxadm/tail v1.4.11
 )
 

@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/AntoineMeresse/flibot-urt/src/db"
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
@@ -20,13 +21,16 @@ func main() {
 	myLogChannel := make(chan string)
 	keepRunning := true
 	
-	rcon, err := getRcon()
+	rcon, rconErr := getRcon()
+	db, dbErr := db.InitDb("test.db")
 
-	if err == nil {
+	if rconErr == nil && dbErr == nil {
 		rcon.Connect()
+		
 		defer rcon.CloseConnection()
+		defer db.Close()
 
-		server := models.Server{Rcon : rcon}
+		server := models.Server{Rcon : rcon, Db: db}
 		server.Init()
 
 		// Initialize tail

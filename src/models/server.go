@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"strings"
@@ -10,9 +11,10 @@ import (
 )
 
 type Server struct {
-	Players []Player
+	Db *sql.DB
 	Rcon quake3_rcon.Rcon
 	UrtPath UrtPath
+	Players []Player
 	Mapname string
 	Nextmap string
 	Maplist []string
