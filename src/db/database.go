@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -57,7 +57,7 @@ func InitDb(dbName string) (*sql.DB, error) {
 		_, err := db.Exec(initTables)
 
 		if err == nil {
-			fmt.Printf("\n[SQL] Tables created or already exist.\n")
+			log.Debugf("[SQL] Tables created or already exist.\n")
 		} else {
 			log.Fatal(err)
 		}

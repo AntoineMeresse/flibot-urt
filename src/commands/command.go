@@ -1,8 +1,9 @@
 package commands
 
 import (
-	"fmt"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
@@ -54,8 +55,8 @@ func HandleCommand(action_params []string, server models.Server) {
 }
 
 func displayCommandInfos(commandname string, server models.Server, playerNumber string, command_params []string, isGlobal bool) {
-	fmt.Printf("\n\nCommand: %s", commandname)
-	fmt.Printf("\n    |-> isGlobal: %v", isGlobal)
-	fmt.Printf("\n    |-> Playernumber: %s", playerNumber)
-	fmt.Printf("\n    |-> Params (%d): %v\n", len(command_params), command_params)
+	log.Debugf("Command: %s", commandname)
+	log.Debugf("    |-> isGlobal: %v", isGlobal)
+	log.Debugf("    |-> Playernumber: %s", playerNumber)
+	log.Debugf("    |-> Params (%d): %v\n", len(command_params), command_params)
 }

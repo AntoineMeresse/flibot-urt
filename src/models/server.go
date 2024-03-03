@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
@@ -26,7 +28,7 @@ func (server *Server) Init() {
 	server.initMapName()
 	server.initNextMapName()
 	
-	fmt.Printf("\n-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
+	log.Debugf("-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
 }
 
 func (server *Server) SetMapList() {
@@ -48,12 +50,12 @@ func (server *Server) SetMapList() {
 	defer file.Close()
 	
 	server.Maplist = res;
-	fmt.Println(server.Maplist)
+	log.Println(server.Maplist)
 }
 
 func (server *Server) initMapName() {
 	server.Mapname = server.Rcon.RconCommandExtractValue("mapname")
-	fmt.Printf("Current map is: %s\n", server.Mapname)
+	log.Debugf("Current map is: %s\n", server.Mapname)
 }
 
 func (server *Server) initNextMapName() {
@@ -66,7 +68,7 @@ func (server *Server) initNextMapName() {
 		}
 		server.Nextmap = nextmap
 	}
-	fmt.Printf("Nexmap is: %s\n", server.Nextmap)
+	log.Debugf("Nexmap is: %s\n", server.Nextmap)
 }
 
 func (server Server) RconText(text string, isGlobal bool, playerNumber string) {

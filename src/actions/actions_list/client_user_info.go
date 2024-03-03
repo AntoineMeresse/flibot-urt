@@ -1,21 +1,22 @@
 package actionslist
 
 import (
-	"fmt"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 func ClientUserinfo(action_params []string, server models.Server) {
-	fmt.Printf("\nClient User Info: %v", action_params)
+	log.Debugf("Client User Info: %v", action_params)
 	if (len(action_params) > 1) {
 		// playerNumber := action_params[0]
 		infoString := strings.Join(action_params[1:], "")
 		infosMap := splitInfos(infoString)
 
-		fmt.Printf("\nInfos: \n%v", infosMap)
+		log.Debugf("Infos: \n%v", infosMap)
 	}
 	
 }
