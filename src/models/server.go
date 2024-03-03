@@ -26,7 +26,7 @@ func (server *Server) Init() {
 	server.initMapName()
 	server.initNextMapName()
 	
-	fmt.Printf("\n-------> Flibot started (%s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
+	fmt.Printf("\n-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
 }
 
 func (server *Server) SetMapList() {
