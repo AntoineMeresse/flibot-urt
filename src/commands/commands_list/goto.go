@@ -7,7 +7,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func Goto(server models.Server, playerNumber string, params []string, isGlobal bool) {
+func Goto(server *models.Server, playerNumber string, params []string, isGlobal bool) {
 	if len(params) == 0 {
 		locationDisplayList := goto_shared.GetDisplayLocation(server)
 		server.RconList(locationDisplayList, isGlobal, playerNumber)

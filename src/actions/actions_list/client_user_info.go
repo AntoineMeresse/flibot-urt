@@ -9,14 +9,16 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ClientUserinfo(action_params []string, server models.Server) {
+func ClientUserinfo(action_params []string, server *models.Server) {
 	log.Debugf("Client User Info: %v", action_params)
 	if (len(action_params) > 1) {
-		// playerNumber := action_params[0]
+		playerNumber := action_params[0]
 		infoString := strings.Join(action_params[1:], "")
-		infosMap := splitInfos(infoString)
+		infos := splitInfos(infoString)
 
-		log.Debugf("Infos: \n%v", infosMap)
+		log.Debugf("Infos: \n%v\n", infos)
+		
+		server.Players.AddPlayer(playerNumber, generatePlayer(infos))
 	}
 	
 }
@@ -31,4 +33,20 @@ func splitInfos(infos string) map[string]string {
 	}
 
 	return res;
+}
+
+func generatePlayer(infos map[string]string) models.Player {
+	player := models.Player{};
+	
+	if name, ok := infos["name"]; ok {
+		player.Name = name;
+	}
+
+	if guid, ok := infos["cl_guid"]; ok {
+		player.Guid = guid;
+	}
+
+	player.Role = 0;
+
+	return player                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 }

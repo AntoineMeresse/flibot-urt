@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 
@@ -16,7 +17,7 @@ type Server struct {
 	Db *sql.DB
 	Rcon quake3_rcon.Rcon
 	UrtPath UrtPath
-	Players []Player
+	Players Players
 	Mapname string
 	Nextmap string
 	Maplist []string
@@ -27,6 +28,7 @@ func (server *Server) Init() {
 	server.SetMapList()
 	server.initMapName()
 	server.initNextMapName()
+	server.initPlayers()
 	
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
 }
@@ -71,7 +73,11 @@ func (server *Server) initNextMapName() {
 	log.Debugf("Nexmap is: %s\n", server.Nextmap)
 }
 
-func (server Server) RconText(text string, isGlobal bool, playerNumber string) {
+func (server *Server) initPlayers() {
+	server.Players = Players{Mutex: sync.RWMutex{}, List: make(map[string]Player)}
+}
+
+func (server *Server) RconText(text string, isGlobal bool, playerNumber string) {
 	if isGlobal {
 		server.Rcon.RconCommand(fmt.Sprintf("say ^3%s", text))
 	} else {
@@ -79,8 +85,10 @@ func (server Server) RconText(text string, isGlobal bool, playerNumber string) {
 	}
 }
 
-func (server Server) RconList(list []string, isGlobal bool, playerNumber string) {
+func (server *Server) RconList(list []string, isGlobal bool, playerNumber string) {
 	for _, text := range list {
 		server.RconText(text, isGlobal, playerNumber)
 	}
 }
+
+

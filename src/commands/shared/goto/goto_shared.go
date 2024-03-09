@@ -11,13 +11,13 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func DoesPositionExist(server models.Server, jumpName string) (exists bool, path string) {
+func DoesPositionExist(server *models.Server, jumpName string) (exists bool, path string) {
 	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtPath.GotosPath, server.Mapname, jumpName)
 	_, err := os.Stat(locationPath)
 	return !os.IsNotExist(err), locationPath
 }
 
-func getGotosList(server models.Server) []string {
+func getGotosList(server *models.Server) []string {
 	mapPath := fmt.Sprintf("%s/%s", server.UrtPath.GotosPath, server.Mapname)
 
 	file, err := os.Open(mapPath)
@@ -71,7 +71,7 @@ func groupGotos(gotoPositions []string) map[string][]string{
 	return res
 }
 
-func GetDisplayLocation(server models.Server) []string {
+func GetDisplayLocation(server *models.Server) []string {
 	res := []string{}
 	gotos := getGotosList(server)
 	if len(gotos) == 0 {
@@ -103,7 +103,7 @@ func GetDisplayLocation(server models.Server) []string {
 	return res
 }
 
-func GetJumpNameForSavePos(server models.Server, jumpName string) string {
+func GetJumpNameForSavePos(server *models.Server, jumpName string) string {
 	if len(jumpName) == 1 {
 		if unicode.IsLetter(rune(jumpName[0])) {
 			gotos := getGotosList(server)
@@ -119,7 +119,7 @@ func GetJumpNameForSavePos(server models.Server, jumpName string) string {
 	return jumpName
 }
 
-func RemovePosition(server models.Server, jumpName string) bool {
+func RemovePosition(server *models.Server, jumpName string) bool {
 	exists, path := DoesPositionExist(server, jumpName)
 	err := os.Remove(path)
 	if err != nil {

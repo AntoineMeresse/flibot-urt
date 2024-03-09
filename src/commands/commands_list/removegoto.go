@@ -7,7 +7,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func RemoveGoto(server models.Server, playerNumber string, params []string, isGlobal bool) {
+func RemoveGoto(server *models.Server, playerNumber string, params []string, isGlobal bool) {
 	if len(params) > 0 {
 		jumpName := params[0]
 		deleted := goto_shared.RemovePosition(server, jumpName)

@@ -17,6 +17,10 @@ var Commands map[string]Command = map[string]Command {
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},
 	"removegoto" : {commandslist.RemoveGoto, 80, ""},
+
+	// Dev Only
+	"players" : {commandslist.PlayersList, 0, "!players"},
+	"player" : {commandslist.PlayersGet, 0, "!player"},
 }
 
 var CommandsShortcut map[string]string = map[string]string {

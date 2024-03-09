@@ -54,7 +54,7 @@ func main() {
 		defer rcon.CloseConnection()
 		defer db.Close()
 
-		server := models.Server{Rcon : rcon, Db: db}
+		server := &models.Server{Rcon : rcon, Db: db}
 		server.Init()
 
 		// Initialize tail

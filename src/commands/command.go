@@ -45,16 +45,16 @@ func checkPlayerRights(playerNumber string,command Command) bool {
 	return playerRights >= command.Level;
 }
 
-func HandleCommand(action_params []string, server models.Server) {
+func HandleCommand(action_params []string, server *models.Server) {
 	playerNumber := action_params[0]
 	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand && checkPlayerRights(playerNumber, command) {
-		displayCommandInfos(action_params[2], server, playerNumber, command_params, isGlobal)
-		command.Function.(func(models.Server, string, []string, bool))(server, playerNumber, command_params, isGlobal)
+		displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
+		command.Function.(func(*models.Server, string, []string, bool))(server, playerNumber, command_params, isGlobal)
 	}
 }
 
-func displayCommandInfos(commandname string, server models.Server, playerNumber string, command_params []string, isGlobal bool) {
+func displayCommandInfos(commandname string, playerNumber string, command_params []string, isGlobal bool) {
 	log.Debugf("Command: %s", commandname)
 	log.Debugf("    |-> isGlobal: %v", isGlobal)
 	log.Debugf("    |-> Playernumber: %s", playerNumber)
