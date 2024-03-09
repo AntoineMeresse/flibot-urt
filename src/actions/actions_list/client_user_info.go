@@ -18,7 +18,7 @@ func ClientUserinfo(action_params []string, server *models.Server) {
 
 		log.Debugf("Infos: \n%v\n", infos)
 		
-		server.Players.AddPlayer(playerNumber, generatePlayer(infos))
+		server.Players.AddPlayer(playerNumber, generatePlayer(playerNumber, infos))
 	}
 	
 }
@@ -35,7 +35,7 @@ func splitInfos(infos string) map[string]string {
 	return res;
 }
 
-func generatePlayer(infos map[string]string) models.Player {
+func generatePlayer(playerNumber string, infos map[string]string) models.Player {
 	player := models.Player{};
 	
 	if name, ok := infos["name"]; ok {
@@ -46,6 +46,7 @@ func generatePlayer(infos map[string]string) models.Player {
 		player.Guid = guid;
 	}
 
+	player.Id = playerNumber
 	player.Role = 0;
 
 	return player                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     

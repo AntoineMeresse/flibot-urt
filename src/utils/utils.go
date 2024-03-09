@@ -48,3 +48,7 @@ func DecolorString(str string) string {
 	re := regexp.MustCompile(`\^\d`)
 	return re.ReplaceAllString(str, "");
 }
+
+func IsDigitOnly(str string) bool {
+	return regexp.MustCompile(`^[0-9]+$`).MatchString(str)
+}

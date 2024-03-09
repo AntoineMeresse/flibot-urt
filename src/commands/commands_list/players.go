@@ -19,15 +19,15 @@ func PlayersList(server *models.Server, playerNumber string, params []string, is
 }
 
 func PlayersGet(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.RconText("Players: ", isGlobal, playerNumber)
 	if len(params) > 0 {
 		searchCriteria := params[0]
-		found, player := server.Players.GetPlayer(searchCriteria)
-		if found {
-			text := fmt.Sprintf("Player found with these datas: (%v)" , player)
+		server.RconText(fmt.Sprintf("Player with criteria (%s): ", searchCriteria), isGlobal, playerNumber)
+		player, err := server.Players.GetPlayer(searchCriteria)
+		if err == nil {
+			text := fmt.Sprintf("Player found: (%v)" , *player)
 			server.RconText(text, isGlobal, playerNumber)
 		} else {
-			server.RconText("No player found", isGlobal, playerNumber)
+			server.RconText(err.Error(), isGlobal, playerNumber)
 		}
 	} else {
 		server.RconText("Add criteria", isGlobal, playerNumber)
