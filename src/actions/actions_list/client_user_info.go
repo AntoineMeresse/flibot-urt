@@ -39,7 +39,7 @@ func generatePlayer(infos map[string]string) models.Player {
 	player := models.Player{};
 	
 	if name, ok := infos["name"]; ok {
-		player.Name = name;
+		player.Name = utils.DecolorString(name);
 	}
 
 	if guid, ok := infos["cl_guid"]; ok {

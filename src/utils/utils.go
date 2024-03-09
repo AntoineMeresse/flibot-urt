@@ -2,6 +2,7 @@ package utils
 
 import (
 	"math/rand"
+	"regexp"
 	"sort"
 
 	"github.com/maruel/natural"
@@ -41,4 +42,9 @@ func NaturalSort(stringSlice []string) []string {
 	cpy := append([]string{}, stringSlice...)
 	sort.Sort(natural.StringSlice(cpy))
 	return cpy
+}
+
+func DecolorString(str string) string {
+	re := regexp.MustCompile(`\^\d`)
+	return re.ReplaceAllString(str, "");
 }
