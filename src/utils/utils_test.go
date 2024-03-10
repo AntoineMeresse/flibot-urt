@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestDecolorString(t *testing.T) {
+func Test_DecolorString(t *testing.T) {
     given := "^7Flir^1oo^7w"
 	want := "Fliroow"
 	res := DecolorString(given)
@@ -14,7 +14,7 @@ func TestDecolorString(t *testing.T) {
 	}
 }
 
-func TestIsDigitOnly_ShouldReturnTrue(t *testing.T) {
+func Test_IsDigitOnly_ShouldReturnTrue(t *testing.T) {
     given := "1234"
 	want := true
 	res := IsDigitOnly(given)
@@ -24,12 +24,22 @@ func TestIsDigitOnly_ShouldReturnTrue(t *testing.T) {
 	}
 }
 
-func TestIsDigitOnly_ShouldReturnFalse(t *testing.T) {
+func Test_IsDigitOnly_ShouldReturnFalse(t *testing.T) {
     given := "12a34"
 	want := false
 	res := IsDigitOnly(given)
 
 	if want != res {
 		t.Errorf("IsDigitOnly (%s) result wasn't correct, got: %v, want: %v", given, res, want);
+	}
+}
+
+func Test_CleanEmptyElements(t *testing.T) {
+	given := []string{"", "a","b", "", "c", ""}
+	want := []string{"a","b","c"}
+	res := CleanEmptyElements(given)
+
+	if len(want) != len(res) || want[0] != "a" || want[1] != "b" || want[2] != "c" {
+		t.Errorf("CleanEmptyElements (%s) result wasn't correct, got: %v, want: %v", given, res, want);
 	}
 }
