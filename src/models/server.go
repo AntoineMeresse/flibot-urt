@@ -3,13 +3,10 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"os"
-	"strings"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
 
@@ -18,59 +15,15 @@ type Server struct {
 	Rcon quake3_rcon.Rcon
 	UrtPath UrtPath
 	Players Players
-	Mapname string
-	Nextmap string
-	Maplist []string
+	Settings ServerSettings
 }
 
 func (server *Server) Init() {
 	server.UrtPath.init()
-	server.SetMapList()
-	server.initMapName()
-	server.initNextMapName()
+	server.InitSettings()
 	server.initPlayers()
 	
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
-}
-
-func (server *Server) SetMapList() {
-	res := []string{}
-	
-	file, err := os.Open(server.UrtPath.DownloadPath)
-	
-	if err == nil {
-		names, err := file.Readdirnames(0)
-		if err == nil {
-			for _, currentFile := range (names) {
-				if (strings.HasSuffix(currentFile, ".pk3")) {
-					res = append(res, strings.TrimSuffix(currentFile, ".pk3"))
-				}
-			}
-		}
-	}
-
-	defer file.Close()
-	
-	server.Maplist = res;
-	log.Println(server.Maplist)
-}
-
-func (server *Server) initMapName() {
-	server.Mapname = server.Rcon.RconCommandExtractValue("mapname")
-	log.Debugf("Current map is: %s\n", server.Mapname)
-}
-
-func (server *Server) initNextMapName() {
-	if len(server.Maplist) < 2 {
-		server.Nextmap = server.Mapname
-	} else {
-		nextmap := utils.RandomValueFromSlice(server.Maplist)
-		for nextmap != "" && nextmap == server.Mapname {
-			nextmap = utils.RandomValueFromSlice(server.Maplist)
-		}
-		server.Nextmap = nextmap
-	}
-	log.Debugf("Nexmap is: %s\n", server.Nextmap)
 }
 
 func (server *Server) initPlayers() {

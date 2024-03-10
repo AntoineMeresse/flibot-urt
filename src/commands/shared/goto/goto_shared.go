@@ -12,13 +12,13 @@ import (
 )
 
 func DoesPositionExist(server *models.Server, jumpName string) (exists bool, path string) {
-	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtPath.GotosPath, server.Mapname, jumpName)
+	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtPath.GotosPath, server.GetCurrentMap(), jumpName)
 	_, err := os.Stat(locationPath)
 	return !os.IsNotExist(err), locationPath
 }
 
 func getGotosList(server *models.Server) []string {
-	mapPath := fmt.Sprintf("%s/%s", server.UrtPath.GotosPath, server.Mapname)
+	mapPath := fmt.Sprintf("%s/%s", server.UrtPath.GotosPath, server.GetCurrentMap())
 
 	file, err := os.Open(mapPath)
 	if err != nil {
@@ -75,7 +75,7 @@ func GetDisplayLocation(server *models.Server) []string {
 	res := []string{}
 	gotos := getGotosList(server)
 	if len(gotos) == 0 {
-		res = append(res, fmt.Sprintf("^5%s ^1doesn't^3 have locations yet.", server.Mapname))
+		res = append(res, fmt.Sprintf("^5%s ^1doesn't^3 have locations yet.", server.GetCurrentMap()))
 	} else {
 		maxLength := 75
 		arrow := "^7  |---> "
@@ -84,7 +84,7 @@ func GetDisplayLocation(server *models.Server) []string {
 
 		gotosGroup := groupGotos(gotos)
 
-		res = append(res, fmt.Sprintf("Goto list for ^5%s^7: ", server.Mapname))
+		res = append(res, fmt.Sprintf("Goto list for ^5%s^7: ", server.GetCurrentMap()))
 		for _, k := range utils.GetKeysSorted(gotosGroup) {
 			lign := fmt.Sprintf("%s ^2%s^7 : ", arrow, k)
 			for _, pos := range gotosGroup[k] {
