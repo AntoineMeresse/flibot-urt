@@ -7,29 +7,29 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func PlayersList(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.RconText("Players: ", isGlobal, playerNumber)
-	server.Players.Mutex.RLock()
-	for key, value := range(server.Players.List) {
+func PlayersList(cmd *models.CommandsArgs) {
+	cmd.RconText("Players: ")
+	cmd.Server.Players.Mutex.RLock()
+	for key, value := range(cmd.Server.Players.List) {
 		text := fmt.Sprintf("%s: %v" , key,  value)
 		log.Debug(text)
-		server.RconText(text, isGlobal, playerNumber)
+		cmd.RconText(text)
 	}
-	server.Players.Mutex.RUnlock()
+	cmd.Server.Players.Mutex.RUnlock()
 }
 
-func PlayersGet(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	if len(params) > 0 {
-		searchCriteria := params[0]
-		server.RconText(fmt.Sprintf("Player with criteria (%s): ", searchCriteria), isGlobal, playerNumber)
-		player, err := server.Players.GetPlayer(searchCriteria)
+func PlayersGet(cmd *models.CommandsArgs) {
+	if len(cmd.Params) > 0 {
+		searchCriteria := cmd.Params[0]
+		cmd.RconText(fmt.Sprintf("Player with criteria (%s): ", searchCriteria))
+		player, err := cmd.Server.Players.GetPlayer(searchCriteria)
 		if err == nil {
 			text := fmt.Sprintf("Player found: (%v)" , *player)
-			server.RconText(text, isGlobal, playerNumber)
+			cmd.RconText(text)
 		} else {
-			server.RconText(err.Error(), isGlobal, playerNumber)
+			cmd.RconText(err.Error())
 		}
 	} else {
-		server.RconText("Add criteria", isGlobal, playerNumber)
+		cmd.RconText("Add criteria")
 	}
 }

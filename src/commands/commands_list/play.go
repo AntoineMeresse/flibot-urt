@@ -6,6 +6,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func Play(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.Rcon.RconCommand(fmt.Sprintf("forceteam %s free", playerNumber))
+func Play(cmd *models.CommandsArgs) {
+	cmd.RconCommand(fmt.Sprintf("forceteam %s free", cmd.PlayerId))
 }

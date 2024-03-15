@@ -4,6 +4,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func CurrentMap(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.RconText(server.GetCurrentMap(), isGlobal, playerNumber)
+func CurrentMap(cmd *models.CommandsArgs) {
+	cmd.RconText(cmd.Server.GetCurrentMap())
 }

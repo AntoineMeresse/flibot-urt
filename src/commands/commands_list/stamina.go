@@ -6,6 +6,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func Stamina(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.Rcon.RconCommand(fmt.Sprintf("customstamina %s", playerNumber))
+func Stamina(cmd *models.CommandsArgs) {
+	cmd.RconCommand(fmt.Sprintf("customstamina %s", cmd.PlayerId))
 }

@@ -46,13 +46,15 @@ func checkPlayerRights(playerNumber string,command Command) bool {
 	return playerRights >= command.Level;
 }
 
+
+
 func HandleCommand(action_params []string, server *models.Server) {
 	playerNumber := action_params[0]
 	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand && checkPlayerRights(playerNumber, command) {
 		displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
-		// command.Function.(func(*models.Server, string, []string, bool, models.RconFunction))(server, playerNumber, command_params, isGlobal)
-		command.Function.(func(*models.Server, string, []string, bool))(server, playerNumber, command_params, isGlobal)
+		args := models.CommandsArgs{Server: server, PlayerId: playerNumber, Params: command_params, IsGlobal: isGlobal}
+		command.Function.(func(*models.CommandsArgs))(&args)
 	}
 }
 

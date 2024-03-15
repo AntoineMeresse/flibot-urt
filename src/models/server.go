@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
@@ -38,20 +37,6 @@ func (server *Server) initPlayers() {
 func (server *Server) initApi() {
 	server.Api = &api.Api{}
 	server.Api.Init()
-}
-
-func (server *Server) RconText(text string, isGlobal bool, playerNumber string) {
-	if isGlobal {
-		server.Rcon.RconCommand(fmt.Sprintf("say ^3%s", text))
-	} else {
-		server.Rcon.RconCommand(fmt.Sprintf("tell %s ^6[PM] ^3%s", playerNumber, text))
-	}
-}
-
-func (server *Server) RconList(list []string, isGlobal bool, playerNumber string) {
-	for _, text := range list {
-		server.RconText(text, isGlobal, playerNumber)
-	}
 }
 
 

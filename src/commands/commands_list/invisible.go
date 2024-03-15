@@ -6,6 +6,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func Invisible(server *models.Server, playerNumber string, params []string, isGlobal bool) {
-	server.Rcon.RconCommand(fmt.Sprintf("invisible %s", playerNumber))
+func Invisible(cmd *models.CommandsArgs) {
+	cmd.RconCommand(fmt.Sprintf("invisible %s", cmd.PlayerId))
 }
