@@ -21,11 +21,10 @@ func PlayersList(cmd *models.CommandsArgs) {
 func PlayersGet(cmd *models.CommandsArgs) {
 	if len(cmd.Params) > 0 {
 		searchCriteria := cmd.Params[0]
-		cmd.RconText(fmt.Sprintf("Player with criteria (%s): ", searchCriteria))
+		cmd.RconText("Player with criteria (%s): ", searchCriteria)
 		player, err := cmd.Server.Players.GetPlayer(searchCriteria)
 		if err == nil {
-			text := fmt.Sprintf("Player found: (%v)" , *player)
-			cmd.RconText(text)
+			cmd.RconText("Player found: (%v)" , *player)
 		} else {
 			cmd.RconText(err.Error())
 		}

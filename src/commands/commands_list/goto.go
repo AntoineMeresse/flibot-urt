@@ -1,8 +1,6 @@
 package commandslist
 
 import (
-	"fmt"
-
 	goto_shared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
@@ -14,10 +12,10 @@ func Goto(cmd *models.CommandsArgs) {
 	} else {
 		jumpName := cmd.Params[0]
 		if exists, _  := goto_shared.DoesPositionExist(cmd.Server, jumpName); exists {
-			cmd.RconCommand(fmt.Sprintf("forceteam %s free", cmd.PlayerId))
-			cmd.RconCommand(fmt.Sprintf("loadJumpPos %s %s", cmd.PlayerId, jumpName))
+			cmd.RconCommand("forceteam %s free", cmd.PlayerId)
+			cmd.RconCommand("loadJumpPos %s %s", cmd.PlayerId, jumpName)
 		} else {
-			cmd.RconText(fmt.Sprintf("Location (^5%s^3) ^1doesn't^3 exist.", jumpName))
+			cmd.RconText("Location (^5%s^3) ^1doesn't^3 exist.", jumpName)
 		}
 	}
 }

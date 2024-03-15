@@ -1,8 +1,6 @@
 package commandslist
 
 import (
-	"fmt"
-
 	goto_shared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
@@ -12,9 +10,9 @@ func RemoveGoto(cmd *models.CommandsArgs) {
 		jumpName := cmd.Params[0]
 		deleted := goto_shared.RemovePosition(cmd.Server, jumpName)
 		if deleted {
-			cmd.RconText(fmt.Sprintf("Location (^5%s^3) has been deleted.", jumpName))
+			cmd.RconText("Location (^5%s^3) has been deleted.", jumpName)
 		} else {
-			cmd.RconText(fmt.Sprintf("Location (^5%s^3) ^1doesn't^3 exist.", jumpName))
+			cmd.RconText("Location (^5%s^3) ^1doesn't^3 exist.", jumpName)
 		}
 	}
 }
