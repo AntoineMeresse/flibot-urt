@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 type Command struct {
@@ -34,7 +35,7 @@ func extractCmdInfos(action_params []string) (iscommand bool, command Command, i
 		command := strings.ToLower(text[1:])
 		replaceShortcutByKnownCommand(&command) 
 		if cmd, ok := Commands[command]; ok {
-			return true, cmd, isCommandGlobal(text), action_params[3:] 
+			return true, cmd, isCommandGlobal(text), utils.CleanEmptyElements(action_params[3:]) 
 		}
 	}
 	return false, Command{}, false, nil
@@ -50,11 +51,13 @@ func HandleCommand(action_params []string, server *models.Server) {
 	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand && checkPlayerRights(playerNumber, command) {
 		displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
+		// command.Function.(func(*models.Server, string, []string, bool, models.RconFunction))(server, playerNumber, command_params, isGlobal)
 		command.Function.(func(*models.Server, string, []string, bool))(server, playerNumber, command_params, isGlobal)
 	}
 }
 
 func displayCommandInfos(commandname string, playerNumber string, command_params []string, isGlobal bool) {
+	log.Debugf("-------------------------------------------------------------------------------------")
 	log.Debugf("Command: %s", commandname)
 	log.Debugf("    |-> isGlobal: %v", isGlobal)
 	log.Debugf("    |-> Playernumber: %s", playerNumber)

@@ -17,6 +17,7 @@ var Commands map[string]Command = map[string]Command {
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},
 	"removegoto" : {commandslist.RemoveGoto, 80, ""},
+	"download" : {commandslist.Download, 80, ""},
 
 	// Dev Only
 	"players" : {commandslist.PlayersList, 0, "!players"},
@@ -30,4 +31,9 @@ var CommandsShortcut map[string]string = map[string]string {
 	"invi" : "invisible",
 	"l1" : "loadonce",
 	"lo" : "loadonce",
+	"mapget" : "download",
+	"mg" : "download",
+	"dl" : "download",
 }
+
+// ut43_lunaria_icebase_b1 ut43_red_b1 ut43_asian_a2 ut43_venus_p2

@@ -12,13 +12,13 @@ import (
 )
 
 func DoesPositionExist(server *models.Server, jumpName string) (exists bool, path string) {
-	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtPath.GotosPath, server.GetCurrentMap(), jumpName)
+	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtConfig.GotosPath, server.GetCurrentMap(), jumpName)
 	_, err := os.Stat(locationPath)
 	return !os.IsNotExist(err), locationPath
 }
 
 func getGotosList(server *models.Server) []string {
-	mapPath := fmt.Sprintf("%s/%s", server.UrtPath.GotosPath, server.GetCurrentMap())
+	mapPath := fmt.Sprintf("%s/%s", server.UrtConfig.GotosPath, server.GetCurrentMap())
 
 	file, err := os.Open(mapPath)
 	if err != nil {

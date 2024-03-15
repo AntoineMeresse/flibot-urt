@@ -3,6 +3,7 @@ package utils
 import (
 	"math/rand"
 	"regexp"
+	"slices"
 	"sort"
 
 	"github.com/maruel/natural"
@@ -12,6 +13,16 @@ func CleanEmptyElements(datas []string) []string {
 	var res []string
 	for _, value := range(datas) {
 		if value != "" {
+			res = append(res, value)
+		}
+	}
+	return res
+}
+
+func CleanDuplicateElements(datas []string) []string {
+	var res []string
+	for _, value := range(datas) {
+		if !slices.Contains(res, value) {
 			res = append(res, value)
 		}
 	}

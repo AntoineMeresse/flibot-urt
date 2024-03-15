@@ -2,6 +2,7 @@ package models
 
 import (
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
@@ -17,7 +18,7 @@ type ServerSettings struct {
 func (server *Server) SetMapList() {
 	res := []string{}
 	
-	file, err := os.Open(server.UrtPath.DownloadPath)
+	file, err := os.Open(server.UrtConfig.DownloadPath)
 	
 	if err == nil {
 		names, err := file.Readdirnames(0)
@@ -60,6 +61,11 @@ func (server *Server) InitSettings() {
 	server.initNextMapName()
 }
 
+func (server *Server) IsMapAlreadyDownloaded(mapname string) bool{
+	res := slices.Contains(server.GetMapList(), mapname)
+	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
+	return res;
+}
 ////////////////////////////////////////////////////////////////
 
 func (server *Server) GetCurrentMap() string {

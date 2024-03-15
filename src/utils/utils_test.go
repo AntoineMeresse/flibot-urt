@@ -43,3 +43,13 @@ func Test_CleanEmptyElements(t *testing.T) {
 		t.Errorf("CleanEmptyElements (%s) result wasn't correct, got: %v, want: %v", given, res, want);
 	}
 }
+
+func Test_CleanDuplicateElements(t *testing.T) {
+	given := []string{"a", "b", "a", "c", "c", "b", "d"}
+	want := []string{"a","b","c","d"}
+	res := CleanDuplicateElements(given)
+
+	if len(want) != len(res) || want[0] != "a" || want[1] != "b" || want[2] != "c" || want[3] != "d"{
+		t.Errorf("CleanDuplicateElements (%s) result wasn't correct, got: %v, want: %v", given, res, want);
+	}
+}
