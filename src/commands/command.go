@@ -42,6 +42,8 @@ func extractCmdInfos(action_params []string) (iscommand bool, command Command, i
 }
 
 func checkPlayerRights(playerNumber string,command Command) bool {
+	log.Debugf("-------------------------------------------------------------")
+	log.Debugf("checkPlayerRights | playerNumber (%s)", playerNumber)
 	playerRights := 100 // replace
 	return playerRights >= command.Level;
 }
@@ -65,7 +67,6 @@ func HandleCommand(action_params []string, server *models.Server) {
 }
 
 func displayCommandInfos(commandname string, playerNumber string, command_params []string, isGlobal bool) {
-	log.Debugf("-------------------------------------------------------------------------------------")
 	log.Debugf("Command: %s", commandname)
 	log.Debugf("    |-> isGlobal: %v", isGlobal)
 	log.Debugf("    |-> Playernumber: %s", playerNumber)
