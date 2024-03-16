@@ -21,6 +21,7 @@ var Commands map[string]Command = map[string]Command {
 	"removegoto" : {commandslist.RemoveGoto, 80, ""},
 	"download" : {commandslist.Download, 80, ""},
 	"timelimit" : {commandslist.Timelimit, 80, "!timelimit [1-999]"},
+	"extend" : {commandslist.Extend, 80, "!extend or !extend [1-999]"},
 
 	// Dev Only
 	"players" : {commandslist.PlayersList, 0, "!players"},
