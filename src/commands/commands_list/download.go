@@ -30,13 +30,13 @@ func downloadMap(mapSearch string, cmd *models.CommandsArgs) {
 			start := time.Now()
 			if err := api.DownloadFile(newFile, url); err == nil {
 				elapsed := time.Since(start)
-				cmd.RconText("Downloading map %s: OK (%s)", mapname, elapsed)
+				cmd.RconText("Downloading map %s: %s (^5%s^3)", mapname, utils.Green("OK"), elapsed)
 				cmd.Server.SetMapList()
 			} else {
-				cmd.RconText("Downloading map %s: KO", mapname)
+				cmd.RconText("Downloading map %s: %s", mapname, utils.Green("KO"))
 			}
 		} else {
-			cmd.RconText("%s is already on server !", mapname)
+			cmd.RconText("%s is ^1already^3 on server !", mapname)
 		}
 	}
 }

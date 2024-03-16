@@ -35,5 +35,3 @@ var CommandsShortcut map[string]string = map[string]string {
 	"mg" : "download",
 	"dl" : "download",
 }
-
-// ut43_lunaria_icebase_b1 ut43_red_b1 ut43_asian_a2 ut43_venus_p2
