@@ -7,6 +7,7 @@ import (
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
+	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
 type Command struct {
@@ -85,11 +86,7 @@ func HandleCommand(action_params []string, server *models.Server) {
 				level,
 				role,
 			)
-			server.RconText(false, playerNumber, "You ^1can't^3 use command ^5%s^3 ^7(required: ^6%d^7 | got: ^1%d^7)", 
-				action_params[2],
-				level,
-				role,
-			)
+			server.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, action_params[2], level, role)
 		}
 	}
 }

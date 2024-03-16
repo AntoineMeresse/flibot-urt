@@ -3,6 +3,7 @@ package commandslist
 import (
 	goto_shared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
 func Goto(cmd *models.CommandsArgs) {
@@ -15,7 +16,7 @@ func Goto(cmd *models.CommandsArgs) {
 			cmd.RconCommand("forceteam %s free", cmd.PlayerId)
 			cmd.RconCommand("loadJumpPos %s %s", cmd.PlayerId, jumpName)
 		} else {
-			cmd.RconText("Location (^5%s^3) ^1doesn't^3 exist.", jumpName)
+			cmd.RconText(msg.GOTO_NO_LOCATION, jumpName)
 		}
 	}
 }

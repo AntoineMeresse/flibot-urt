@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
 func MapList(cmd *models.CommandsArgs) {
 	maps := cmd.Server.GetMapList()
 	new := []string{}
-	new = append(new, fmt.Sprintf("Server map list [^5%d^3]: ", len(maps)))
+	new = append(new, fmt.Sprintf(msg.MAP_LIST, len(maps)))
 	if len(maps) > 5 {
 		new = append(new, maps[:5]...)
 		new = append(new, "...")

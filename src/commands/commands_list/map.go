@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
 func MapFn(cmd *models.CommandsArgs) {
@@ -12,7 +13,7 @@ func MapFn(cmd *models.CommandsArgs) {
 		if err != nil {
 			cmd.RconText(err.Error())
 		} else {
-			cmd.RconBigText("^7Changing map to %s", *mapName)
+			cmd.RconBigText(msg.MAP_CHANGE, *mapName)
 			time.Sleep(200 * time.Millisecond)
 			cmd.RconCommand("map %s", *mapName)
 			cmd.Server.SetMapName(*mapName)
