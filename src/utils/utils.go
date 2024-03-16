@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"slices"
 	"sort"
+	"strconv"
 
 	"github.com/maruel/natural"
 )
@@ -62,4 +63,8 @@ func DecolorString(str string) string {
 
 func IsDigitOnly(str string) bool {
 	return regexp.MustCompile(`^[0-9]+$`).MatchString(str)
+}
+
+func ExtractNumber(str string) (int, error) {
+	return strconv.Atoi(str)
 }
