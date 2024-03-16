@@ -47,7 +47,7 @@ func generatePlayer(playerNumber string, infos map[string]string) models.Player 
 	}
 
 	player.Id = playerNumber
-	player.Role = 0;
+	player.Role = 100; // Todo: change with db rights
 
 	return player                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 }

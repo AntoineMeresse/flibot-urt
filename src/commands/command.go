@@ -41,28 +41,56 @@ func extractCmdInfos(action_params []string) (iscommand bool, command Command, i
 	return false, Command{}, false, nil
 }
 
-func checkPlayerRights(playerNumber string,command Command) bool {
+func checkPlayerRights(playerNumber string, command Command, server *models.Server) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
-	log.Debugf("checkPlayerRights | playerNumber (%s)", playerNumber)
-	playerRights := 100 // replace
-	return playerRights >= command.Level;
-}
 
+	if (command.Level == 0) {
+		log.Debug("Command that can be used by everyone.")
+		return true, 0, 0
+	}
+
+	player, err := server.Players.GetPlayer(playerNumber)
+	var canUseCmd bool = false;
+	role := 0
+
+	if (err == nil) {
+		role = player.Role
+		log.Debugf("checkPlayerRights | player (%v)", player)
+		canUseCmd =  role >= command.Level
+	}
+
+	return canUseCmd, command.Level, role
+}
 
 
 func HandleCommand(action_params []string, server *models.Server) {
 	playerNumber := action_params[0]
 	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
-	if isCommand && checkPlayerRights(playerNumber, command) {
-		displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
-		args := models.CommandsArgs{
-			Server: server, 
-			PlayerId: playerNumber, 
-			Params: command_params, 
-			IsGlobal: isGlobal,
-			Usage: command.Usage,
+	if isCommand {
+		canAccess, level, role := checkPlayerRights(playerNumber, command, server)
+		if canAccess {
+			displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
+			args := models.CommandsArgs{
+				Server: server, 
+				PlayerId: playerNumber, 
+				Params: command_params, 
+				IsGlobal: isGlobal,
+				Usage: command.Usage,
+			}
+			command.Function.(func(*models.CommandsArgs))(&args)
+		} else {
+			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ", 
+				playerNumber, 
+				action_params[2],
+				level,
+				role,
+			)
+			server.RconText(false, playerNumber, "You ^1can't^3 use command ^5%s^3 ^7(required: ^6%d^7 | got: ^1%d^7)", 
+				action_params[2],
+				level,
+				role,
+			)
 		}
-		command.Function.(func(*models.CommandsArgs))(&args)
 	}
 }
 

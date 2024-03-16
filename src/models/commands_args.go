@@ -14,12 +14,7 @@ type CommandsArgs struct {
 
 
 func (c *CommandsArgs) RconText(text string, a ...any) {
-	msg := fmt.Sprintf(text, a...)
-	if c.IsGlobal {
-		c.Server.Rcon.RconCommand(fmt.Sprintf("say ^3%s", msg))
-	} else {
-		c.Server.Rcon.RconCommand(fmt.Sprintf("tell %s ^6[PM] ^3%s", c.PlayerId, msg))
-	}
+	c.Server.RconText(c.IsGlobal, c.PlayerId, text, a...)
 }
 
 func (c *CommandsArgs) RconBigText(text string, a ...any) {
