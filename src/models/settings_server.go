@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 	"slices"
 	"strings"
@@ -13,6 +14,14 @@ type ServerSettings struct {
 	Mapname string
 	Nextmap string
 	Maplist []string
+}
+
+func (server *Server) SetMapName(mapName string) {
+	server.Settings.Mapname = mapName
+}
+
+func (server *Server) SetNextMap(nextMapName string) {
+	server.Settings.Nextmap = nextMapName
 }
 
 func (server *Server) SetMapList() {
@@ -66,6 +75,34 @@ func (server *Server) IsMapAlreadyDownloaded(mapname string) bool{
 	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
 	return res;
 }
+
+func (server *Server) GetMapWithCriteria(searchCriteria string) (*string, error) {
+	res := []string{}
+	
+	for _, m := range(server.GetMapList()) {
+		if strings.Contains(strings.ToLower(m), strings.ToLower(searchCriteria)) {
+			res = append(res, m)
+		}
+	}
+
+	if len(res) == 1 {
+		return &res[0], nil
+	} else {
+		if len(res) == 0 {
+			return nil, fmt.Errorf("no map found using (^6%s^3)", searchCriteria)
+		} else {
+			var mapList string;
+			if len(res) > 3 {
+				mapList = strings.Join(res[:3], ", ")
+				mapList += " ^5...^3 "
+			} else {
+				mapList = strings.Join(res, ", ")
+			}
+			return nil, fmt.Errorf("multiple maps found [^5%d^3] using (^6%s^3): %s ", len(res), searchCriteria, mapList)
+		}
+	}
+}
+
 ////////////////////////////////////////////////////////////////
 
 func (server *Server) GetCurrentMap() string {

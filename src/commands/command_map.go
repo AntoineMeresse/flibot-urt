@@ -13,6 +13,8 @@ var Commands map[string]Command = map[string]Command {
 	"goto" : {commandslist.Goto, 0, "!goto"},
 	"invisible" : {commandslist.Invisible, 0, "!invisible"},
 	"loadonce" : {commandslist.Loadonce, 0, "!loadonce"},
+	"map" : {commandslist.MapFn, 0, "!map [search]"},
+	"maps" : {commandslist.MapList, 0, "!maps"},
 
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},

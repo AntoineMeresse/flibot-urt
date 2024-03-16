@@ -53,7 +53,13 @@ func HandleCommand(action_params []string, server *models.Server) {
 	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand && checkPlayerRights(playerNumber, command) {
 		displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
-		args := models.CommandsArgs{Server: server, PlayerId: playerNumber, Params: command_params, IsGlobal: isGlobal}
+		args := models.CommandsArgs{
+			Server: server, 
+			PlayerId: playerNumber, 
+			Params: command_params, 
+			IsGlobal: isGlobal,
+			Usage: command.Usage,
+		}
 		command.Function.(func(*models.CommandsArgs))(&args)
 	}
 }
