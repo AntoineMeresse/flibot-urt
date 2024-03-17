@@ -68,3 +68,7 @@ func IsDigitOnly(str string) bool {
 func ExtractNumber(str string) (int, error) {
 	return strconv.Atoi(str)
 }
+
+func IsVoteCommand(text string) bool {
+	return text == "+" || text == "-"
+}

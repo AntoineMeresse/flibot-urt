@@ -17,7 +17,7 @@ type Command struct {
 }
 
 func isCommand(text string) (bool) {
-	return len(text) > 1 && (text[0] == '!' || text[0] == '@')
+	return utils.IsVoteCommand(text) || (len(text) > 1 && (text[0] == '!' || text[0] == '@'))
 }
 
 func isCommandGlobal(text string) bool {
@@ -33,7 +33,12 @@ func replaceShortcutByKnownCommand(cmd *string) {
 func extractCmdInfos(action_params []string) (iscommand bool, command Command, isGlobal bool, params []string) {
 	text := action_params[2]
 	if isCommand(text) {
-		command := strings.ToLower(text[1:])
+		var command string;
+		if utils.IsVoteCommand(text) {
+			command = text
+		} else {
+			command = strings.ToLower(text[1:])
+		}
 		replaceShortcutByKnownCommand(&command) 
 		if cmd, ok := Commands[command]; ok {
 			return true, cmd, isCommandGlobal(text), utils.CleanEmptyElements(action_params[3:]) 

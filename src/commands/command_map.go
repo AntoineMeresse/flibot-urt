@@ -16,6 +16,8 @@ var Commands map[string]Command = map[string]Command {
 	"map" : {commandslist.MapFn, 0, "!map [search]"},
 	"maps" : {commandslist.MapList, 0, "!maps"},
 	"callvote" : {commandslist.Callvote, 0, "!callvote tocomplete"},
+	"+" : {commandslist.VoteYes, 0, ""},
+	"-" : {commandslist.VoteNo, 0, ""},
 
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},
