@@ -17,6 +17,7 @@ type Server struct {
 	Players Players
 	Settings ServerSettings
 	Api *api.Api
+	VoteChannel chan Vote
 }
 
 type RconFunction func(format string, a ...any)

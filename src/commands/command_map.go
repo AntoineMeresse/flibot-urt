@@ -15,6 +15,7 @@ var Commands map[string]Command = map[string]Command {
 	"loadonce" : {commandslist.Loadonce, 0, "!loadonce"},
 	"map" : {commandslist.MapFn, 0, "!map [search]"},
 	"maps" : {commandslist.MapList, 0, "!maps"},
+	"callvote" : {commandslist.Callvote, 0, "!callvote tocomplete"},
 
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 80, ""},
@@ -38,4 +39,5 @@ var CommandsShortcut map[string]string = map[string]string {
 	"mapget" : "download",
 	"mg" : "download",
 	"dl" : "download",
+	"cv" : "callvote",
 }

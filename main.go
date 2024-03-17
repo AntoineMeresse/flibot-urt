@@ -12,6 +12,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/db"
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/vote"
 	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
 	"github.com/joho/godotenv"
 
@@ -43,6 +44,7 @@ func main() {
 
 	// Variables
 	myLogChannel := make(chan string)
+	voteChannel := make(chan models.Vote)
 	keepRunning := true
 	
 	rcon, rconErr := getRcon()
@@ -54,7 +56,7 @@ func main() {
 		defer rcon.CloseConnection()
 		defer db.Close()
 
-		server := &models.Server{Rcon : rcon, Db: db}
+		server := &models.Server{Rcon : rcon, Db: db, VoteChannel: voteChannel}
 		server.Init()
 
 		// Initialize tail
@@ -64,6 +66,10 @@ func main() {
 		for i := 0; i < WorkerNumber; i++ {
 			go logparser.HandleLogsWorker(myLogChannel, i, server)
 		}
+
+		// Initialize Vote system
+		go vote.InitVoteSystem(voteChannel, server)
+
 
 		for keepRunning {
 			time.Sleep(time.Second * 10)
