@@ -18,8 +18,7 @@ func (c *CommandsArgs) RconText(text string, a ...any) {
 }
 
 func (c *CommandsArgs) RconBigText(text string, a ...any) {
-	msg := fmt.Sprintf(text, a...)
-	c.Server.Rcon.RconCommand(fmt.Sprintf("bigtext \"%s\"", msg))
+	c.Server.RconBigText(c.IsGlobal, c.PlayerId, text, a...)
 }
 
 func (c *CommandsArgs) RconUsage(text string, a ...any) {
