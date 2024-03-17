@@ -31,13 +31,20 @@ func InitVoteSystem(voteChannel <-chan models.Vote, server *models.Server) {
 	}
 }
 
+func (voteSystem *VoteSystem) reset() {
+	voteSystem.CanVote = true
+	voteSystem.Cancel = false
+	clear(voteSystem.VoteYes)
+	clear(voteSystem.VoteNo)  
+}
+
 func voteLogic(server *models.Server, voteSystem *VoteSystem, vote models.Vote) {
 	if vote.Params == nil {
 		logrus.Errorf("Vote params can't be null %v", vote)
 		return
 	}
 
-	if handleVote(server, voteSystem, vote) {
+	if handleVote(voteSystem, vote) {
 		return
 	} 
 	
@@ -50,30 +57,31 @@ func isOnlyVote(vote models.Vote) (isVote bool, value string) {
 
 func createVote(server *models.Server, voteSystem *VoteSystem, vote models.Vote) {
 	if (voteSystem.CanVote) {
-		voteSystem.CanVote = false
-		server.RconText(false, vote.PlayerId, "New vote incoming: %v", vote)
-		iteration := 0
-		secondsToEnd := SECONDS_PER_VOTE*2 // To avoid to deal with float
-		cpt := 0
-		msg := strings.Join(vote.Params, " ")
-		for (iteration <= secondsToEnd && !voteSystem.Cancel) {
-			voteKeysMessage(&cpt, server)
-			server.RconBigText(true, "0", "%s | ^2Yes^7: %2d / ^1No^7 : %2d (%02d s)", msg, len(voteSystem.VoteYes), len(voteSystem.VoteNo), (secondsToEnd - iteration) / 2)
-			iteration += 1
-			time.Sleep(500 * time.Millisecond)
-			if hasMajority() {
-				break
+		if continueVote, endFunction, msg := getVoteInfos(server, vote); continueVote {
+			voteSystem.CanVote = false
+			server.RconText(false, vote.PlayerId, "New vote incoming: %v", vote)
+			iteration := 0
+			secondsToEnd := SECONDS_PER_VOTE*2 // To avoid to deal with float
+			cpt := 0
+			for (iteration <= secondsToEnd && !voteSystem.Cancel) {
+				voteKeysMessage(&cpt, server)
+				server.RconBigText("%s | ^2Yes^7: %2d / ^1No^7 : %2d (%02d s)", msg, len(voteSystem.VoteYes), len(voteSystem.VoteNo), (secondsToEnd - iteration) / 2)
+				iteration += 1
+				time.Sleep(500 * time.Millisecond)
+				if hasMajority(server, voteSystem) {
+					break
+				}
 			}
+			endVote(server, voteSystem, vote, endFunction)
+			voteSystem.CanVote = true
 		}
-		voteSystem.CanVote = true
 	} else {
 		server.RconText(false, vote.PlayerId, "Can't ^1start^3 a new vote !")
 	}
 }
 
-func handleVote(server *models.Server, voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
+func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
 	if isVote, value := isOnlyVote(vote); isVote {
-		server.RconText(false, vote.PlayerId, "Just a vote !")
 		if (value == "+") {
 			voteSystem.addYesVote(vote.PlayerId)
 		} else {
@@ -96,7 +104,7 @@ func (v *VoteSystem) addNoVote(playerId string) {
 	v.VoteNo[playerId] = 0
 }
 
-func voteKeysMessage(cpt *int, server *models.Server,) {
+func voteKeysMessage(cpt *int, server *models.Server) {
 	if (*cpt == 10) {
 		*cpt = 0
 	}
@@ -106,7 +114,35 @@ func voteKeysMessage(cpt *int, server *models.Server,) {
 	*cpt += 2
 }
 
-func hasMajority() bool {
-	// TODO: check if majority 
-	return false
+func hasMajority(server *models.Server, voteSystem *VoteSystem) bool {
+	majority := (len(server.Players.List) / 2) + 1 
+	return len(voteSystem.VoteYes) >= majority || len(voteSystem.VoteNo) >= majority
+}
+
+func endVote(server *models.Server, voteSystem *VoteSystem, vote models.Vote, endFunction interface{}) {
+	if !voteSystem.Cancel {
+		if len(voteSystem.VoteYes) > len(voteSystem.VoteNo) {
+			server.RconBigText("^2Vote Passed")
+			execVote(server, vote, endFunction)
+		} else {
+			server.RconBigText("^1Vote Failed")
+		}
+		voteSystem.reset()
+	}
+}
+
+func getVoteInfos(server *models.Server, vote models.Vote) (bool, interface{}, string) {
+	infos, exists := votes[vote.Params[0]]
+	param := strings.Join(vote.Params[1:], " ")
+	if exists {
+		continueVote, msg := infos.msgFn.(func (*models.Server, string, string) (bool, string))(server, infos.messageFormat, param)
+		return continueVote, infos.function, msg
+	}
+	return false, nil, ""
+}
+
+func execVote(server *models.Server, vote models.Vote, endFunction interface{}) {
+	time.Sleep(1 * time.Second)
+	param := strings.Join(vote.Params[1:], " ");
+	endFunction.(func (string, *models.Server))(param, server)
 }

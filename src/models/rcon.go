@@ -11,7 +11,7 @@ func (server *Server) RconText(isGlobal bool, playerId string, text string, a ..
 	}
 }
 
-func (server *Server) RconBigText(isGlobal bool, playerId string, text string, a ...any) {
+func (server *Server) RconBigText(text string, a ...any) {
 	msg := fmt.Sprintf(text, a...)
 	server.Rcon.RconCommand(fmt.Sprintf("bigtext \"%s\"", msg))
 }
@@ -19,4 +19,8 @@ func (server *Server) RconBigText(isGlobal bool, playerId string, text string, a
 func (server *Server) RconPrint(text string, a ...any) {
 	msg := fmt.Sprintf(text, a...)
 	server.Rcon.RconCommand(fmt.Sprintf("\"%s\"", msg))
+}
+
+func (server *Server) RconCommand(text string, a ...any) {
+	server.Rcon.RconCommand(fmt.Sprintf(text, a...))
 }

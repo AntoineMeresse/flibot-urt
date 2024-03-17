@@ -18,7 +18,7 @@ func (c *CommandsArgs) RconText(text string, a ...any) {
 }
 
 func (c *CommandsArgs) RconBigText(text string, a ...any) {
-	c.Server.RconBigText(c.IsGlobal, c.PlayerId, text, a...)
+	c.Server.RconBigText(text, a...)
 }
 
 func (c *CommandsArgs) RconUsage(text string, a ...any) {
