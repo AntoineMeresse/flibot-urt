@@ -7,6 +7,7 @@ var Actions map[string]interface{} = map[string]interface{}{
 	"say:": actionslist.Say,
 	"ClientConnect:": actionslist.ClientConnect,
 	"ClientUserinfo:" : actionslist.ClientUserinfo,
+	"Timelimit:": actionslist.TimelimitHit,
 }
 
 

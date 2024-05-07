@@ -57,7 +57,7 @@ func checkPlayerRights(playerNumber string, command Command, server *models.Serv
 
 	player, err := server.Players.GetPlayer(playerNumber)
 	var canUseCmd bool = false;
-	role := 100
+	role := 0
 
 	if (err == nil) {
 		role = player.Role
