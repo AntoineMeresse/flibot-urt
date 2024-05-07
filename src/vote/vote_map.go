@@ -16,6 +16,7 @@ var votes map[string]VoteInfo = map[string]VoteInfo {
 	"cycle" : {voteslist.Cyclemap, voteslist.CyclemapMessage, "Cycling to %s"},
 	"extend": {voteslist.Extend, voteslist.ExtendMessage, "Entend %d minutes"},
 	"reload" : {voteslist.Reload, noFormatting, "Reload"},
+	"nextmap" : {voteslist.Nextmap, voteslist.MapMessage, "Changing nextmap to %s"},
 }
 
 func noFormatting(server *models.Server, str string, param string) (bool, string) {

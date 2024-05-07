@@ -76,7 +76,7 @@ func (server *Server) IsMapAlreadyDownloaded(mapname string) bool{
 	return res;
 }
 
-func (server *Server) GetMapWithCriteria(searchCriteria string) (*string, error) {
+func (server *Server) GetMapWithCriteria(searchCriteria string) (uniqueMap *string , err error) {
 	res := []string{}
 	
 	for _, m := range(server.GetMapList()) {

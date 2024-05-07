@@ -137,6 +137,8 @@ func getVoteInfos(server *models.Server, vote models.Vote) (bool, interface{}, s
 	if exists {
 		continueVote, msg := infos.msgFn.(func (*models.Server, string, string) (bool, string))(server, infos.messageFormat, param)
 		return continueVote, infos.function, msg
+	} else {
+		server.RconText(false, vote.PlayerId, "Vote [%s] does not exist", vote.Params[0])
 	}
 	return false, nil, ""
 }
