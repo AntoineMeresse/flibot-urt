@@ -18,9 +18,10 @@ var Commands map[string]Command = map[string]Command {
 	"callvote" : {commandslist.Callvote, 0, "!callvote tocomplete"},
 	"+" : {commandslist.VoteYes, 0, ""},
 	"-" : {commandslist.VoteNo, 0, ""},
+	"help" : {commandslist.Help, 0, ""},
 
 	// Level: 80
-	"setgoto" : {commandslist.SetGoto, 80, ""},
+	"setgoto" : {commandslist.SetGoto, 0, ""},
 	"removegoto" : {commandslist.RemoveGoto, 80, ""},
 	"download" : {commandslist.Download, 80, ""},
 	"timelimit" : {commandslist.Timelimit, 80, "!timelimit [1-999]"},

@@ -6,6 +6,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/maruel/natural"
 )
@@ -71,4 +72,27 @@ func ExtractNumber(str string) (int, error) {
 
 func IsVoteCommand(text string) bool {
 	return text == "+" || text == "-"
+}
+
+func ToShorterChunkArray(strList []string) []string {
+	maxLength := 75
+	res := []string{}
+	lign := ""
+	sep := " "
+
+	for _, current := range strList {
+		newLign := lign + current + sep 
+		if len(newLign) <= maxLength {
+			lign = newLign
+		} else {
+			res = append(res, lign)
+			lign = current + sep
+		}
+	}
+	res = append(res, lign)
+	return res
+}
+
+func ToShorterChunkString(str string) []string {
+	return ToShorterChunkArray(strings.Split(str, " "))
 }

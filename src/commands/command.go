@@ -30,7 +30,7 @@ func replaceShortcutByKnownCommand(cmd *string) {
 	}
 }
 
-func extractCmdInfos(action_params []string) (iscommand bool, command Command, isGlobal bool, params []string) {
+func extractCmdInfos(action_params []string) (iscommand bool, commandName string, command Command, isGlobal bool, params []string) {
 	text := action_params[2]
 	if isCommand(text) {
 		var command string;
@@ -41,10 +41,10 @@ func extractCmdInfos(action_params []string) (iscommand bool, command Command, i
 		}
 		replaceShortcutByKnownCommand(&command) 
 		if cmd, ok := Commands[command]; ok {
-			return true, cmd, isCommandGlobal(text), utils.CleanEmptyElements(action_params[3:]) 
+			return true, command,  cmd, isCommandGlobal(text), utils.CleanEmptyElements(action_params[3:]) 
 		}
 	}
-	return false, Command{}, false, nil
+	return false, "", Command{}, false, nil
 }
 
 func checkPlayerRights(playerNumber string, command Command, server *models.Server) (canAccess bool, required int, got int) {
@@ -57,7 +57,7 @@ func checkPlayerRights(playerNumber string, command Command, server *models.Serv
 
 	player, err := server.Players.GetPlayer(playerNumber)
 	var canUseCmd bool = false;
-	role := 0
+	role := 100
 
 	if (err == nil) {
 		role = player.Role
@@ -68,10 +68,21 @@ func checkPlayerRights(playerNumber string, command Command, server *models.Serv
 	return canUseCmd, command.Level, role
 }
 
+func overrideParamsForCommands(commandName string, role int, cmdArgs *models.CommandsArgs) {
+	if commandName == "help" {
+		var cmdList []string;
+		for key, value := range(Commands) {
+			if (value.Level <= role) {	
+				cmdList = append(cmdList, key)
+			}
+		}
+		cmdArgs.Params =  utils.CleanEmptyElements(cmdList)
+	}
+}
 
 func HandleCommand(action_params []string, server *models.Server) {
 	playerNumber := action_params[0]
-	isCommand, command, isGlobal, command_params := extractCmdInfos(action_params)
+	isCommand, commandName, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand {
 		canAccess, level, role := checkPlayerRights(playerNumber, command, server)
 		if canAccess {
@@ -83,6 +94,7 @@ func HandleCommand(action_params []string, server *models.Server) {
 				IsGlobal: isGlobal,
 				Usage: command.Usage,
 			}
+			overrideParamsForCommands(commandName, role, &args)
 			command.Function.(func(*models.CommandsArgs))(&args)
 		} else {
 			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ", 
