@@ -21,18 +21,18 @@ func Download(cmd *models.CommandsArgs) {
 }
 
 func downloadMap(mapSearch string, cmd *models.CommandsArgs) {
-	// server.SetMapList()
+	// context.SetMapList()
 	unique, mapname := uniqueMapExist(mapSearch, cmd)
 	if unique {
-		if !cmd.Server.IsMapAlreadyDownloaded(mapname) {
-			newFile := fmt.Sprintf("%s/%s.pk3",cmd.Server.UrtConfig.DownloadPath, mapname)
-			url := fmt.Sprintf("%s/%s", cmd.Server.UrtConfig.MapRepository, mapname)
+		if !cmd.Context.IsMapAlreadyDownloaded(mapname) {
+			newFile := fmt.Sprintf("%s/%s.pk3",cmd.Context.UrtConfig.DownloadPath, mapname)
+			url := fmt.Sprintf("%s/%s", cmd.Context.UrtConfig.MapRepository, mapname)
 			cmd.RconText(msg.DOWNLOAD_START, mapname)
 			start := time.Now()
 			if err := api.DownloadFile(newFile, url); err == nil {
 				elapsed := time.Since(start)
 				cmd.RconText(msg.DOWNLOAD_OK, mapname, elapsed)
-				cmd.Server.SetMapList()
+				cmd.Context.SetMapList()
 			} else {
 				cmd.RconText(msg.DOWNLOAD_KO, mapname)
 			}
@@ -43,7 +43,7 @@ func downloadMap(mapSearch string, cmd *models.CommandsArgs) {
 }
 
 func uniqueMapExist(search string, cmd *models.CommandsArgs) (bool, string) {
-	maps := cmd.Server.Api.GetMapsWithPattern(search)
+	maps := cmd.Context.Api.GetMapsWithPattern(search)
 	if len(maps) == 0 {
 		cmd.RconText(msg.DOWNLOAD_NO_MAP, search)
 		return false, ""

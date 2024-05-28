@@ -6,11 +6,11 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func Cyclemap(param string, server *models.Context) {
-	server.Rcon.RconCommand("cyclemap")
+func Cyclemap(param string, context *models.Context) {
+	context.Rcon.RconCommand("cyclemap")
 	// set currentmap
 }
 
-func CyclemapMessage(server *models.Context, msg string, param string) (bool, string) {
-	return true, fmt.Sprintf(msg, server.GetNextMap())
+func CyclemapMessage(context *models.Context, msg string, param string) (bool, string) {
+	return true, fmt.Sprintf(msg, context.GetNextMap())
 }

@@ -11,14 +11,14 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func DoesPositionExist(server *models.Context, jumpName string) (exists bool, path string) {
-	locationPath := fmt.Sprintf("%s/%s/%s.pos", server.UrtConfig.GotosPath, server.GetCurrentMap(), jumpName)
+func DoesPositionExist(context *models.Context, jumpName string) (exists bool, path string) {
+	locationPath := fmt.Sprintf("%s/%s/%s.pos", context.UrtConfig.GotosPath, context.GetCurrentMap(), jumpName)
 	_, err := os.Stat(locationPath)
 	return !os.IsNotExist(err), locationPath
 }
 
-func getGotosList(server *models.Context) []string {
-	mapPath := fmt.Sprintf("%s/%s", server.UrtConfig.GotosPath, server.GetCurrentMap())
+func getGotosList(context *models.Context) []string {
+	mapPath := fmt.Sprintf("%s/%s", context.UrtConfig.GotosPath, context.GetCurrentMap())
 
 	file, err := os.Open(mapPath)
 	if err != nil {
@@ -71,11 +71,11 @@ func groupGotos(gotoPositions []string) map[string][]string{
 	return res
 }
 
-func GetDisplayLocation(server *models.Context) []string {
+func GetDisplayLocation(context *models.Context) []string {
 	res := []string{}
-	gotos := getGotosList(server)
+	gotos := getGotosList(context)
 	if len(gotos) == 0 {
-		res = append(res, fmt.Sprintf("^5%s ^1doesn't^3 have locations yet.", server.GetCurrentMap()))
+		res = append(res, fmt.Sprintf("^5%s ^1doesn't^3 have locations yet.", context.GetCurrentMap()))
 	} else {
 		maxLength := 75
 		arrow := "^7  |---> "
@@ -84,7 +84,7 @@ func GetDisplayLocation(server *models.Context) []string {
 
 		gotosGroup := groupGotos(gotos)
 
-		res = append(res, fmt.Sprintf("Goto list for ^5%s^7: ", server.GetCurrentMap()))
+		res = append(res, fmt.Sprintf("Goto list for ^5%s^7: ", context.GetCurrentMap()))
 		for _, k := range utils.GetKeysSorted(gotosGroup) {
 			lign := fmt.Sprintf("%s ^2%s^7 : ", arrow, k)
 			for _, pos := range gotosGroup[k] {
@@ -103,10 +103,10 @@ func GetDisplayLocation(server *models.Context) []string {
 	return res
 }
 
-func GetJumpNameForSavePos(server *models.Context, jumpName string) string {
+func GetJumpNameForSavePos(context *models.Context, jumpName string) string {
 	if len(jumpName) == 1 {
 		if unicode.IsLetter(rune(jumpName[0])) {
-			gotos := getGotosList(server)
+			gotos := getGotosList(context)
 			i := 1
 			startPos := fmt.Sprintf("%s%d", jumpName, i)
 			for slices.Contains(gotos, startPos) {
@@ -119,8 +119,8 @@ func GetJumpNameForSavePos(server *models.Context, jumpName string) string {
 	return jumpName
 }
 
-func RemovePosition(server *models.Context, jumpName string) bool {
-	exists, path := DoesPositionExist(server, jumpName)
+func RemovePosition(context *models.Context, jumpName string) bool {
+	exists, path := DoesPositionExist(context, jumpName)
 	err := os.Remove(path)
 	if err != nil {
 		return false

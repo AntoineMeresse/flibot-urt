@@ -7,7 +7,7 @@ import (
 
 func SetGoto(cmd *models.CommandsArgs) {
 	if len(cmd.Params) > 0 {
-		jumpname := goto_shared.GetJumpNameForSavePos(cmd.Server, cmd.Params[0])
+		jumpname := goto_shared.GetJumpNameForSavePos(cmd.Context, cmd.Params[0])
 		cmd.RconCommand("saveJumpPos %s %s", cmd.PlayerId, jumpname)
 	}
 }

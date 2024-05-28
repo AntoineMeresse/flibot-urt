@@ -2,6 +2,6 @@ package voteslist
 
 import "github.com/AntoineMeresse/flibot-urt/src/models"
 
-func Reload(param string, server *models.Context) {
-	server.Rcon.RconCommand("reload")
+func Reload(param string, context *models.Context) {
+	context.Rcon.RconCommand("reload")
 }

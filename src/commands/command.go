@@ -47,7 +47,7 @@ func extractCmdInfos(action_params []string) (iscommand bool, commandName string
 	return false, "", Command{}, false, nil
 }
 
-func checkPlayerRights(playerNumber string, command Command, server *models.Context) (canAccess bool, required int, got int) {
+func checkPlayerRights(playerNumber string, command Command, context *models.Context) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
 
 	if (command.Level == 0) {
@@ -55,7 +55,7 @@ func checkPlayerRights(playerNumber string, command Command, server *models.Cont
 		return true, 0, 0
 	}
 
-	player, err := server.Players.GetPlayer(playerNumber)
+	player, err := context.Players.GetPlayer(playerNumber)
 	var canUseCmd bool = false;
 	role := 0
 
@@ -80,15 +80,15 @@ func overrideParamsForCommands(commandName string, role int, cmdArgs *models.Com
 	}
 }
 
-func HandleCommand(action_params []string, server *models.Context) {
+func HandleCommand(action_params []string, context *models.Context) {
 	playerNumber := action_params[0]
 	isCommand, commandName, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand {
-		canAccess, level, role := checkPlayerRights(playerNumber, command, server)
+		canAccess, level, role := checkPlayerRights(playerNumber, command, context)
 		if canAccess {
 			displayCommandInfos(action_params[2], playerNumber, command_params, isGlobal)
 			args := models.CommandsArgs{
-				Server: server, 
+				Context: context, 
 				PlayerId: playerNumber, 
 				Params: command_params, 
 				IsGlobal: isGlobal,
@@ -103,7 +103,7 @@ func HandleCommand(action_params []string, server *models.Context) {
 				level,
 				role,
 			)
-			server.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, action_params[2], level, role)
+			context.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, action_params[2], level, role)
 		}
 	}
 }

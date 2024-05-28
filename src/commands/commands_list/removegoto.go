@@ -9,7 +9,7 @@ import (
 func RemoveGoto(cmd *models.CommandsArgs) {
 	if len(cmd.Params) > 0 {
 		jumpName := cmd.Params[0]
-		deleted := goto_shared.RemovePosition(cmd.Server, jumpName)
+		deleted := goto_shared.RemovePosition(cmd.Context, jumpName)
 		if deleted {
 			cmd.RconText(msg.GOTO_REMOVE, jumpName)
 		} else {

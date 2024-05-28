@@ -8,7 +8,7 @@ import (
 )
 
 func MapList(cmd *models.CommandsArgs) {
-	maps := cmd.Server.GetMapList()
+	maps := cmd.Context.GetMapList()
 	new := []string{}
 	new = append(new, fmt.Sprintf(msg.MAP_LIST, len(maps)))
 	if len(maps) > 5 {

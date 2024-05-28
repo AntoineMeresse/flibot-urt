@@ -5,6 +5,6 @@ type Vote struct {
 	PlayerId string
 }
 
-func (server *Context) NewVote(v Vote) {
-	server.VoteChannel <- v
+func (context *Context) NewVote(v Vote) {
+	context.VoteChannel <- v
 }

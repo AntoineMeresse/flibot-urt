@@ -9,7 +9,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ClientUserinfo(action_params []string, server *models.Context) {
+func ClientUserinfo(action_params []string, context *models.Context) {
 	log.Debugf("Client User Info: %v", action_params)
 	if (len(action_params) > 1) {
 		playerNumber := action_params[0]
@@ -18,7 +18,7 @@ func ClientUserinfo(action_params []string, server *models.Context) {
 
 		log.Debugf("Infos: \n%v\n", infos)
 		
-		server.Players.AddPlayer(playerNumber, generatePlayer(playerNumber, infos))
+		context.Players.AddPlayer(playerNumber, generatePlayer(playerNumber, infos))
 	}
 	
 }

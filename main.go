@@ -15,22 +15,22 @@ func main() {
 	myLogChannel := make(chan string)
 	voteChannel := make(chan models.Vote)
 	
-	server := &models.Context{VoteChannel: voteChannel}
-	server.Init()
+	context := &models.Context{VoteChannel: voteChannel}
+	context.Init()
 
-	defer server.Rcon.CloseConnection()
-	defer server.DB.Close();
+	defer context.Rcon.CloseConnection()
+	defer context.DB.Close();
 
 	// Initialize tail
-	go logparser.InitLogparser(myLogChannel, server.UrtConfig.LogFile)
+	go logparser.InitLogparser(myLogChannel, context.UrtConfig.LogFile)
 
 	// Handle each line
-	for i := 0; i < server.UrtConfig.WorkerNumber; i++ {
-		go logparser.HandleLogsWorker(myLogChannel, i, server)
+	for i := 0; i < context.UrtConfig.WorkerNumber; i++ {
+		go logparser.HandleLogsWorker(myLogChannel, i, context)
 	}
 
 	// Initialize Vote system
-	go vote.InitVoteSystem(voteChannel, server)
+	go vote.InitVoteSystem(voteChannel, context)
 
 	// Because we're only using go routines, if we don't have this block program isn't keep alived.
 	keepRunning := true

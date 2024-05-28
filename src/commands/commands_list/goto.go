@@ -8,11 +8,11 @@ import (
 
 func Goto(cmd *models.CommandsArgs) {
 	if len(cmd.Params) == 0 {
-		locationDisplayList := goto_shared.GetDisplayLocation(cmd.Server)
+		locationDisplayList := goto_shared.GetDisplayLocation(cmd.Context)
 		cmd.RconList(locationDisplayList)
 	} else {
 		jumpName := cmd.Params[0]
-		if exists, _  := goto_shared.DoesPositionExist(cmd.Server, jumpName); exists {
+		if exists, _  := goto_shared.DoesPositionExist(cmd.Context, jumpName); exists {
 			cmd.RconCommand("forceteam %s free", cmd.PlayerId)
 			cmd.RconCommand("loadJumpPos %s %s", cmd.PlayerId, jumpName)
 		} else {

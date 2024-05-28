@@ -19,6 +19,6 @@ var votes map[string]VoteInfo = map[string]VoteInfo {
 	"nextmap" : {voteslist.Nextmap, voteslist.MapMessage, "Changing nextmap to %s"},
 }
 
-func noFormatting(server *models.Context, str string, param string) (bool, string) {
+func noFormatting(context *models.Context, str string, param string) (bool, string) {
 	return true, str;
 }

@@ -6,8 +6,8 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func TimelimitHit(action_params []string, server *models.Context) {
+func TimelimitHit(action_params []string, context *models.Context) {
 	log.Debugf("Timelimit hit: %v", action_params)
 	v := models.Vote{Params: []string{"extend"}}
-	server.NewVote(v)
+	context.NewVote(v)
 }

@@ -23,38 +23,38 @@ type Context struct {
 
 type RconFunction func(format string, a ...any)
 
-func (server *Context) Init() {
-	server.UrtConfig.loadEnvVariables()
+func (context *Context) Init() {
+	context.UrtConfig.loadEnvVariables()
 	
-	server.initRcon()
-	server.initSettings()
-	server.initPlayers()
-	server.initApi()
-	server.initDb()
+	context.initRcon()
+	context.initSettings()
+	context.initPlayers()
+	context.initApi()
+	context.initDb()
 	
-	log.Debugf("-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
+	log.Debugf("-------> Flibot started (/connect %s:%s)\n", context.Rcon.ServerIp, context.Rcon.ServerPort)
 }
 
-func (server *Context) initPlayers() {
-	server.Players = Players{Mutex: sync.RWMutex{}, List: make(map[string]Player)}
+func (context *Context) initPlayers() {
+	context.Players = Players{Mutex: sync.RWMutex{}, List: make(map[string]Player)}
 }
 
-func (server *Context) initApi() {
-	server.Api = &api.Api{}
-	server.Api.Init()
+func (context *Context) initApi() {
+	context.Api = &api.Api{}
+	context.Api.Init()
 }
 
-func (server *Context) initRcon() {
-	server.Rcon = quake3_rcon.Rcon{
-		ServerIp: server.UrtConfig.ServerConfig.Ip, 
-		ServerPort: server.UrtConfig.ServerConfig.Port, 
-		Password: server.UrtConfig.ServerConfig.Password,
+func (context *Context) initRcon() {
+	context.Rcon = quake3_rcon.Rcon{
+		ServerIp: context.UrtConfig.ServerConfig.Ip, 
+		ServerPort: context.UrtConfig.ServerConfig.Port, 
+		Password: context.UrtConfig.ServerConfig.Password,
 	}
 	
-	server.Rcon.Connect()
+	context.Rcon.Connect()
 }
 
-func (server *Context) initDb() {
+func (context *Context) initDb() {
 	db, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db") 
 
@@ -62,7 +62,7 @@ func (server *Context) initDb() {
 		panic("Error trying to instanciate db")
 	} 
 
-	server.DB = db;
+	context.DB = db;
 }
 
 

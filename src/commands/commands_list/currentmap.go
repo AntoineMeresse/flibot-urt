@@ -5,5 +5,5 @@ import (
 )
 
 func CurrentMap(cmd *models.CommandsArgs) {
-	cmd.RconText(cmd.Server.GetCurrentMap())
+	cmd.RconText(cmd.Context.GetCurrentMap())
 }

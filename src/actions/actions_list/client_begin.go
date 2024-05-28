@@ -6,6 +6,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func ClientBegin(action_params []string, server *models.Context) {
+func ClientBegin(action_params []string, context *models.Context) {
 	log.Debugf("Client Begin: %v", action_params)
 }

@@ -5,7 +5,7 @@ import (
 )
 
 type CommandsArgs struct {
-	Server *Context
+	Context *Context
 	PlayerId string
 	Params []string 
 	IsGlobal bool 
@@ -14,11 +14,11 @@ type CommandsArgs struct {
 
 
 func (c *CommandsArgs) RconText(text string, a ...any) {
-	c.Server.RconText(c.IsGlobal, c.PlayerId, text, a...)
+	c.Context.RconText(c.IsGlobal, c.PlayerId, text, a...)
 }
 
 func (c *CommandsArgs) RconBigText(text string, a ...any) {
-	c.Server.RconBigText(text, a...)
+	c.Context.RconBigText(text, a...)
 }
 
 func (c *CommandsArgs) RconUsage(text string, a ...any) {
@@ -33,9 +33,9 @@ func (c *CommandsArgs) RconList(list []string) {
 }
 
 func (c *CommandsArgs) RconCommand(command string, a ...any) (res string) {
-	return c.Server.Rcon.RconCommand(fmt.Sprintf(command, a...))
+	return c.Context.Rcon.RconCommand(fmt.Sprintf(command, a...))
 }
 
 func (c *CommandsArgs) RconCommandExtractValue(command string, a ...any) string {
-	return c.Server.Rcon.RconCommandExtractValue(fmt.Sprintf(command, a...))
+	return c.Context.Rcon.RconCommandExtractValue(fmt.Sprintf(command, a...))
 }

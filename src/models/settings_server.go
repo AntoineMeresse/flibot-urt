@@ -16,18 +16,18 @@ type ServerSettings struct {
 	Maplist []string
 }
 
-func (server *Context) SetMapName(mapName string) {
-	server.Settings.Mapname = mapName
+func (context *Context) SetMapName(mapName string) {
+	context.Settings.Mapname = mapName
 }
 
-func (server *Context) SetNextMap(nextMapName string) {
-	server.Settings.Nextmap = nextMapName
+func (context *Context) SetNextMap(nextMapName string) {
+	context.Settings.Nextmap = nextMapName
 }
 
-func (server *Context) SetMapList() {
+func (context *Context) SetMapList() {
 	res := []string{}
 	
-	file, err := os.Open(server.UrtConfig.DownloadPath)
+	file, err := os.Open(context.UrtConfig.DownloadPath)
 	
 	if err == nil {
 		names, err := file.Readdirnames(0)
@@ -42,44 +42,44 @@ func (server *Context) SetMapList() {
 
 	defer file.Close()
 	
-	server.Settings.Maplist = res;
-	log.Println(server.Settings.Maplist)
+	context.Settings.Maplist = res;
+	log.Println(context.Settings.Maplist)
 }
 
-func (server *Context) initMapName() {
-	server.Settings.Mapname = server.Rcon.RconCommandExtractValue("mapname")
-	log.Debugf("Current map is: %s\n", server.Settings.Mapname)
+func (context *Context) initMapName() {
+	context.Settings.Mapname = context.Rcon.RconCommandExtractValue("mapname")
+	log.Debugf("Current map is: %s\n", context.Settings.Mapname)
 }
 
-func (server *Context) initNextMapName() {
-	if len(server.Settings.Maplist) < 2 {
-		server.Settings.Nextmap = server.Settings.Mapname
+func (context *Context) initNextMapName() {
+	if len(context.Settings.Maplist) < 2 {
+		context.Settings.Nextmap = context.Settings.Mapname
 	} else {
-		nextmap := utils.RandomValueFromSlice(server.Settings.Maplist)
-		for nextmap != "" && nextmap == server.Settings.Mapname {
-			nextmap = utils.RandomValueFromSlice(server.Settings.Maplist)
+		nextmap := utils.RandomValueFromSlice(context.Settings.Maplist)
+		for nextmap != "" && nextmap == context.Settings.Mapname {
+			nextmap = utils.RandomValueFromSlice(context.Settings.Maplist)
 		}
-		server.Settings.Nextmap = nextmap
+		context.Settings.Nextmap = nextmap
 	}
-	log.Debugf("Nexmap is: %s\n", server.Settings.Nextmap)
+	log.Debugf("Nexmap is: %s\n", context.Settings.Nextmap)
 }
 
-func (server *Context) initSettings() {
-	server.SetMapList()
-	server.initMapName()
-	server.initNextMapName()
+func (context *Context) initSettings() {
+	context.SetMapList()
+	context.initMapName()
+	context.initNextMapName()
 }
 
-func (server *Context) IsMapAlreadyDownloaded(mapname string) bool{
-	res := slices.Contains(server.GetMapList(), mapname)
+func (context *Context) IsMapAlreadyDownloaded(mapname string) bool{
+	res := slices.Contains(context.GetMapList(), mapname)
 	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
 	return res;
 }
 
-func (server *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *string , err error) {
+func (context *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *string , err error) {
 	res := []string{}
 	
-	for _, m := range(server.GetMapList()) {
+	for _, m := range(context.GetMapList()) {
 		if strings.Contains(strings.ToLower(m), strings.ToLower(searchCriteria)) {
 			res = append(res, m)
 		}
@@ -105,15 +105,15 @@ func (server *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *str
 
 ////////////////////////////////////////////////////////////////
 
-func (server *Context) GetCurrentMap() string {
-	return server.Settings.Mapname
+func (context *Context) GetCurrentMap() string {
+	return context.Settings.Mapname
 }
 
-func (server *Context) GetNextMap() string {
-	return server.Settings.Nextmap
+func (context *Context) GetNextMap() string {
+	return context.Settings.Nextmap
 }
 
-func (server *Context) GetMapList() []string {
-	return server.Settings.Maplist
+func (context *Context) GetMapList() []string {
+	return context.Settings.Maplist
 }
 

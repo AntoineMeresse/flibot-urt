@@ -9,14 +9,14 @@ import (
 
 func MapFn(cmd *models.CommandsArgs) {
 	if len(cmd.Params) == 1 {
-		mapName, err := cmd.Server.GetMapWithCriteria(cmd.Params[0])
+		mapName, err := cmd.Context.GetMapWithCriteria(cmd.Params[0])
 		if err != nil {
 			cmd.RconText(err.Error())
 		} else {
 			cmd.RconBigText(msg.MAP_CHANGE, *mapName)
 			time.Sleep(200 * time.Millisecond)
 			cmd.RconCommand("map %s", *mapName)
-			cmd.Server.SetMapName(*mapName)
+			cmd.Context.SetMapName(*mapName)
 		}
 	} else {
 		cmd.RconUsage(cmd.Usage)

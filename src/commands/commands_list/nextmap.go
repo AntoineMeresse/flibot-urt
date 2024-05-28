@@ -5,5 +5,5 @@ import (
 )
 
 func NextMap(cmd *models.CommandsArgs) {
-	cmd.RconText(cmd.Server.GetNextMap())
+	cmd.RconText(cmd.Context.GetNextMap())
 }
