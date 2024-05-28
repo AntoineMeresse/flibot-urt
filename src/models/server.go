@@ -24,8 +24,10 @@ type Server struct {
 type RconFunction func(format string, a ...any)
 
 func (server *Server) Init() {
-	server.UrtConfig.init()
-	server.InitSettings()
+	server.UrtConfig.loadEnvVariables()
+	
+	server.initRcon()
+	server.initSettings()
 	server.initPlayers()
 	server.initApi()
 	server.initDb()
@@ -40,6 +42,16 @@ func (server *Server) initPlayers() {
 func (server *Server) initApi() {
 	server.Api = &api.Api{}
 	server.Api.Init()
+}
+
+func (server *Server) initRcon() {
+	server.Rcon = quake3_rcon.Rcon{
+		ServerIp: server.UrtConfig.ServerConfig.Ip, 
+		ServerPort: server.UrtConfig.ServerConfig.Port, 
+		Password: server.UrtConfig.ServerConfig.Password,
+	}
+	
+	server.Rcon.Connect()
 }
 
 func (server *Server) initDb() {

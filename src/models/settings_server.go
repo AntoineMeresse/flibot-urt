@@ -64,7 +64,7 @@ func (server *Server) initNextMapName() {
 	log.Debugf("Nexmap is: %s\n", server.Settings.Nextmap)
 }
 
-func (server *Server) InitSettings() {
+func (server *Server) initSettings() {
 	server.SetMapList()
 	server.initMapName()
 	server.initNextMapName()

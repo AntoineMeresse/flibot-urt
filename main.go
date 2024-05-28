@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -12,8 +11,6 @@ import (
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
-	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
-	"github.com/joho/godotenv"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -41,50 +38,30 @@ func initLogger() {
 func main() {
 	initLogger()
 
-	// Variables
+	// Channels
 	myLogChannel := make(chan string)
 	voteChannel := make(chan models.Vote)
+	
+	server := &models.Server{VoteChannel: voteChannel}
+	server.Init()
+
+	defer server.Rcon.CloseConnection()
+	defer server.DB.Close();
+
+	// Initialize tail
+	go logparser.InitLogparser(myLogChannel, Logfile)
+
+	// Handle each line
+	for i := 0; i < WorkerNumber; i++ {
+		go logparser.HandleLogsWorker(myLogChannel, i, server)
+	}
+
+	// Initialize Vote system
+	go vote.InitVoteSystem(voteChannel, server)
+
 	keepRunning := true
-	
-	rcon, rconErr := getRcon()
-
-	if rconErr == nil {
-		rcon.Connect()
-		
-		server := &models.Server{Rcon : rcon, VoteChannel: voteChannel}
-		server.Init()
-
-		defer rcon.CloseConnection()
-		defer server.DB.Close();
-
-		// Initialize tail
-		go logparser.InitLogparser(myLogChannel, Logfile)
-
-		// Handle each line
-		for i := 0; i < WorkerNumber; i++ {
-			go logparser.HandleLogsWorker(myLogChannel, i, server)
-		}
-
-		// Initialize Vote system
-		go vote.InitVoteSystem(voteChannel, server)
-
-
-		for keepRunning {
-			time.Sleep(time.Second * 10)
-			// Send server infos to bridge
-		}
+	for keepRunning {
+		time.Sleep(time.Second * 10)
+		// Send server infos to bridge
 	}
-}
-
-func getRcon() (quake3_rcon.Rcon, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return quake3_rcon.Rcon{}, errors.New("could not load .env file")
-	}
-
-	serverIp := os.Getenv("serverip") 
-	serverPort := os.Getenv("serverport") 
-	password := os.Getenv("password") 
-	
-	return quake3_rcon.Rcon{ServerIp: serverIp, ServerPort: serverPort, Password: password}, nil
 }
