@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/AntoineMeresse/flibot-urt/src/db"
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
@@ -31,7 +30,7 @@ func initLogger() {
 		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {                                                     
 			fileName := " " + path.Base(frame.File) + ":" + strconv.Itoa(frame.Line)  + " | "      
 			//return frame.Function, fileName                                        
-			return "", fmt.Sprintf("%20.20s", fileName)                                                      
+			return "", fmt.Sprintf("%25.25s", fileName)                                                      
 		},    
 		DisableLevelTruncation: true,
 		PadLevelText: true,
@@ -48,16 +47,15 @@ func main() {
 	keepRunning := true
 	
 	rcon, rconErr := getRcon()
-	db, dbErr := db.InitDb("test.db")
 
-	if rconErr == nil && dbErr == nil {
+	if rconErr == nil {
 		rcon.Connect()
 		
-		defer rcon.CloseConnection()
-		defer db.Close()
-
-		server := &models.Server{Rcon : rcon, Db: db, VoteChannel: voteChannel}
+		server := &models.Server{Rcon : rcon, VoteChannel: voteChannel}
 		server.Init()
+
+		defer rcon.CloseConnection()
+		defer server.DB.Close();
 
 		// Initialize tail
 		go logparser.InitLogparser(myLogChannel, Logfile)

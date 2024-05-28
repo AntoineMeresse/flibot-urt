@@ -1,14 +1,19 @@
-package db
+package sqlite_impl
 
 import (
 	"database/sql"
-
-	log "github.com/sirupsen/logrus"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
+
+	log "github.com/sirupsen/logrus"
 )
 
-func InitDb(dbName string) (*sql.DB, error) {
+type SqliteDB struct {
+	*sql.DB
+}
+
+func InitSqliteDb(dbName string) (SqliteDB, error) {
 	db, err := sql.Open("sqlite3", dbName);
 
 	if err != nil {
@@ -16,26 +21,8 @@ func InitDb(dbName string) (*sql.DB, error) {
 	} else {
 		// Add mapoptions table
 		// Merge checkpoints/utjruns => runs ?
-		initTables := `
-			CREATE TABLE IF NOT EXISTS player (
-				id INTEGER PRIMARY KEY NOT NULL, 
-				guid TEXT NOT NULL, 
-				name TEXT NOT NULL, 
-				ip_address TEXT NOT NULL, 
-				time_joined DATETIME, 
-				aliases TEXT
-			);
-
-			CREATE TABLE IF NOT EXISTS utjruns (
-				id INTEGER PRIMARY KEY NOT NULL, 
-				guid TEXT NOT NULL, 
-				run_date DATETIME NOT NULL, 
-				runtime INTEGER NOT NULL, 
-				mapname TEXT NOT NULL,  
-				way TEXT NOT NULL, 
-				demopath TEXT
-			);
-
+		initTables := fmt.Sprintf(`
+			%s
 			CREATE TABLE IF NOT EXISTS checkpoints (
 				id INTEGER PRIMARY KEY NOT NULL, 
 				guid TEXT NOT NULL, 
@@ -52,8 +39,9 @@ func InitDb(dbName string) (*sql.DB, error) {
 				date DATETIME NOT NULL, 
 				size REAL NOT NULL)
 			;
-		`
+		`, createDb_Player())
 
+		// log.Debugf("Init tables: %s", initTables)
 		_, err := db.Exec(initTables)
 
 		if err == nil {
@@ -63,5 +51,21 @@ func InitDb(dbName string) (*sql.DB, error) {
 		}
 	}
 
-	return db, err;
+	return SqliteDB{DB: db}, err;
+}
+
+func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
+	db, initError := InitSqliteDb(dbName)
+
+	// Exec some methods
+	err := db.SaveNewPlayer("Fliro", "Flitest", "fakeip")
+	if err != nil {
+		log.Infof("Error trying to save a new player: %s", err.Error())
+	}
+
+	return db, initError;
+}
+
+func (db SqliteDB) Close() {
+	db.DB.Close()
 }
