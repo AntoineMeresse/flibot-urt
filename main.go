@@ -15,7 +15,7 @@ func main() {
 	myLogChannel := make(chan string)
 	voteChannel := make(chan models.Vote)
 	
-	server := &models.Server{VoteChannel: voteChannel}
+	server := &models.Context{VoteChannel: voteChannel}
 	server.Init()
 
 	defer server.Rcon.CloseConnection()

@@ -9,7 +9,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ClientUserinfo(action_params []string, server *models.Server) {
+func ClientUserinfo(action_params []string, server *models.Context) {
 	log.Debugf("Client User Info: %v", action_params)
 	if (len(action_params) > 1) {
 		playerNumber := action_params[0]

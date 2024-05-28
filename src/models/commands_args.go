@@ -5,7 +5,7 @@ import (
 )
 
 type CommandsArgs struct {
-	Server *Server
+	Server *Context
 	PlayerId string
 	Params []string 
 	IsGlobal bool 

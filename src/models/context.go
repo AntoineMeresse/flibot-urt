@@ -11,7 +11,7 @@ import (
 	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
 
-type Server struct {
+type Context struct {
 	DB db.DataPersister
 	Rcon quake3_rcon.Rcon
 	UrtConfig UrtConfig
@@ -23,7 +23,7 @@ type Server struct {
 
 type RconFunction func(format string, a ...any)
 
-func (server *Server) Init() {
+func (server *Context) Init() {
 	server.UrtConfig.loadEnvVariables()
 	
 	server.initRcon()
@@ -35,16 +35,16 @@ func (server *Server) Init() {
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", server.Rcon.ServerIp, server.Rcon.ServerPort)
 }
 
-func (server *Server) initPlayers() {
+func (server *Context) initPlayers() {
 	server.Players = Players{Mutex: sync.RWMutex{}, List: make(map[string]Player)}
 }
 
-func (server *Server) initApi() {
+func (server *Context) initApi() {
 	server.Api = &api.Api{}
 	server.Api.Init()
 }
 
-func (server *Server) initRcon() {
+func (server *Context) initRcon() {
 	server.Rcon = quake3_rcon.Rcon{
 		ServerIp: server.UrtConfig.ServerConfig.Ip, 
 		ServerPort: server.UrtConfig.ServerConfig.Port, 
@@ -54,7 +54,7 @@ func (server *Server) initRcon() {
 	server.Rcon.Connect()
 }
 
-func (server *Server) initDb() {
+func (server *Context) initDb() {
 	db, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db") 
 

@@ -47,7 +47,7 @@ func extractCmdInfos(action_params []string) (iscommand bool, commandName string
 	return false, "", Command{}, false, nil
 }
 
-func checkPlayerRights(playerNumber string, command Command, server *models.Server) (canAccess bool, required int, got int) {
+func checkPlayerRights(playerNumber string, command Command, server *models.Context) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
 
 	if (command.Level == 0) {
@@ -80,7 +80,7 @@ func overrideParamsForCommands(commandName string, role int, cmdArgs *models.Com
 	}
 }
 
-func HandleCommand(action_params []string, server *models.Server) {
+func HandleCommand(action_params []string, server *models.Context) {
 	playerNumber := action_params[0]
 	isCommand, commandName, command, isGlobal, command_params := extractCmdInfos(action_params)
 	if isCommand {

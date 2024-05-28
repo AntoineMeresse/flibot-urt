@@ -16,15 +16,15 @@ type ServerSettings struct {
 	Maplist []string
 }
 
-func (server *Server) SetMapName(mapName string) {
+func (server *Context) SetMapName(mapName string) {
 	server.Settings.Mapname = mapName
 }
 
-func (server *Server) SetNextMap(nextMapName string) {
+func (server *Context) SetNextMap(nextMapName string) {
 	server.Settings.Nextmap = nextMapName
 }
 
-func (server *Server) SetMapList() {
+func (server *Context) SetMapList() {
 	res := []string{}
 	
 	file, err := os.Open(server.UrtConfig.DownloadPath)
@@ -46,12 +46,12 @@ func (server *Server) SetMapList() {
 	log.Println(server.Settings.Maplist)
 }
 
-func (server *Server) initMapName() {
+func (server *Context) initMapName() {
 	server.Settings.Mapname = server.Rcon.RconCommandExtractValue("mapname")
 	log.Debugf("Current map is: %s\n", server.Settings.Mapname)
 }
 
-func (server *Server) initNextMapName() {
+func (server *Context) initNextMapName() {
 	if len(server.Settings.Maplist) < 2 {
 		server.Settings.Nextmap = server.Settings.Mapname
 	} else {
@@ -64,19 +64,19 @@ func (server *Server) initNextMapName() {
 	log.Debugf("Nexmap is: %s\n", server.Settings.Nextmap)
 }
 
-func (server *Server) initSettings() {
+func (server *Context) initSettings() {
 	server.SetMapList()
 	server.initMapName()
 	server.initNextMapName()
 }
 
-func (server *Server) IsMapAlreadyDownloaded(mapname string) bool{
+func (server *Context) IsMapAlreadyDownloaded(mapname string) bool{
 	res := slices.Contains(server.GetMapList(), mapname)
 	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
 	return res;
 }
 
-func (server *Server) GetMapWithCriteria(searchCriteria string) (uniqueMap *string , err error) {
+func (server *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *string , err error) {
 	res := []string{}
 	
 	for _, m := range(server.GetMapList()) {
@@ -105,15 +105,15 @@ func (server *Server) GetMapWithCriteria(searchCriteria string) (uniqueMap *stri
 
 ////////////////////////////////////////////////////////////////
 
-func (server *Server) GetCurrentMap() string {
+func (server *Context) GetCurrentMap() string {
 	return server.Settings.Mapname
 }
 
-func (server *Server) GetNextMap() string {
+func (server *Context) GetNextMap() string {
 	return server.Settings.Nextmap
 }
 
-func (server *Server) GetMapList() []string {
+func (server *Context) GetMapList() []string {
 	return server.Settings.Maplist
 }
 

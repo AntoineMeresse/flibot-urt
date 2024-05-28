@@ -7,11 +7,11 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func Extend(param string, server *models.Server) {
+func Extend(param string, server *models.Context) {
 	server.RconCommand("extend %d", getTime(param))
 }
 
-func ExtendMessage(server *models.Server, msg string, param string) (bool, string) {
+func ExtendMessage(server *models.Context, msg string, param string) (bool, string) {
 	return true, fmt.Sprintf(msg, getTime(param))
 }
 

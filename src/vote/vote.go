@@ -21,7 +21,7 @@ type VoteSystem struct {
 	VoteNo  map[string]int // use of map cause golang has no set
 }
 
-func InitVoteSystem(voteChannel <-chan models.Vote, server *models.Server) {
+func InitVoteSystem(voteChannel <-chan models.Vote, server *models.Context) {
 	voteSystem := VoteSystem{CanVote: true, Cancel: false, VoteYes: make(map[string]int), VoteNo: make(map[string]int)}
 	logrus.Debugf("VoteSystem initiated: %v", voteSystem)
 
@@ -38,7 +38,7 @@ func (voteSystem *VoteSystem) reset() {
 	clear(voteSystem.VoteNo)  
 }
 
-func voteLogic(server *models.Server, voteSystem *VoteSystem, vote models.Vote) {
+func voteLogic(server *models.Context, voteSystem *VoteSystem, vote models.Vote) {
 	if vote.Params == nil {
 		logrus.Errorf("Vote params can't be null %v", vote)
 		return
@@ -55,7 +55,7 @@ func isOnlyVote(vote models.Vote) (isVote bool, value string) {
 	return len(vote.Params) == 1 && utils.IsVoteCommand(vote.Params[0]), vote.Params[0]
 }
 
-func createVote(server *models.Server, voteSystem *VoteSystem, vote models.Vote) {
+func createVote(server *models.Context, voteSystem *VoteSystem, vote models.Vote) {
 	if (voteSystem.CanVote) {
 		if continueVote, endFunction, msg := getVoteInfos(server, vote); continueVote {
 			voteSystem.CanVote = false
@@ -104,7 +104,7 @@ func (v *VoteSystem) addNoVote(playerId string) {
 	v.VoteNo[playerId] = 0
 }
 
-func voteKeysMessage(cpt *int, server *models.Server) {
+func voteKeysMessage(cpt *int, server *models.Context) {
 	if (*cpt == 10) {
 		*cpt = 0
 	}
@@ -114,12 +114,12 @@ func voteKeysMessage(cpt *int, server *models.Server) {
 	*cpt += 2
 }
 
-func hasMajority(server *models.Server, voteSystem *VoteSystem) bool {
+func hasMajority(server *models.Context, voteSystem *VoteSystem) bool {
 	majority := (len(server.Players.List) / 2) + 1 
 	return len(voteSystem.VoteYes) >= majority || len(voteSystem.VoteNo) >= majority
 }
 
-func endVote(server *models.Server, voteSystem *VoteSystem, vote models.Vote, endFunction interface{}) {
+func endVote(server *models.Context, voteSystem *VoteSystem, vote models.Vote, endFunction interface{}) {
 	if !voteSystem.Cancel {
 		if len(voteSystem.VoteYes) > len(voteSystem.VoteNo) {
 			server.RconBigText("^2Vote Passed")
@@ -131,11 +131,11 @@ func endVote(server *models.Server, voteSystem *VoteSystem, vote models.Vote, en
 	}
 }
 
-func getVoteInfos(server *models.Server, vote models.Vote) (bool, interface{}, string) {
+func getVoteInfos(server *models.Context, vote models.Vote) (bool, interface{}, string) {
 	infos, exists := votes[vote.Params[0]]
 	param := strings.Join(vote.Params[1:], " ")
 	if exists {
-		continueVote, msg := infos.msgFn.(func (*models.Server, string, string) (bool, string))(server, infos.messageFormat, param)
+		continueVote, msg := infos.msgFn.(func (*models.Context, string, string) (bool, string))(server, infos.messageFormat, param)
 		return continueVote, infos.function, msg
 	} else {
 		server.RconText(false, vote.PlayerId, "Vote [%s] does not exist", vote.Params[0])
@@ -143,8 +143,8 @@ func getVoteInfos(server *models.Server, vote models.Vote) (bool, interface{}, s
 	return false, nil, ""
 }
 
-func execVote(server *models.Server, vote models.Vote, endFunction interface{}) {
+func execVote(server *models.Context, vote models.Vote, endFunction interface{}) {
 	time.Sleep(1 * time.Second)
 	param := strings.Join(vote.Params[1:], " ");
-	endFunction.(func (string, *models.Server))(param, server)
+	endFunction.(func (string, *models.Context))(param, server)
 }

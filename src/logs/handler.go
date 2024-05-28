@@ -8,7 +8,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func HandleLogsWorker(myLogChannel <-chan string, id int, server *models.Server) {
+func HandleLogsWorker(myLogChannel <-chan string, id int, server *models.Context) {
 	for log := range myLogChannel {
 		logSplit := utils.CleanEmptyElements(strings.Split(strings.TrimSpace(log), " "))
 		if len(logSplit) >= 4 {
