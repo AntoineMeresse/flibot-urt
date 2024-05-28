@@ -5,7 +5,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
 )
 
 type ServerConfig struct {
@@ -20,6 +22,8 @@ type UrtConfig struct {
 	DownloadPath string
 	GotosPath string
 	MapRepository string
+	LogFile string
+	WorkerNumber int
 }
 
 func (u *UrtConfig) loadEnvVariables() {
@@ -40,4 +44,26 @@ func (u *UrtConfig) loadEnvVariables() {
 	u.ServerConfig.Ip = os.Getenv("serverip") 
 	u.ServerConfig.Port =  os.Getenv("serverport") 
 	u.ServerConfig.Password = os.Getenv("password") 
+
+	u.LogFile = os.Getenv("logFilePath") 
+	u.initWorkerNumber()	
+}
+
+func (u *UrtConfig) initWorkerNumber() {
+	workerValue, found := os.LookupEnv("botWorkerNumber")
+	if !found {
+		log.Debug("Worker number not specify in conf. Will use default: 1")
+		u.WorkerNumber = 1
+	}
+
+	value, err := utils.ExtractNumber(workerValue);
+
+	if err == nil && value > 0 && value < 100 {
+		if value != 1 {
+			u.WorkerNumber = value;
+			log.Debugf("Worker number has been modify in configuration to: %d (Default: 1)", value)
+		}
+	} else {
+		log.Error("Please specify a number between 1 & 99 for the env variable: botWorkerNumber")
+	}
 }
