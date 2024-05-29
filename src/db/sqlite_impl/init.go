@@ -21,27 +21,9 @@ func InitSqliteDb(dbName string) (SqliteDB, error) {
 	} else {
 		// Add mapoptions table
 		// Merge checkpoints/utjruns => runs ?
-		initTables := fmt.Sprintf(`
-			%s
-			CREATE TABLE IF NOT EXISTS checkpoints (
-				id INTEGER PRIMARY KEY NOT NULL, 
-				guid TEXT NOT NULL, 
-				utj INTEGER NOT NULL, 
-				mapname TEXT NOT NULL, 
-				way TEXT NOT NULL, 
-				runtime INTEGER NOT NULL, 
-				checkpoints TEXT NOT NULL
-			);
-			
-			CREATE TABLE IF NOT EXISTS pen (
-				id INTEGER PRIMARY KEY NOT NULL, 
-				guid TEXT NOT NULL, 
-				date DATETIME NOT NULL, 
-				size REAL NOT NULL)
-			;
-		`, createDb_Player())
-
-		// log.Debugf("Init tables: %s", initTables)
+		initTables := fmt.Sprintf("%s\n%s\n%s", createDb_Player(), createDb_Checkpoints(), createDb_Pen())
+		log.Debugf("Init tables: %s", initTables)
+		
 		_, err := db.Exec(initTables)
 
 		if err == nil {
