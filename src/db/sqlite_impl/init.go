@@ -21,9 +21,9 @@ func InitSqliteDb(dbName string) (SqliteDB, error) {
 	} else {
 		// Add mapoptions table
 		// Merge checkpoints/utjruns => runs ?
-		initTables := fmt.Sprintf("%s\n%s\n%s", createDb_Player(), createDb_Checkpoints(), createDb_Pen())
+		initTables := fmt.Sprintf("%s\n%s\n%s\n%s", createDb_Player(), createDb_Checkpoints(), createDb_Pen(), createDb_Admin())
 		log.Debugf("Init tables: %s", initTables)
-		
+
 		_, err := db.Exec(initTables)
 
 		if err == nil {
@@ -40,12 +40,20 @@ func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
 	db, initError := InitSqliteDb(dbName)
 
 	// Exec some methods
-	err := db.SaveNewPlayer("Fliro", "Flitest", "fakeip")
-	if err != nil {
-		log.Infof("Error trying to save a new player: %s", err.Error())
-	}
+	displaySqliteRequestExec(db.SaveNewPlayer("Fliro", "Flitestguid", "fakeip"))
+	displaySqliteRequestExec(db.Admin_add("Flitestguid111", 100))
+	displaySqliteRequestExec(db.Admin_add_default("Flitestguid_norole211"))
+	displaySqliteRequestExec(db.Admin_update("Flitestguid_norole211", 99))
 
 	return db, initError;
+}
+
+func displaySqliteRequestExec(err error) {
+	if err != nil {
+		log.Error(err.Error())
+	} else {
+		// log.Debug("No error in sql request")
+	}
 }
 
 func (db SqliteDB) Close() {
