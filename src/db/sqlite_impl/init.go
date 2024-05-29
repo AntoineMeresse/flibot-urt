@@ -40,10 +40,13 @@ func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
 	db, initError := InitSqliteDb(dbName)
 
 	// Exec some methods
-	db.SaveNewPlayer("Fliro", "Flitestguid", "fakeip")
-	db.Admin_add("Flitestguid111", 100)
-	db.Admin_add_default("Flitestguid_norole211")
-	db.Admin_update("Flitestguid_norole211", 99)
+	// db.SaveNewPlayer("Flirow", "Flitestguid3", "fakeip")
+	db.Admin_add("Flitestguid", 3)
+	// db.Admin_add_default("Flitestguid_norole211")
+	db.Admin_update("Flitestguid_norole211", 100)
+	db.Pen_add("Flitestguid3", 1.234)
+	potd, _ := db.Pen_PenOfTheDay()
+	log.Debugf("%v", potd)
 
 	return db, initError;
 }
