@@ -1,11 +1,5 @@
 package sqlite_impl
 
-import (
-	"fmt"
-
-	log "github.com/sirupsen/logrus"
-)
-
 func createDb_Player() string {
 	return `
 		CREATE TABLE IF NOT EXISTS player (
@@ -20,20 +14,7 @@ func createDb_Player() string {
 }
 
 func (db SqliteDB) SaveNewPlayer(name string, guid string, ip_address string) error {
-	req, err := db.DB.Prepare("INSERT INTO player(name, guid, ip_address) values (?, ?, ?)")
-	if err != nil {
-		return fmt.Errorf("addPlayer sqlite req error. %s", err.Error())
-	}
-
-	res, err := req.Exec(name, guid, ip_address)
-	if err != nil {
-		return fmt.Errorf("addPlayer sqlite req exec error. %s", err.Error())
-	}
-
-	id, _ := res.LastInsertId()
-	log.Infof("New user successfully created with id : %d", id)
-
-	return nil
+	return db.sqliteCommit("SaveNewPlayer", "INSERT INTO player(name, guid, ip_address) values (?, ?, ?)", name, guid, ip_address)
 }
 
 func (db SqliteDB) UpdatePlayer() error {

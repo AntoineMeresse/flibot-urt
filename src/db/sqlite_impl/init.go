@@ -40,20 +40,12 @@ func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
 	db, initError := InitSqliteDb(dbName)
 
 	// Exec some methods
-	displaySqliteRequestExec(db.SaveNewPlayer("Fliro", "Flitestguid", "fakeip"))
-	displaySqliteRequestExec(db.Admin_add("Flitestguid111", 100))
-	displaySqliteRequestExec(db.Admin_add_default("Flitestguid_norole211"))
-	displaySqliteRequestExec(db.Admin_update("Flitestguid_norole211", 99))
+	db.SaveNewPlayer("Fliro", "Flitestguid", "fakeip")
+	db.Admin_add("Flitestguid111", 100)
+	db.Admin_add_default("Flitestguid_norole211")
+	db.Admin_update("Flitestguid_norole211", 99)
 
 	return db, initError;
-}
-
-func displaySqliteRequestExec(err error) {
-	if err != nil {
-		log.Error(err.Error())
-	} else {
-		// log.Debug("No error in sql request")
-	}
 }
 
 func (db SqliteDB) Close() {
