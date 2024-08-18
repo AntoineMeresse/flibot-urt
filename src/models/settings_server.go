@@ -82,8 +82,11 @@ func (context *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *st
 	for _, m := range(context.GetMapList()) {
 		if strings.Contains(strings.ToLower(m), strings.ToLower(searchCriteria)) {
 			res = append(res, m)
+			log.Debugf("Map found with criteria (%s): %s", searchCriteria, m)
 		}
 	}
+
+	log.Debugf("List of possible maps: %v", res)
 
 	if len(res) == 1 {
 		return &res[0], nil

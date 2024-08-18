@@ -13,7 +13,7 @@ func MapVote(param string, context *models.Context) {
 func MapMessage(context *models.Context, msg string, param string) (bool, string) {
 	mapname, err := context.GetMapWithCriteria(param)
 	if err != nil {
-		context.RconText(true, "", "Could not find a map with criteria: %s", param)
+		context.RconText(true, "", err.Error())
 		return false, ""
 	} else {
 		return true, fmt.Sprintf(msg, *mapname)
