@@ -20,6 +20,8 @@ var Commands map[string]Command = map[string]Command {
 	"-" : {commandslist.VoteNo, 0, ""},
 	"help" : {commandslist.Help, 0, ""},
 
+	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
+	
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 0, ""},
 	"removegoto" : {commandslist.RemoveGoto, 80, ""},
