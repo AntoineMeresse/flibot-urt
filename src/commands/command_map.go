@@ -45,4 +45,5 @@ var CommandsShortcut map[string]string = map[string]string {
 	"mg" : "download",
 	"dl" : "download",
 	"cv" : "callvote",
+	"current": "currentmap",
 }
