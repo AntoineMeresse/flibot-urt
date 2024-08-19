@@ -16,6 +16,11 @@ type ServerConfig struct {
 	Password string
 }
 
+type ApiConfig struct {
+	Url string
+	ApiKey string
+}
+
 type UrtConfig struct {
 	ServerConfig ServerConfig
 	BasePath string
@@ -24,6 +29,7 @@ type UrtConfig struct {
 	MapRepository string
 	LogFile string
 	WorkerNumber int
+	ApiConfig ApiConfig
 }
 
 func (u *UrtConfig) loadEnvVariables() {
@@ -44,6 +50,9 @@ func (u *UrtConfig) loadEnvVariables() {
 	u.ServerConfig.Ip = os.Getenv("serverip") 
 	u.ServerConfig.Port =  os.Getenv("serverport") 
 	u.ServerConfig.Password = os.Getenv("password") 
+
+	u.ApiConfig.Url = os.Getenv("ujmUrl") 
+	u.ApiConfig.ApiKey = os.Getenv("ujmApiKey") 
 
 	u.LogFile = os.Getenv("logFilePath") 
 	u.initWorkerNumber()	

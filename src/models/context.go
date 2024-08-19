@@ -1,7 +1,9 @@
 package models
 
 import (
+	"net/http"
 	"sync"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -40,8 +42,13 @@ func (context *Context) initPlayers() {
 }
 
 func (context *Context) initApi() {
-	context.Api = &api.Api{}
-	context.Api.Init()
+	context.Api = &api.Api{
+		UjmUrl: context.UrtConfig.ApiConfig.Url, 
+		Apikey: context.UrtConfig.ApiConfig.ApiKey,
+		BridgeUrl: "https://ujm-servers.ovh",
+		BridgeLocalUrl: "https://ujm-servers.ovh/local",
+		Client: http.Client{Timeout: time.Minute * 2},
+	}
 }
 
 func (context *Context) initRcon() {
