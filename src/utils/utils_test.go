@@ -53,3 +53,13 @@ func Test_CleanDuplicateElements(t *testing.T) {
 		t.Errorf("CleanDuplicateElements (%s) result wasn't correct, got: %v, want: %v", given, res, want);
 	}
 }
+
+func Test_GetColorRun(t *testing.T) {
+	given := 1
+	res := GetColorRun(given)
+	want := "^2"
+
+	if (res != want) {
+		t.Errorf("Color isn't correct for given index: %d. Expected: (%s), got: (%s)", given, want, res)
+	}
+} 

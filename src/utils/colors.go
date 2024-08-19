@@ -11,6 +11,7 @@ const (
 	cyan = "^5"
 	magenta = "^6"
 	white = "^7"
+	bronze = "^8"
 )
 
 func Black(str string) string {

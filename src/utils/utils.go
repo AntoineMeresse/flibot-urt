@@ -96,3 +96,14 @@ func ToShorterChunkArray(strList []string) []string {
 func ToShorterChunkString(str string) []string {
 	return ToShorterChunkArray(strings.Split(str, " "))
 }
+
+func GetColorRun(i int) string {
+	if (i == 0) {
+		return yellow
+	} else if (i == 1) {
+		return green
+	} else if (i == 2) {
+		return bronze
+	}
+	return white
+}

@@ -20,6 +20,8 @@ var Commands map[string]Command = map[string]Command {
 	"-" : {commandslist.VoteNo, 0, ""},
 	"help" : {commandslist.Help, 0, ""},
 	"mapinfo" : {commandslist.MapInformation, 0, ""},
+	"topruns" : {commandslist.ToprunsInformation, 0, ""},
+	"top" : {commandslist.TopInformation, 0, ""},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 	
@@ -49,4 +51,5 @@ var CommandsShortcut map[string]string = map[string]string {
 	"current": "currentmap",
 	"mapinfos": "mapinfo",
 	"mi": "mapinfo",
+	"tr" : "topruns",
 }
