@@ -37,9 +37,11 @@ func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
 			if err := json.Unmarshal(body, &res); err == nil {
 				logrus.Debugf("GetMapInformation (%s): %v", url, res)
 				return res, nil
-			} 
+			} else {
+				return MapInfos{}, err
+			}
 		} 
-	} 
+	}
 
 	return MapInfos{}, err
 }
