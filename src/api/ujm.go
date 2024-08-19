@@ -124,3 +124,46 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 
 	return []LatestRunElement{}, err
 }
+
+// [{'dateadded': 'Sun, 18 Aug 2024 00:00:00 GMT', 'filename': 'ut43_rastachjumps_b1', 'id': 896, 'mapname': 'Rastach Jumps', 'mapper': ['RaStachMan'], 'types': ['Normal']}
+
+type LatestMapElement struct {
+	Date string `json:"dateadded"`
+	Filename string `json:"filename"`
+	Mapname string `json:"mapname"`
+	Mappers []string `json:"mapper"`
+	Types []string `json:"types"`
+}
+
+func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
+	url := fmt.Sprintf("%s/mapinfo/latestmaps", api.UjmUrl)
+	logrus.Debugf("[GetLatestMaps] Url: %s", url)
+	
+	getBody, _ := json.Marshal(map[string]interface{}{
+		"apikey": api.Apikey,
+	})
+
+	request, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(getBody))
+	request.Header.Set("Content-Type", "application/json")
+
+	if (err != nil) {
+		return []LatestMapElement{}, err
+	}
+
+	resp, err := http.DefaultClient.Do(request)
+
+	if err == nil {
+		if body, err := io.ReadAll(resp.Body); err == nil {
+			var res []LatestMapElement;
+			// logrus.Debug(string(body))
+			if err := json.Unmarshal(body, &res); err == nil {
+				logrus.Tracef("[GetLatestMaps] (%s): %v", url, res)
+				return res, nil
+			} else {
+				return []LatestMapElement{}, err
+			}
+		} 
+	}
+
+	return []LatestMapElement{}, err
+}
