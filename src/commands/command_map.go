@@ -7,6 +7,7 @@ var Commands map[string]Command = map[string]Command {
 	"play" : {commandslist.Play, 0, ""},
 	"spec" : {commandslist.Spec, 0, ""},
 	"currentmap" : {commandslist.CurrentMap, 0, ""},
+	"setnextmap" : {commandslist.SetNextMap, 0, ""},
 	"nextmap" : {commandslist.NextMap, 0, ""},
 	"stamina" : {commandslist.Stamina, 0, ""},
 	"ready" : {commandslist.Ready, 0, "!ready"},
@@ -24,7 +25,7 @@ var Commands map[string]Command = map[string]Command {
 	"top" : {commandslist.TopInformation, 0, ""},
 	"latestruns" : {commandslist.LatestRuns, 0, ""},
 	"latestmaps" : {commandslist.LatestMaps, 0, ""},
-
+	
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 	
 	// Level: 80
@@ -57,4 +58,5 @@ var CommandsShortcut map[string]string = map[string]string {
 	"latest" : "latestruns",
 	"lr" : "latestruns",
 	"lm" : "latestmaps",
+	"snm" : "setnextmap",
 }

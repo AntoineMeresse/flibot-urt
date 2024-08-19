@@ -21,6 +21,8 @@ func (context *Context) SetMapName(mapName string) {
 }
 
 func (context *Context) SetNextMap(nextMapName string) {
+	log.Debugf("[SetNextMap] Changing nextmap from %s to %s", context.GetNextMap(), nextMapName)
+	context.RconCommand("g_nextmap %s", nextMapName)
 	context.Settings.Nextmap = nextMapName
 }
 

@@ -5,5 +5,9 @@ import (
 )
 
 func NextMap(cmd *models.CommandsArgs) {
-	cmd.RconText(cmd.Context.GetNextMap())
+	if len(cmd.Params) == 0 {
+		cmd.RconText(cmd.Context.GetNextMap())
+		return
+	} 
+	ChangeNextMap(cmd)
 }
