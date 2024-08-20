@@ -36,13 +36,14 @@ var Commands map[string]Command = map[string]Command {
 	"timelimit" : {commandslist.Timelimit, 80, "!timelimit [1-999]"},
 	"extend" : {commandslist.Extend, 80, "!extend or !extend [1-999]"},
 	"veto" : {commandslist.VoteVeto, 80, "!veto"},
+	"overbounces" : {commandslist.Overbounces, 80, "!overbounces [0 or 1]"},
 
 	// Dev Only
 	"players" : {commandslist.PlayersList, 0, "!players"},
 	"player" : {commandslist.PlayersGet, 0, "!player"},
 }
 
-var CommandsShortcut map[string]string = map[string]string {
+var CommandsAlias map[string]string = map[string]string {
 	"pl" : "play",
 	"sp" : "spec",
 	"rmgoto" : "removegoto",
@@ -64,4 +65,6 @@ var CommandsShortcut map[string]string = map[string]string {
 	"snm" : "setnextmap",
 	"mremove": "mapremove",
 	"mrm": "mapremove",
+	"g_overbounces" : "overbounces",
+	"ob" : "overbounces",
 }

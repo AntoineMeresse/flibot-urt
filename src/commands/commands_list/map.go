@@ -19,6 +19,6 @@ func MapFn(cmd *models.CommandsArgs) {
 			cmd.Context.SetMapName(*mapName)
 		}
 	} else {
-		cmd.RconUsage(cmd.Usage)
+		cmd.RconUsage()
 	}
 }

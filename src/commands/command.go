@@ -25,7 +25,7 @@ func isCommandGlobal(text string) bool {
 }
 
 func replaceShortcutByKnownCommand(cmd *string) {
-	if val, ok := CommandsShortcut[*cmd]; ok {
+	if val, ok := CommandsAlias[*cmd]; ok {
 		*cmd = val;
 	}
 }

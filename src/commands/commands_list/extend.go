@@ -23,6 +23,6 @@ func Extend(cmd *models.CommandsArgs) {
 	if extendTime > 0 {
 		cmd.RconCommand("extend %d", extendTime)
 	} else {
-		cmd.RconUsage(cmd.Usage)
+		cmd.RconUsage()
 	}
 }

@@ -16,5 +16,5 @@ func Timelimit(cmd *models.CommandsArgs) {
 			}
 		} 
 	}
-	cmd.RconUsage(cmd.Usage)
+	cmd.RconUsage()
 }

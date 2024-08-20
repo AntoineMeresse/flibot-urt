@@ -21,9 +21,13 @@ func (c *CommandsArgs) RconBigText(text string, a ...any) {
 	c.Context.RconBigText(text, a...)
 }
 
-func (c *CommandsArgs) RconUsage(text string, a ...any) {
-	msg := fmt.Sprintf("^5Usage^3: %s", text)
-	c.RconText(msg, a...)
+func (c *CommandsArgs) RconUsage() {
+	c.RconText("^5Usage^3: %s.", c.Usage)
+}
+
+func (c *CommandsArgs) RconUsageWithText(text string, a ...any) {
+	additionnalText := fmt.Sprintf(text, a...)
+	c.RconText("^5Usage^3: %s. %s", c.Usage, additionnalText)
 }
 
 func (c *CommandsArgs) RconList(list []string) {
