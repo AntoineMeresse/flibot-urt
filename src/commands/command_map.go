@@ -25,6 +25,7 @@ var Commands map[string]Command = map[string]Command {
 	"top" : {commandslist.TopInformation, 0, ""},
 	"latestruns" : {commandslist.LatestRuns, 0, ""},
 	"latestmaps" : {commandslist.LatestMaps, 0, ""},
+	"pen" : {commandslist.Pen, 0, ""},
 	
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 	

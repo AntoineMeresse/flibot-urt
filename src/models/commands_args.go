@@ -2,6 +2,8 @@ package models
 
 import (
 	"fmt"
+
+	"github.com/sirupsen/logrus"
 )
 
 type CommandsArgs struct {
@@ -15,6 +17,10 @@ type CommandsArgs struct {
 
 func (c *CommandsArgs) RconText(text string, a ...any) {
 	c.Context.RconText(c.IsGlobal, c.PlayerId, text, a...)
+}
+
+func (c *CommandsArgs) RconGlobalText(text string, a ...any) {
+	c.Context.RconText(true, "", text, a...)
 }
 
 func (c *CommandsArgs) RconBigText(text string, a ...any) {
@@ -42,4 +48,14 @@ func (c *CommandsArgs) RconCommand(command string, a ...any) (res string) {
 
 func (c *CommandsArgs) RconCommandExtractValue(command string, a ...any) string {
 	return c.Context.Rcon.RconCommandExtractValue(fmt.Sprintf(command, a...))
+}
+
+func (c *CommandsArgs) GetPlayerGuid() (guid string) {
+	player, err := c.Context.Players.GetPlayer(c.PlayerId)
+
+	if (err != nil) {
+		logrus.Errorf("Couldn't find player with (id: %s). %s", c.PlayerId, err.Error())
+	}
+
+	return player.Guid
 }

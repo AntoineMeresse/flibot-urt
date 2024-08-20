@@ -89,3 +89,13 @@ func Test_IsVoteCommand(t *testing.T) {
 		t.Errorf("(%s) is not a vote and should return false", given)
 	}
 }
+
+func Test_Truncate(t *testing.T) {
+	given := 20.123456
+	res := truncate(given, 3)
+	expected := 20.123
+	
+	if res != expected {
+		t.Errorf("Trucate of %f should be %f. Got: %f", given, expected, res)
+	}
+}

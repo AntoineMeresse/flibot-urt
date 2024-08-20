@@ -36,7 +36,7 @@ func (db SqliteDB) Pen_add(guid string, size float64) error {
 	if rows.Next() {
 		var size float64
 		rows.Scan(&size)
-		return fmt.Errorf("already used pen. Size: %f", size)
+		return fmt.Errorf("already used pen. Size: %.3f", size)
 	}
 
 	return db.sqliteCommit("Pen_add", "INSERT INTO pen(guid, date, size) values (?, date('now'), ?)", guid, size)

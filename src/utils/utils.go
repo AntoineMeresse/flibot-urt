@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"math"
 	"math/rand"
 	"regexp"
 	"slices"
@@ -106,4 +107,13 @@ func GetColorRun(i int) string {
 		return bronze
 	}
 	return white
+}
+
+func truncate(num float64, precision int) float64 {
+    output := math.Pow(10, float64(precision))
+    return float64(math.Round(num * output)) / output
+}
+
+func RandomFloat(min float64, max float64, precision int) float64 {
+	return truncate(rand.Float64() * max + min, precision)
 }
