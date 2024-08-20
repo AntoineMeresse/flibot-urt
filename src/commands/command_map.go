@@ -35,6 +35,7 @@ var Commands map[string]Command = map[string]Command {
 	"mapremove" : {commandslist.MapRemove, 80, ""},
 	"timelimit" : {commandslist.Timelimit, 80, "!timelimit [1-999]"},
 	"extend" : {commandslist.Extend, 80, "!extend or !extend [1-999]"},
+	"veto" : {commandslist.VoteVeto, 80, "!veto"},
 
 	// Dev Only
 	"players" : {commandslist.PlayersList, 0, "!players"},

@@ -63,3 +63,29 @@ func Test_GetColorRun(t *testing.T) {
 		t.Errorf("Color isn't correct for given index: %d. Expected: (%s), got: (%s)", given, want, res)
 	}
 } 
+
+func Test_IsVoteCommand(t *testing.T) {
+	given := "+"
+
+	if IsVoteCommand(given) != true {
+		t.Errorf("(%s) is a vote and should return true", given)
+	}
+
+	given = "-"
+
+	if IsVoteCommand(given) != true {
+		t.Errorf("(%s) is a vote and should return true", given)
+	}
+
+	given = "v"
+
+	if IsVoteCommand(given) != true {
+		t.Errorf("(%s) is a vote and should return true", given)
+	}
+
+	given = "other"
+
+	if IsVoteCommand(given) != false {
+		t.Errorf("(%s) is not a vote and should return false", given)
+	}
+}

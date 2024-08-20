@@ -71,7 +71,7 @@ func ExtractNumber(str string) (int, error) {
 }
 
 func IsVoteCommand(text string) bool {
-	return text == "+" || text == "-"
+	return text == "+" || text == "-" ||text == "v"
 }
 
 func ToShorterChunkArray(strList []string) []string {

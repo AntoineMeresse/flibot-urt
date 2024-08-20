@@ -82,7 +82,9 @@ func createVote(context *models.Context, voteSystem *VoteSystem, vote models.Vot
 
 func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
 	if isVote, value := isOnlyVote(vote); isVote {
-		if (value == "+") {
+		if value == "v" {
+			voteSystem.addVetoVote()
+		} else if value == "+" {
 			voteSystem.addYesVote(vote.PlayerId)
 		} else {
 			voteSystem.addNoVote(vote.PlayerId)
@@ -102,6 +104,10 @@ func (v *VoteSystem) addYesVote(playerId string) {
 func (v *VoteSystem) addNoVote(playerId string) {
 	delete(v.VoteYes, playerId)
 	v.VoteNo[playerId] = 0
+}
+
+func (v *VoteSystem) addVetoVote() {
+	v.Cancel = true
 }
 
 func voteKeysMessage(cpt *int, context *models.Context) {
@@ -127,8 +133,10 @@ func endVote(context *models.Context, voteSystem *VoteSystem, vote models.Vote, 
 		} else {
 			context.RconBigText("^1Vote Failed")
 		}
-		voteSystem.reset()
+	} else {
+		context.RconBigText("^1Vote Canceled")
 	}
+	voteSystem.reset()
 }
 
 func getVoteInfos(context *models.Context, vote models.Vote) (bool, interface{}, string) {
