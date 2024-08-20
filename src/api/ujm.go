@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 
 	"github.com/sirupsen/logrus"
 )
@@ -101,14 +100,7 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 		"apikey": api.Apikey,
 	})
 
-	request, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(getBody))
-	request.Header.Set("Content-Type", "application/json")
-
-	if (err != nil) {
-		return []LatestRunElement{}, err
-	}
-
-	resp, err := http.DefaultClient.Do(request)
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
 
 	if err == nil {
 		if body, err := io.ReadAll(resp.Body); err == nil {
@@ -124,8 +116,6 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 
 	return []LatestRunElement{}, err
 }
-
-// [{'dateadded': 'Sun, 18 Aug 2024 00:00:00 GMT', 'filename': 'ut43_rastachjumps_b1', 'id': 896, 'mapname': 'Rastach Jumps', 'mapper': ['RaStachMan'], 'types': ['Normal']}
 
 type LatestMapElement struct {
 	Date string `json:"dateadded"`
@@ -143,14 +133,7 @@ func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
 		"apikey": api.Apikey,
 	})
 
-	request, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(getBody))
-	request.Header.Set("Content-Type", "application/json")
-
-	if (err != nil) {
-		return []LatestMapElement{}, err
-	}
-
-	resp, err := http.DefaultClient.Do(request)
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
 
 	if err == nil {
 		if body, err := io.ReadAll(resp.Body); err == nil {

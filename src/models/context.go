@@ -47,7 +47,7 @@ func (context *Context) initApi() {
 		Apikey: context.UrtConfig.ApiConfig.ApiKey,
 		BridgeUrl: "https://ujm-servers.ovh",
 		BridgeLocalUrl: "https://ujm-servers.ovh/local",
-		Client: http.Client{Timeout: time.Minute * 2},
+		Client: http.Client{Timeout: time.Second * 2},
 	}
 }
 
