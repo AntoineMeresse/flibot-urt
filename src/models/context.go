@@ -72,4 +72,16 @@ func (context *Context) initDb() {
 	context.DB = db;
 }
 
+func (context *Context) MapSync() {
+	mapSyncErr := context.Api.MapSync()
+	if mapSyncErr != nil {
+		log.Errorf("Error while trying to sync map: %s", mapSyncErr.Error())
+		context.RconCommand("reloadMaps")
+		context.SetMapList()
+		context.RconText(true, "", "^7Map sync: local")
+	} else {
+		context.RconText(true, "", "^7Map sync: bridge (All servers)")
+	}
+}
+
 

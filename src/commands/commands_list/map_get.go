@@ -10,7 +10,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func Download(cmd *models.CommandsArgs) {
+func MapGet(cmd *models.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		cmd.RconText("Please specify one or more maps.");
 	} else {
@@ -32,7 +32,7 @@ func downloadMap(mapSearch string, cmd *models.CommandsArgs) {
 			if err := api.DownloadFile(newFile, url); err == nil {
 				elapsed := time.Since(start)
 				cmd.RconText(msg.DOWNLOAD_OK, mapname, elapsed)
-				cmd.Context.SetMapList()
+				cmd.Context.MapSync()
 			} else {
 				cmd.RconText(msg.DOWNLOAD_KO, mapname)
 			}

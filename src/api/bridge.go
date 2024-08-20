@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	log "github.com/sirupsen/logrus"
 )
 
 
@@ -25,4 +27,10 @@ func (api *Api) GetMapsWithPattern(criteria string) []string {
 		} 
 	} 
 	return []string{""}
+}
+
+func (api *Api) MapSync() error {
+	log.Debug("MapSync called.")
+	// TODO: Implement mapsync via Bridge
+	return fmt.Errorf("mapsync method not implemented yet")
 }

@@ -31,7 +31,8 @@ var Commands map[string]Command = map[string]Command {
 	// Level: 80
 	"setgoto" : {commandslist.SetGoto, 0, ""},
 	"removegoto" : {commandslist.RemoveGoto, 80, ""},
-	"download" : {commandslist.Download, 80, ""},
+	"mapget" : {commandslist.MapGet, 80, ""},
+	"mapremove" : {commandslist.MapRemove, 80, ""},
 	"timelimit" : {commandslist.Timelimit, 80, "!timelimit [1-999]"},
 	"extend" : {commandslist.Extend, 80, "!extend or !extend [1-999]"},
 
@@ -47,9 +48,10 @@ var CommandsShortcut map[string]string = map[string]string {
 	"invi" : "invisible",
 	"l1" : "loadonce",
 	"lo" : "loadonce",
-	"mapget" : "download",
-	"mg" : "download",
-	"dl" : "download",
+	"download" : "mapget",
+	"mg" : "mapget",
+	"mget" : "mapget",
+	"dl" : "mapget",
 	"cv" : "callvote",
 	"current": "currentmap",
 	"mapinfos": "mapinfo",
@@ -59,4 +61,6 @@ var CommandsShortcut map[string]string = map[string]string {
 	"lr" : "latestruns",
 	"lm" : "latestmaps",
 	"snm" : "setnextmap",
+	"mremove": "mapremove",
+	"mrm": "mapremove",
 }
