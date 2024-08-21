@@ -8,11 +8,16 @@ import (
 )
 
 func MapRemove(cmd *models.CommandsArgs) {
-	mapSearch := cmd.Context.GetCurrentMap()
-	if len(cmd.Params) > 0 {
-		mapSearch = cmd.Params[0]
+	if len(cmd.Params) == 0 {
+		removeMap(cmd, cmd.Context.GetCurrentMap())
+	} else {
+		for _, mapname := range(cmd.Params) {
+			removeMap(cmd, mapname)
+		}
 	}
+}
 
+func removeMap(cmd *models.CommandsArgs, mapSearch string) {
 	mapName, err := cmd.Context.GetMapWithCriteria(mapSearch)
 	
 	if err != nil {
@@ -30,4 +35,3 @@ func MapRemove(cmd *models.CommandsArgs) {
 	cmd.RconText("^7Map (^5%s^7) has been removed.", *mapName)
 	cmd.Context.MapSync()
 }
-

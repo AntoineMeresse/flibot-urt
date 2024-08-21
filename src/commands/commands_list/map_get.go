@@ -29,9 +29,9 @@ func downloadMap(mapSearch string, cmd *models.CommandsArgs) {
 			url := fmt.Sprintf("%s/%s", cmd.Context.UrtConfig.MapRepository, mapname)
 			cmd.RconText(msg.DOWNLOAD_START, mapname)
 			start := time.Now()
-			if err := api.DownloadFile(newFile, url); err == nil {
+			if bytes, err := api.DownloadFile(newFile, url); err == nil {
 				elapsed := time.Since(start)
-				cmd.RconText(msg.DOWNLOAD_OK, mapname, elapsed)
+				cmd.RconText(msg.DOWNLOAD_OK, mapname, utils.BytesNumberConverter(bytes), elapsed.Round(time.Millisecond))
 				cmd.Context.MapSync()
 			} else {
 				cmd.RconText(msg.DOWNLOAD_KO, mapname)

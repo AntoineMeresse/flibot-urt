@@ -78,9 +78,9 @@ func (context *Context) MapSync() {
 		log.Errorf("Error while trying to sync map: %s", mapSyncErr.Error())
 		context.RconCommand("reloadMaps")
 		context.SetMapList()
-		context.RconText(true, "", "^7Map sync: local")
+		context.RconText(true, "", "^7Local map sync")
 	} else {
-		context.RconText(true, "", "^7Map sync: bridge (All servers)")
+		context.RconText(true, "", "^7Bridge map sync (All servers)")
 	}
 }
 

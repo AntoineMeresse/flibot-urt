@@ -2,10 +2,10 @@ package msg
 
 const (
 	// download.go
-	DOWNLOAD_START = "Downloading map %s: Start"
-	DOWNLOAD_OK = "Downloading map %s: ^2OK^3 (^5%s^3)"
-	DOWNLOAD_KO = "Downloading map %s: ^1KO^3"
-	DOWNLOAD_ALREADY_ON_SERV = "%s is ^1already^3 on server !"
+	DOWNLOAD_START = "Downloading map ^5%s^3: ^2Start"
+	DOWNLOAD_OK = "Downloading map ^5%s^3: ^2OK^3 ^7(Size: ^5%s^7, time: ^5%s^3)"
+	DOWNLOAD_KO = "Downloading map ^5%s^3: ^1KO^3"
+	DOWNLOAD_ALREADY_ON_SERV = "^5%s^3 is ^1already^3 on server !"
 
 	DOWNLOAD_NO_MAP = "No map was found matching (%s)"
 	DOWNLOAD_MULTIPLE_MAP = "Multiple maps found [%d] matching (%s)"
