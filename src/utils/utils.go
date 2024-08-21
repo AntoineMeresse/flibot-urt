@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/maruel/natural"
-	"github.com/sirupsen/logrus"
 )
 
 func CleanEmptyElements(datas []string) []string { 
@@ -122,7 +121,6 @@ func RandomFloat(min float64, max float64, precision int) float64 {
 }
 
 func FormatTimeToDate(t time.Time) string {
-	logrus.Debugf("[FormatTimeToDate] Time: %s", t.Round(0))
 	return fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
 }
 

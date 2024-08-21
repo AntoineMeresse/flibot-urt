@@ -27,6 +27,8 @@ var Commands map[string]Command = map[string]Command {
 	"latestmaps" : {commandslist.LatestMaps, 0, ""},
 	"pen" : {commandslist.Pen, 0, ""},
 	"potd" : {commandslist.PenOfTheDay, 0, ""},
+	"phof" : {commandslist.PenHallOfFame, 0, ""},
+	"phos" : {commandslist.PenHallOfShame, 0, ""},
 	
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 	

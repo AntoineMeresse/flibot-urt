@@ -2,6 +2,7 @@ package utils
 
 import (
 	"testing"
+	"time"
 )
 
 func Test_DecolorString(t *testing.T) {
@@ -97,5 +98,15 @@ func Test_Truncate(t *testing.T) {
 	
 	if res != expected {
 		t.Errorf("Trucate of %f should be %f. Got: %f", given, expected, res)
+	}
+}
+
+func Test_FormatTimeToDate(t *testing.T) {
+	given, _ := time.Parse(time.RFC1123, "Mon, 13 Dec 2021 00:00:00 UTC")
+	res := FormatTimeToDate(given)
+	expected := "2021-12-13"
+	
+	if res != expected {
+		t.Errorf("FormatTimeToDate of %s should be %s. Got: %s", given, expected, res)
 	}
 }

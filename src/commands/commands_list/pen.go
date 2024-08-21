@@ -25,14 +25,43 @@ func Pen(cmd *models.CommandsArgs) {
 }
 
 func PenOfTheDay(cmd *models.CommandsArgs) {
-	datas, err := cmd.Context.DB.Pen_PenOfTheDay()
+	date, datas, err := cmd.Context.DB.Pen_PenOfTheDay()
 
 	if err != nil {
 		cmd.RconText(err.Error())
 		return
 	} 
 
+	cmd.RconText("^7=========== ^6Pen of the day ^7(^5%s^7) ===========", date)
 	for _, data := range(datas) {
-		cmd.RconText("Pen ===> %s - %.3f - ", data.Name, data.Size)
+		cmd.RconText("Pen ===> %s - %.3f ", data.GetName(), data.Size)
+	}
+}
+
+func PenHallOfFame(cmd *models.CommandsArgs) {
+	datas, err := cmd.Context.DB.Pen_PenHallOfFame()
+
+	if err != nil {
+		cmd.RconText(err.Error())
+		return
+	} 
+
+	cmd.RconText("^7=========== ^2Pen Hall Of Fame ^7===========")
+	for _, data := range(datas) {
+		cmd.RconText("Pen ===> %s - %.3f - %s", data.GetName(), data.Size, data.GetDate())
+	}
+}
+
+func PenHallOfShame(cmd *models.CommandsArgs) {
+	datas, err := cmd.Context.DB.Pen_PenHallOfShame()
+
+	if err != nil {
+		cmd.RconText(err.Error())
+		return
+	} 
+
+	cmd.RconText("^7=========== ^1Pen Hall Of Shame ^7===========")
+	for _, data := range(datas) {
+		cmd.RconText("Pen ===> %s - %.3f - %s", data.GetName(), data.Size, data.GetDate())
 	}
 }
