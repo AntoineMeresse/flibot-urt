@@ -30,6 +30,7 @@ var Commands map[string]Command = map[string]Command {
 	"phof" : {commandslist.PenHallOfFame, 0, ""},
 	"phos" : {commandslist.PenHallOfShame, 0, ""},
 	"pb": {commandslist.PersonnalBest, 0, ""},
+	"status": {commandslist.ServerStatus, 0, "!status"},
 	
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 	

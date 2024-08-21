@@ -77,14 +77,19 @@ func IsVoteCommand(text string) bool {
 	return text == "+" || text == "-" ||text == "v"
 }
 
-func ToShorterChunkArray(strList []string) []string {
+func ToShorterChunkArraySep(strList []string, sep string, exceptFirst bool) []string {
 	maxLength := 75
 	res := []string{}
 	lign := ""
-	sep := " "
 
-	for _, current := range strList {
-		newLign := lign + current + sep 
+
+	for i, current := range strList {
+		newLign := ""
+		if i == 0 && exceptFirst {
+			newLign = lign + current 
+		} else {
+			newLign = lign + current + sep 
+		}
 		if len(newLign) <= maxLength {
 			lign = newLign
 		} else {
@@ -92,8 +97,12 @@ func ToShorterChunkArray(strList []string) []string {
 			lign = current + sep
 		}
 	}
-	res = append(res, lign)
+	res = append(res, lign[0:len(lign)-len(sep)])
 	return res
+}
+
+func ToShorterChunkArray(strList []string) []string {
+	return ToShorterChunkArraySep(strList, " ", false)
 }
 
 func ToShorterChunkString(str string) []string {
