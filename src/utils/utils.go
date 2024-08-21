@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"regexp"
@@ -8,8 +9,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/maruel/natural"
+	"github.com/sirupsen/logrus"
 )
 
 func CleanEmptyElements(datas []string) []string { 
@@ -116,4 +119,13 @@ func truncate(num float64, precision int) float64 {
 
 func RandomFloat(min float64, max float64, precision int) float64 {
 	return truncate(rand.Float64() * max + min, precision)
+}
+
+func FormatTimeToDate(t time.Time) string {
+	logrus.Debugf("[FormatTimeToDate] Time: %s", t.Round(0))
+	return fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
+}
+
+func GetTodayDateFormated() string {
+	return FormatTimeToDate(time.Now())
 }

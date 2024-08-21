@@ -1,6 +1,7 @@
 package sqlite_impl
 
 import (
+	"database/sql"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
@@ -23,6 +24,12 @@ func (db SqliteDB) sqliteCommit(functionName string, request string, paramsInOrd
 }
 
 func sqliteError(err error) error {
-	// log.Error(err.Error())
+	log.Error(err.Error())
 	return err
+}
+
+func (db SqliteDB) createQuery(format string, args ...any) (*sql.Rows, error) {
+	query := fmt.Sprintf(format, args...)
+	log.Debug(query)
+	return db.Query(query)
 }

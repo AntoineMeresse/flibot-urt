@@ -44,9 +44,9 @@ func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
 	db.Admin_add("Flitestguid", 3)
 	// db.Admin_add_default("Flitestguid_norole211")
 	db.Admin_update("Flitestguid_norole211", 100)
-	db.Pen_add("Flitestguid3", 1.234)
-	potd, _ := db.Pen_PenOfTheDay()
-	log.Debugf("%v", potd)
+	// db.Pen_add("Flitestguid3", 1.234)
+	// potd, _ := db.Pen_PenOfTheDay()
+	// log.Debugf("%v", potd)
 
 	return db, initError;
 }

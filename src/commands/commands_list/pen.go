@@ -23,3 +23,16 @@ func Pen(cmd *models.CommandsArgs) {
 		cmd.RconGlobalText("^5%s^7 %s pen(!s) size : ^5%.3f^7 cm", pen, player.Name, size)
 	}
 }
+
+func PenOfTheDay(cmd *models.CommandsArgs) {
+	datas, err := cmd.Context.DB.Pen_PenOfTheDay()
+
+	if err != nil {
+		cmd.RconText(err.Error())
+		return
+	} 
+
+	for _, data := range(datas) {
+		cmd.RconText("Pen ===> %s - %.3f - ", data.Name, data.Size)
+	}
+}
