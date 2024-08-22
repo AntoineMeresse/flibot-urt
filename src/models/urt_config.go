@@ -60,14 +60,22 @@ func (u *UrtConfig) loadEnvVariables() {
 
 func (u *UrtConfig) initWorkerNumber() {
 	workerValue, found := os.LookupEnv("botWorkerNumber")
+	u.WorkerNumber = 1
 	if !found {
 		log.Debug("Worker number not specify in conf. Will use default: 1")
-		u.WorkerNumber = 1
+		return
 	}
 
 	value, err := utils.ExtractNumber(workerValue);
+	
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	log.Tracef("Worker from config file: %d", value)
 
-	if err == nil && value > 0 && value < 100 {
+
+	if value > 0 && value < 100 {
 		if value != 1 {
 			u.WorkerNumber = value;
 			log.Debugf("Worker number has been modify in configuration to: %d (Default: 1)", value)
