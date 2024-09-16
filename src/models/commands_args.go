@@ -43,7 +43,9 @@ func (c *CommandsArgs) RconList(list []string) {
 }
 
 func (c *CommandsArgs) RconCommand(command string, a ...any) (res string) {
-	return c.Context.Rcon.RconCommand(fmt.Sprintf(command, a...))
+	cmd := fmt.Sprintf(command, a...)
+	logrus.Debugf("Rcon command: %s", cmd)
+	return c.Context.Rcon.RconCommand(cmd)
 }
 
 func (c *CommandsArgs) RconCommandExtractValue(command string, a ...any) string {

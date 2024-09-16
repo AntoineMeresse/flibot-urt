@@ -31,6 +31,7 @@ var Commands map[string]Command = map[string]Command {
 	"phos" : {commandslist.PenHallOfShame, 0, ""},
 	"pb": {commandslist.PersonnalBest, 0, ""},
 	"status": {commandslist.ServerStatus, 0, "!status"},
+	"quit": {commandslist.Quit, 0, "!quit"},
 	
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 	
@@ -73,4 +74,5 @@ var CommandsAlias map[string]string = map[string]string {
 	"mrm": "mapremove",
 	"g_overbounces" : "overbounces",
 	"ob" : "overbounces",
+	"ff" : "quit",
 }
