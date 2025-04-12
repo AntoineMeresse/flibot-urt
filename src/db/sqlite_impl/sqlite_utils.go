@@ -12,6 +12,7 @@ func (db SqliteDB) sqliteCommit(functionName string, request string, paramsInOrd
 	if err != nil {
 		return sqliteError(fmt.Errorf("%s sqlite req error. %s", functionName, err.Error()))
 	}
+	defer req.Close();
 
 	_, err = req.Exec(paramsInOrder...)
 	if err != nil {
@@ -20,6 +21,34 @@ func (db SqliteDB) sqliteCommit(functionName string, request string, paramsInOrd
 
 	log.Debugf("%s sqlite: OK", functionName)
 
+	return nil
+}
+
+
+func (db SqliteDB) sqliteTransaction(functionName string, request string, paramsInOrder ...any) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return sqliteError(fmt.Errorf("transaction error"))
+	}
+
+	req, err := tx.Prepare(request)
+	if err != nil {
+		return sqliteError(fmt.Errorf("[Transaction] %s sqlite req error. %s", functionName, err.Error()))
+	}
+	defer req.Close();
+
+	_, err = req.Exec(paramsInOrder...)
+	if err != nil {
+		tx.Rollback()
+		return sqliteError(fmt.Errorf("[Transaction] %s sqlite req exec error. %s", functionName, err.Error()))
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return sqliteError(fmt.Errorf("[Transaction] %s sqlite req commit error. %s", functionName, err.Error()))
+	}
+
+	log.Debug("Transaction completed.")
 	return nil
 }
 

@@ -32,6 +32,7 @@ var Commands map[string]Command = map[string]Command{
 	"pb":         {commandslist.PersonnalBest, 0, ""},
 	"status":     {commandslist.ServerStatus, 0, "!status"},
 	"quit":       {commandslist.Quit, 0, "!quit"},
+	"register":   {commandslist.Register, 0, "!register"},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]"},
 
