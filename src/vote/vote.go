@@ -35,7 +35,7 @@ func (voteSystem *VoteSystem) reset() {
 	voteSystem.CanVote = true
 	voteSystem.Cancel = false
 	clear(voteSystem.VoteYes)
-	clear(voteSystem.VoteNo)  
+	clear(voteSystem.VoteNo)
 }
 
 func voteLogic(context *models.Context, voteSystem *VoteSystem, vote models.Vote) {
@@ -46,8 +46,8 @@ func voteLogic(context *models.Context, voteSystem *VoteSystem, vote models.Vote
 
 	if handleVote(voteSystem, vote) {
 		return
-	} 
-	
+	}
+
 	createVote(context, voteSystem, vote)
 }
 
@@ -56,16 +56,16 @@ func isOnlyVote(vote models.Vote) (isVote bool, value string) {
 }
 
 func createVote(context *models.Context, voteSystem *VoteSystem, vote models.Vote) {
-	if (voteSystem.CanVote) {
+	if voteSystem.CanVote {
 		if continueVote, endFunction, msg := getVoteInfos(context, vote); continueVote {
 			voteSystem.CanVote = false
 			context.RconText(false, vote.PlayerId, "New vote incoming: %v", vote)
 			iteration := 0
-			secondsToEnd := SECONDS_PER_VOTE*2 // To avoid to deal with float
+			secondsToEnd := SECONDS_PER_VOTE * 2 // To avoid to deal with float
 			cpt := 0
-			for (iteration <= secondsToEnd && !voteSystem.Cancel) {
+			for iteration <= secondsToEnd && !voteSystem.Cancel {
 				voteKeysMessage(&cpt, context)
-				context.RconBigText("%s | ^2Yes^7: %2d / ^1No^7 : %2d (%02d s)", msg, len(voteSystem.VoteYes), len(voteSystem.VoteNo), (secondsToEnd - iteration) / 2)
+				context.RconBigText("%s | ^2Yes^7: %2d / ^1No^7 : %2d (%02d s)", msg, len(voteSystem.VoteYes), len(voteSystem.VoteNo), (secondsToEnd-iteration)/2)
 				iteration += 1
 				time.Sleep(500 * time.Millisecond)
 				if hasMajority(context, voteSystem) {
@@ -95,7 +95,6 @@ func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
 	return false
 }
 
-
 func (v *VoteSystem) addYesVote(playerId string) {
 	delete(v.VoteNo, playerId)
 	v.VoteYes[playerId] = 0
@@ -111,17 +110,17 @@ func (v *VoteSystem) addVetoVote() {
 }
 
 func voteKeysMessage(cpt *int, context *models.Context) {
-	if (*cpt == 10) {
+	if *cpt == 10 {
 		*cpt = 0
 	}
-	if (*cpt == 0) {
+	if *cpt == 0 {
 		context.RconPrint("^7Use [^2'+'^7] or [^1'-'^7] to vote.")
 	}
 	*cpt += 2
 }
 
 func hasMajority(context *models.Context, voteSystem *VoteSystem) bool {
-	majority := (len(context.Players.List) / 2) + 1 
+	majority := (len(context.Players.List) / 2) + 1
 	return len(voteSystem.VoteYes) >= majority || len(voteSystem.VoteNo) >= majority
 }
 
@@ -140,10 +139,10 @@ func endVote(context *models.Context, voteSystem *VoteSystem, vote models.Vote, 
 }
 
 func getVoteInfos(context *models.Context, vote models.Vote) (bool, interface{}, string) {
-	infos, exists := votes[vote.Params[0]]
+	infos, exists := Votes[vote.Params[0]]
 	param := strings.Join(vote.Params[1:], " ")
 	if exists {
-		continueVote, msg := infos.msgFn.(func (*models.Context, string, string) (bool, string))(context, infos.messageFormat, param)
+		continueVote, msg := infos.msgFn.(func(*models.Context, string, string) (bool, string))(context, infos.messageFormat, param)
 		return continueVote, infos.function, msg
 	} else {
 		context.RconText(false, vote.PlayerId, "Vote [%s] does not exist", vote.Params[0])
@@ -153,6 +152,6 @@ func getVoteInfos(context *models.Context, vote models.Vote) (bool, interface{},
 
 func execVote(context *models.Context, vote models.Vote, endFunction interface{}) {
 	time.Sleep(1 * time.Second)
-	param := strings.Join(vote.Params[1:], " ");
-	endFunction.(func (string, *models.Context))(param, context)
+	param := strings.Join(vote.Params[1:], " ")
+	endFunction.(func(string, *models.Context))(param, context)
 }
