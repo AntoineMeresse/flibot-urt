@@ -5,8 +5,8 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func Say(action_params []string, context *models.Context) {
-	if len(action_params) >= 3 {
-		commands.HandleCommand(action_params, context)
+func Say(actionParams []string, context *models.Context) {
+	if len(actionParams) >= 3 {
+		commands.HandleCommand(actionParams, context)
 	}
 }

@@ -6,6 +6,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func ClientConnect(action_params []string, context *models.Context) {
-	log.Debugf("Client Connect: %v", action_params)
+func ClientConnect(actionParams []string, context *models.Context) {
+	log.Debugf("Client Connect: %v", actionParams)
 }
