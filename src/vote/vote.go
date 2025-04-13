@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	SECONDS_PER_VOTE = 20
+	SecondsPerVote = 20
 )
 
 type VoteSystem struct {
@@ -61,7 +61,7 @@ func createVote(context *models.Context, voteSystem *VoteSystem, vote models.Vot
 			voteSystem.CanVote = false
 			context.RconText(false, vote.PlayerId, "New vote incoming: %v", vote)
 			iteration := 0
-			secondsToEnd := SECONDS_PER_VOTE * 2 // To avoid to deal with float
+			secondsToEnd := SecondsPerVote * 2 // To avoid to deal with float
 			cpt := 0
 			for iteration <= secondsToEnd && !voteSystem.Cancel {
 				voteKeysMessage(&cpt, context)
@@ -95,18 +95,18 @@ func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
 	return false
 }
 
-func (v *VoteSystem) addYesVote(playerId string) {
-	delete(v.VoteNo, playerId)
-	v.VoteYes[playerId] = 0
+func (voteSystem *VoteSystem) addYesVote(playerId string) {
+	delete(voteSystem.VoteNo, playerId)
+	voteSystem.VoteYes[playerId] = 0
 }
 
-func (v *VoteSystem) addNoVote(playerId string) {
-	delete(v.VoteYes, playerId)
-	v.VoteNo[playerId] = 0
+func (voteSystem *VoteSystem) addNoVote(playerId string) {
+	delete(voteSystem.VoteYes, playerId)
+	voteSystem.VoteNo[playerId] = 0
 }
 
-func (v *VoteSystem) addVetoVote() {
-	v.Cancel = true
+func (voteSystem *VoteSystem) addVetoVote() {
+	voteSystem.Cancel = true
 }
 
 func voteKeysMessage(cpt *int, context *models.Context) {
