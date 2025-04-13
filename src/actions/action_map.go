@@ -11,4 +11,11 @@ var Actions = map[string]interface{}{
 	"ClientUserinfoChanged:": actionslist.DefaultAction,
 	"tell:":                  actionslist.Tell,
 	"saytell:":               actionslist.SayTell,
+
+	// Runs
+	"ClientJumpRunStarted:":    actionslist.ClientJumpRunStarted,
+	"ClientJumpRunCanceled:":   actionslist.ClientJumpRunCanceled,
+	"ClientJumpRunStopped:":    actionslist.ClientJumpRunStopped,
+	"ClientJumpRunCheckpoint:": actionslist.ClientJumpRunCheckpoint,
+	"RunLog:":                  actionslist.RunLog,
 }

@@ -21,6 +21,7 @@ type Context struct {
 	Settings    ServerSettings
 	Api         *api.Api
 	VoteChannel chan Vote
+	Runs        RunsInfo
 }
 
 type RconFunction func(format string, a ...any)
@@ -31,6 +32,7 @@ func (context *Context) Init() {
 	context.initRcon()
 	context.initSettings()
 	context.initPlayers()
+	context.initRuns()
 	context.initApi()
 	context.initDb()
 
@@ -39,6 +41,10 @@ func (context *Context) Init() {
 
 func (context *Context) initPlayers() {
 	context.Players = Players{Mutex: sync.RWMutex{}, List: make(map[string]Player)}
+}
+
+func (context *Context) initRuns() {
+	context.Runs = RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]RunInfo)}
 }
 
 func (context *Context) initApi() {
