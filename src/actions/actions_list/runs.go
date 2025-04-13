@@ -15,15 +15,15 @@ func ClientJumpRunStarted(actionParams []string, context *models.Context) {
 }
 
 func ClientJumpRunCanceled(actionParams []string, context *models.Context) {
-	for k, v := range actionParams {
-		log.Debugf("%d -> %s", k, v)
-	}
-
 	log.Debugf("ClientJumpRunCanceled: %v", actionParams)
+	context.Runs.RunCanceled(actionParams[0])
 }
 
 func ClientJumpRunStopped(actionParams []string, context *models.Context) {
 	log.Debugf("ClientJumpRunStopped: %v", actionParams)
+	for k, v := range actionParams {
+		log.Debugf("%d -> %s", k, v)
+	}
 }
 
 func ClientJumpRunCheckpoint(actionParams []string, context *models.Context) {

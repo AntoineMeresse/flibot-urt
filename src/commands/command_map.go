@@ -47,8 +47,9 @@ var Commands map[string]Command = map[string]Command{
 	"overbounces": {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
 
 	// Dev Only
-	"players": {commandslist.PlayersList, 0, "!players", false},
-	"player":  {commandslist.PlayersGet, 0, "!player", false},
+	"players": {commandslist.PlayersList, 100, "!players", false},
+	"player":  {commandslist.PlayersGet, 100, "!player", false},
+	"runs":    {commandslist.RunsDescribe, 100, "!player", false},
 }
 
 var CommandsAlias map[string]string = map[string]string{
