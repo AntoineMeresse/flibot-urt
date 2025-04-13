@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
@@ -20,6 +21,7 @@ type RunPlayerInfo struct {
 type RunsInfo struct {
 	RunMutex   sync.RWMutex
 	PlayerRuns map[string]*RunPlayerInfo
+	History    map[string][]int
 }
 
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
@@ -50,6 +52,20 @@ func (runs *RunsInfo) RunCanceled(playerNumber string) {
 	log.Debugf("RunCanceled %s", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
+
+	delete(runs.PlayerRuns, playerNumber)
+}
+
+func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time string) {
+	log.Debugf("RunCanceled %s", playerNumber)
+	runs.RunMutex.Lock()
+	defer runs.RunMutex.Unlock()
+
+	var checkpoints []int
+	info := runs.PlayerRuns[playerNumber]
+	checkpoints = append(checkpoints, info.checkpoint...)
+	runId := fmt.Sprintf("%s-%s-%s", playerGuid, info.way, time)
+	runs.History[runId] = checkpoints
 
 	delete(runs.PlayerRuns, playerNumber)
 }

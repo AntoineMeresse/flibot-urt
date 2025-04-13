@@ -10,12 +10,12 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/db"
 	"github.com/AntoineMeresse/flibot-urt/src/db/sqlite_impl"
-	quake3_rcon "github.com/AntoineMeresse/quake3-rcon-go"
+	quake3rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
 
 type Context struct {
 	DB          db.DataPersister
-	Rcon        quake3_rcon.Rcon
+	Rcon        quake3rcon.Rcon
 	UrtConfig   UrtConfig
 	Players     Players
 	Settings    ServerSettings
@@ -44,7 +44,7 @@ func (context *Context) initPlayers() {
 }
 
 func (context *Context) initRuns() {
-	context.Runs = RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*RunPlayerInfo)}
+	context.Runs = RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*RunPlayerInfo), History: make(map[string][]int)}
 }
 
 func (context *Context) initApi() {
@@ -58,7 +58,7 @@ func (context *Context) initApi() {
 }
 
 func (context *Context) initRcon() {
-	context.Rcon = quake3_rcon.Rcon{
+	context.Rcon = quake3rcon.Rcon{
 		ServerIp:   context.UrtConfig.ServerConfig.Ip,
 		ServerPort: context.UrtConfig.ServerConfig.Port,
 		Password:   context.UrtConfig.ServerConfig.Password,

@@ -21,8 +21,12 @@ func ClientJumpRunCanceled(actionParams []string, context *models.Context) {
 
 func ClientJumpRunStopped(actionParams []string, context *models.Context) {
 	log.Debugf("ClientJumpRunStopped: %v", actionParams)
-	for k, v := range actionParams {
-		log.Debugf("%d -> %s", k, v)
+	if len(actionParams) < 7 {
+		log.Error("ClientJumpRunStopped: Invalid parameters")
+		return
+	}
+	if player, err := context.Players.GetPlayer(actionParams[0]); err == nil {
+		context.Runs.RunStopped(actionParams[0], player.Guid, actionParams[6])
 	}
 }
 
@@ -37,4 +41,7 @@ func ClientJumpRunCheckpoint(actionParams []string, context *models.Context) {
 
 func RunLog(actionParams []string, context *models.Context) {
 	log.Debugf("RunLog: %v", actionParams)
+	for k, v := range actionParams {
+		log.Debugf("%d -> %s", k, v)
+	}
 }

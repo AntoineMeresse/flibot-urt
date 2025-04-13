@@ -2,7 +2,7 @@ package commands
 
 import commandslist "github.com/AntoineMeresse/flibot-urt/src/commands/commands_list"
 
-var Commands map[string]Command = map[string]Command{
+var Commands = map[string]Command{
 	// Level: 0
 	"play":       {commandslist.Play, 0, "", true},
 	"spec":       {commandslist.Spec, 0, "", true},
@@ -47,12 +47,13 @@ var Commands map[string]Command = map[string]Command{
 	"overbounces": {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
 
 	// Dev Only
-	"players": {commandslist.PlayersList, 100, "!players", false},
-	"player":  {commandslist.PlayersGet, 100, "!player", false},
-	"runs":    {commandslist.RunsDescribe, 100, "!player", false},
+	"players":     {commandslist.PlayersList, 100, "!players", false},
+	"player":      {commandslist.PlayersGet, 100, "!player", false},
+	"runs":        {commandslist.RunsDescribe, 100, "!runs", false},
+	"runsHistory": {commandslist.RunsHistory, 100, "!runsHistory", false},
 }
 
-var CommandsAlias map[string]string = map[string]string{
+var Alias = map[string]string{
 	"pl":            "play",
 	"sp":            "spec",
 	"rmgoto":        "removegoto",
@@ -78,4 +79,5 @@ var CommandsAlias map[string]string = map[string]string{
 	"ob":            "overbounces",
 	"ff":            "quit",
 	"h":             "help",
+	"rh":            "runsHistory",
 }

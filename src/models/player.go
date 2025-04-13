@@ -36,7 +36,7 @@ func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 	players.Mutex.RLock()
 	defer players.Mutex.RUnlock()
 
-	matchingPlayers := []Player{}
+	var matchingPlayers []Player
 	var alreadyAdded bool
 
 	for playerNumber, player := range players.PlayerMap {
@@ -58,7 +58,7 @@ func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 	} else if len(matchingPlayers) == 0 {
 		return nil, fmt.Errorf("no player found using (%s)", searchCriteria)
 	} else {
-		playerList := []string{}
+		var playerList []string
 
 		for _, p := range matchingPlayers {
 			playerList = append(playerList, fmt.Sprintf("%s [%s]", p.Name, p.Id))
