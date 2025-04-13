@@ -40,11 +40,11 @@ func (context *Context) Init() {
 }
 
 func (context *Context) initPlayers() {
-	context.Players = Players{Mutex: sync.RWMutex{}, List: make(map[string]Player)}
+	context.Players = Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]Player)}
 }
 
 func (context *Context) initRuns() {
-	context.Runs = RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]RunInfo)}
+	context.Runs = RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*RunPlayerInfo)}
 }
 
 func (context *Context) initApi() {

@@ -2,6 +2,7 @@ package models
 
 import (
 	log "github.com/sirupsen/logrus"
+	"strconv"
 	"sync"
 )
 
@@ -10,7 +11,7 @@ type RunCompare struct {
 	checkpoint []int
 }
 
-type RunInfo struct {
+type RunPlayerInfo struct {
 	way        string
 	checkpoint []int
 	runCompare RunCompare
@@ -18,7 +19,7 @@ type RunInfo struct {
 
 type RunsInfo struct {
 	RunMutex   sync.RWMutex
-	PlayerRuns map[string]RunInfo
+	PlayerRuns map[string]*RunPlayerInfo
 }
 
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
@@ -26,6 +27,21 @@ func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
-	runs.PlayerRuns[playerNumber] = RunInfo{way: wayName}
-	log.Debugf("Run map %v", runs.PlayerRuns)
+	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}}
+}
+
+func (i *RunPlayerInfo) appendCheckpoint(time string) {
+	if v, err := strconv.Atoi(time); err == nil {
+		i.checkpoint = append(i.checkpoint, v)
+	} else {
+		log.Errorf("Error converting time to int %v", err)
+	}
+}
+
+func (runs *RunsInfo) AddCheckpoint(playerNumber string, time string) {
+	log.Debugf("AddCheckpoint %s -> %s", playerNumber, time)
+	runs.RunMutex.Lock()
+	defer runs.RunMutex.Unlock()
+
+	runs.PlayerRuns[playerNumber].appendCheckpoint(time)
 }
