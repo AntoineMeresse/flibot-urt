@@ -120,7 +120,7 @@ func voteKeysMessage(cpt *int, context *models.Context) {
 }
 
 func hasMajority(context *models.Context, voteSystem *VoteSystem) bool {
-	majority := (len(context.Players.List) / 2) + 1
+	majority := (len(context.Players.PlayerMap) / 2) + 1
 	return len(voteSystem.VoteYes) >= majority || len(voteSystem.VoteNo) >= majority
 }
 

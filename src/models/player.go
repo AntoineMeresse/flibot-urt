@@ -16,43 +16,42 @@ type Player struct {
 }
 
 type Players struct {
-	Mutex sync.RWMutex
-	List map[string]Player
+	Mutex     sync.RWMutex
+	PlayerMap map[string]Player
 }
 
 func (players *Players) AddPlayer(playerNumber string, player Player) {
 	players.Mutex.Lock()
-	players.List[playerNumber] = player
+	players.PlayerMap[playerNumber] = player
 	players.Mutex.Unlock()
 }
 
 func (players *Players) RemovePlayer(playerNumber string) {
 	players.Mutex.Lock()
-	delete(players.List, playerNumber)
+	delete(players.PlayerMap, playerNumber)
 	players.Mutex.Unlock()
 }
 
-func (players *Players) GetPlayer(searchCriteria string)  (*Player, error)  {
+func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 	players.Mutex.RLock()
 	defer players.Mutex.RUnlock()
 
 	matchingPlayers := []Player{}
-	var alreadyAdded bool;
+	var alreadyAdded bool
 
-	for playerNumber, player := range(players.List) {
-		alreadyAdded = false;
+	for playerNumber, player := range players.PlayerMap {
+		alreadyAdded = false
 		if utils.IsDigitOnly(searchCriteria) {
-			if (playerNumber == searchCriteria) {
-				matchingPlayers = append(matchingPlayers, player);
-				alreadyAdded = true;
+			if playerNumber == searchCriteria {
+				matchingPlayers = append(matchingPlayers, player)
+				alreadyAdded = true
 			}
 		}
 
-		if (!alreadyAdded && strings.Contains(strings.ToLower(player.Name), strings.ToLower(searchCriteria))) {
-			matchingPlayers = append(matchingPlayers, player);
+		if !alreadyAdded && strings.Contains(strings.ToLower(player.Name), strings.ToLower(searchCriteria)) {
+			matchingPlayers = append(matchingPlayers, player)
 		}
 	}
-	
 
 	if len(matchingPlayers) == 1 {
 		return &matchingPlayers[0], nil
@@ -67,7 +66,6 @@ func (players *Players) GetPlayer(searchCriteria string)  (*Player, error)  {
 
 		playersDisplay := strings.Join(playerList, ", ")
 
-		return nil, fmt.Errorf("multiple match (%s) using (%s)", playersDisplay , searchCriteria)
+		return nil, fmt.Errorf("multiple match (%s) using (%s)", playersDisplay, searchCriteria)
 	}
 }
-

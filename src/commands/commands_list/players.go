@@ -10,8 +10,8 @@ import (
 func PlayersList(cmd *models.CommandsArgs) {
 	cmd.RconText("Players: ")
 	cmd.Context.Players.Mutex.RLock()
-	for key, value := range(cmd.Context.Players.List) {
-		text := fmt.Sprintf("%s: %v" , key,  value)
+	for key, value := range cmd.Context.Players.PlayerMap {
+		text := fmt.Sprintf("%s: %v", key, value)
 		log.Debug(text)
 		cmd.RconText(text)
 	}
@@ -24,7 +24,7 @@ func PlayersGet(cmd *models.CommandsArgs) {
 		cmd.RconText("Player with criteria (%s): ", searchCriteria)
 		player, err := cmd.Context.Players.GetPlayer(searchCriteria)
 		if err == nil {
-			cmd.RconText("Player found: (%v)" , *player)
+			cmd.RconText("Player found: (%v)", *player)
 		} else {
 			cmd.RconText(err.Error())
 		}
