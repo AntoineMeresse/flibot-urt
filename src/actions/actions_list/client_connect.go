@@ -8,4 +8,5 @@ import (
 
 func ClientConnect(actionParams []string, context *models.Context) {
 	log.Debugf("Client Connect: %v", actionParams)
+	context.Players.AddPlayer(actionParams[0], &models.Player{})
 }

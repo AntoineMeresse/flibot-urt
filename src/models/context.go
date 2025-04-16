@@ -40,7 +40,7 @@ func (context *Context) Init() {
 }
 
 func (context *Context) initPlayers() {
-	context.Players = Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]Player)}
+	context.Players = Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*Player)}
 }
 
 func (context *Context) initRuns() {

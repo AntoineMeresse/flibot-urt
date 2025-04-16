@@ -14,7 +14,8 @@ func HandleLogsWorker(myLogChannel <-chan string, id int, context *models.Contex
 	for log := range myLogChannel {
 		logrus.Tracef("Worker read: %s", log)
 		logSplit := utils.CleanEmptyElements(strings.Split(strings.TrimSpace(log), " "))
-		if len(logSplit) >= 4 {
+		logrus.Tracef("Log: %s", logSplit)
+		if len(logSplit) >= 3 {
 			logrus.Tracef("Log Ok: %v", logSplit)
 			actions.HandleAction(id, logSplit[1], logSplit[2:], context)
 		}

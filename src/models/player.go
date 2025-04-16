@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"strings"
 	"sync"
 
@@ -17,13 +18,43 @@ type Player struct {
 
 type Players struct {
 	Mutex     sync.RWMutex
-	PlayerMap map[string]Player
+	PlayerMap map[string]*Player
 }
 
-func (players *Players) AddPlayer(playerNumber string, player Player) {
+func (players *Players) AddPlayer(playerNumber string, player *Player) {
+	logrus.Debugf("AddPlayer: %s -> %v", playerNumber, player)
 	players.Mutex.Lock()
 	players.PlayerMap[playerNumber] = player
 	players.Mutex.Unlock()
+}
+
+func (p *Player) hasInfoChange(infos map[string]string) bool {
+	return p.Name != infos["name"] || p.Guid != infos["cl_guid"]
+}
+
+func (players *Players) UpdatePlayer(playerNumber string, infos map[string]string) {
+	currentPlayer := players.PlayerMap[playerNumber]
+
+	if currentPlayer == nil {
+		logrus.Warnf("Player %s not found. Creating it", playerNumber)
+		currentPlayer = &Player{}
+		players.AddPlayer(playerNumber, currentPlayer)
+	}
+
+	if currentPlayer.hasInfoChange(infos) {
+		players.Mutex.Lock()
+		if currentPlayer.Guid == "" {
+			logrus.Debugf("Player %v has no guid. Init player with: %v", playerNumber, infos)
+			currentPlayer.Role = 100 // TODO: fetch role
+		}
+		if name, ok := infos["name"]; ok {
+			currentPlayer.Name = utils.DecolorString(name)
+		}
+		if guid, ok := infos["cl_guid"]; ok {
+			currentPlayer.Guid = guid
+		}
+		players.Mutex.Unlock()
+	}
 }
 
 func (players *Players) RemovePlayer(playerNumber string) {
@@ -43,13 +74,13 @@ func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 		alreadyAdded = false
 		if utils.IsDigitOnly(searchCriteria) {
 			if playerNumber == searchCriteria {
-				matchingPlayers = append(matchingPlayers, player)
+				matchingPlayers = append(matchingPlayers, *player)
 				alreadyAdded = true
 			}
 		}
 
 		if !alreadyAdded && strings.Contains(strings.ToLower(player.Name), strings.ToLower(searchCriteria)) {
-			matchingPlayers = append(matchingPlayers, player)
+			matchingPlayers = append(matchingPlayers, *player)
 		}
 	}
 

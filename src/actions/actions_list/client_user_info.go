@@ -15,39 +15,15 @@ func ClientUserinfo(actionParams []string, context *models.Context) {
 		playerNumber := actionParams[0]
 		infoString := strings.Join(actionParams[1:], "")
 		infos := splitInfos(infoString)
-
-		log.Debugf("Infos: \n%v\n", infos)
-
-		context.Players.AddPlayer(playerNumber, generatePlayer(playerNumber, infos))
+		context.Players.UpdatePlayer(playerNumber, infos)
 	}
-
 }
 
 func splitInfos(infos string) map[string]string {
 	res := make(map[string]string)
-
 	infoSplit := utils.CleanEmptyElements(strings.Split(infos, "\\"))
-
 	for i := 0; i < len(infoSplit)-1; i += 2 {
 		res[infoSplit[i]] = infoSplit[i+1]
 	}
-
 	return res
-}
-
-func generatePlayer(playerNumber string, infos map[string]string) models.Player {
-	player := models.Player{}
-
-	if name, ok := infos["name"]; ok {
-		player.Name = utils.DecolorString(name)
-	}
-
-	if guid, ok := infos["cl_guid"]; ok {
-		player.Guid = guid
-	}
-
-	player.Id = playerNumber
-	player.Role = 100 // Todo: change with db rights
-
-	return player
 }
