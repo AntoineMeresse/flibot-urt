@@ -69,3 +69,17 @@ func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time st
 
 	delete(runs.PlayerRuns, playerNumber)
 }
+
+func (runs *RunsInfo) RunGetCheckpoint(playerNumber string, playerGuid string, time string, way string) []int {
+	log.Debugf("RunGetCheckpoint %s (guid: %s) -> %s", playerNumber, playerGuid, time)
+	runId := fmt.Sprintf("%s-%s-%s", playerGuid, way, time)
+	log.Debugf("Runid: %s", runId)
+	checkpoints, exist := runs.History[runId]
+
+	if !exist {
+		return []int{}
+	}
+
+	delete(runs.History, runId)
+	return checkpoints
+}
