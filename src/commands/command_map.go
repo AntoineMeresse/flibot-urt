@@ -33,6 +33,7 @@ var Commands = map[string]Command{
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit", true},
 	"register":   {commandslist.Register, 0, "!register", true},
+	"website":    {commandslist.Website, 0, "!website", true},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]", true},
 
@@ -80,4 +81,5 @@ var Alias = map[string]string{
 	"ff":            "quit",
 	"h":             "help",
 	"rh":            "runsHistory",
+	"site":          "website",
 }
