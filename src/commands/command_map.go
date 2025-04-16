@@ -34,6 +34,7 @@ var Commands = map[string]Command{
 	"quit":       {commandslist.Quit, 0, "!quit", true},
 	"register":   {commandslist.Register, 0, "!register", true},
 	"website":    {commandslist.Website, 0, "!website", true},
+	"discord":    {commandslist.Discord, 0, "!discord", true},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]", true},
 
