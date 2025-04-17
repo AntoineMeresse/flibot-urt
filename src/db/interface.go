@@ -8,15 +8,15 @@ import (
 )
 
 type PenData struct {
-	Name sql.NullString  
-	Size float64   
-	Date time.Time 
+	Name sql.NullString
+	Size float64
+	Date time.Time
 }
 
 func (p PenData) GetName() string {
 	if p.Name.String == "" {
 		return "Unknown"
-	} 
+	}
 	return p.Name.String
 }
 
@@ -26,19 +26,16 @@ func (p PenData) GetDate() string {
 
 type DataPersister interface {
 	Close()
-	
+
 	// Player
-	SaveNewPlayer(name string, guid string, ip_address string) error
+	SaveNewPlayer(name string, guid string, ipAddress string) error
 	UpdatePlayer() error
 
 	// Role
-	
-	// Pen 
+
+	// Pen
 	Pen_add(guid string, size float64) error
 	Pen_PenOfTheDay() (string, []PenData, error)
 	Pen_PenHallOfFame() ([]PenData, error)
 	Pen_PenHallOfShame() ([]PenData, error)
 }
-
-
-

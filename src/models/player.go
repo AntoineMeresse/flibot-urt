@@ -10,10 +10,12 @@ import (
 )
 
 type Player struct {
-	Id   string
-	Guid string
-	Name string
-	Role int
+	Id      string
+	Guid    string
+	Name    string
+	Ip      string
+	Aliases []string
+	Role    int
 }
 
 type Players struct {
@@ -45,13 +47,19 @@ func (players *Players) UpdatePlayer(playerNumber string, infos map[string]strin
 		players.Mutex.Lock()
 		if currentPlayer.Guid == "" {
 			logrus.Debugf("Player %v has no guid. Init player with: %v", playerNumber, infos)
-			currentPlayer.Role = 100 // TODO: fetch role
+			// TODO: fetch role & aliases
+			currentPlayer.Role = 100
+			currentPlayer.Aliases = []string{}
 		}
 		if name, ok := infos["name"]; ok {
 			currentPlayer.Name = utils.DecolorString(name)
 		}
 		if guid, ok := infos["cl_guid"]; ok {
 			currentPlayer.Guid = guid
+		}
+		if ipAndPort, ok := infos["ip"]; ok {
+			ipAddress := strings.Split(ipAndPort, ":")[0]
+			currentPlayer.Ip = ipAddress
 		}
 		players.Mutex.Unlock()
 	}
