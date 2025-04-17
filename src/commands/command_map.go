@@ -47,12 +47,13 @@ var Commands = map[string]Command{
 	"extend":      {commandslist.Extend, 80, "!extend or !extend [1-999]", true},
 	"veto":        {commandslist.VoteVeto, 80, "!veto", true},
 	"overbounces": {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
+	"putgroup":    {commandslist.SetRights, 80, "!putgroup [player] [0-100]", true},
 
 	// Dev Only
-	"players":     {commandslist.PlayersList, 100, "!players", false},
-	"player":      {commandslist.PlayersGet, 100, "!player", false},
-	"runs":        {commandslist.RunsDescribe, 100, "!runs", false},
-	"runsHistory": {commandslist.RunsHistory, 100, "!runsHistory", false},
+	"players":     {commandslist.PlayersList, 90, "!players", false},
+	"player":      {commandslist.PlayersGet, 90, "!player", false},
+	"runs":        {commandslist.RunsDescribe, 90, "!runs", false},
+	"runsHistory": {commandslist.RunsHistory, 90, "!runsHistory", false},
 }
 
 var Alias = map[string]string{
@@ -83,4 +84,5 @@ var Alias = map[string]string{
 	"h":             "help",
 	"rh":            "runsHistory",
 	"site":          "website",
+	"rights":        "putgroup",
 }

@@ -11,6 +11,7 @@ import (
 
 type Player struct {
 	Id      string
+	Number  string
 	Guid    string
 	Name    string
 	Ip      string
@@ -26,6 +27,7 @@ type Players struct {
 func (players *Players) AddPlayer(playerNumber string, player *Player) {
 	logrus.Debugf("AddPlayer: %s -> %v", playerNumber, player)
 	players.Mutex.Lock()
+	player.Number = playerNumber
 	players.PlayerMap[playerNumber] = player
 	players.Mutex.Unlock()
 }
@@ -65,6 +67,17 @@ func (players *Players) UpdatePlayer(playerNumber string, infos map[string]strin
 	}
 }
 
+func (players *Players) UpdatePlayerRights(playerNumber string, level int) {
+	currentPlayer := players.PlayerMap[playerNumber]
+	if currentPlayer == nil {
+		logrus.Warnf("Player %s not found. Can't update rights.", playerNumber)
+		return
+	}
+	players.Mutex.Lock()
+	currentPlayer.Role = level
+	players.Mutex.Unlock()
+}
+
 func (players *Players) RemovePlayer(playerNumber string) {
 	players.Mutex.Lock()
 	delete(players.PlayerMap, playerNumber)
@@ -100,7 +113,7 @@ func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 		var playerList []string
 
 		for _, p := range matchingPlayers {
-			playerList = append(playerList, fmt.Sprintf("%s [%s]", p.Name, p.Id))
+			playerList = append(playerList, fmt.Sprintf("%s [%s]", p.Name, p.Number))
 		}
 
 		playersDisplay := strings.Join(playerList, ", ")

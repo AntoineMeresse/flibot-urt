@@ -51,7 +51,7 @@ func RunLog(actionParams []string, context *models.Context) {
 		log.Errorf("RunLog: Error unmarshalling json: %v", err)
 	} else {
 		if player, err := context.Players.GetPlayer(runInfo.Playernumber); err == nil {
-			cps := context.Runs.RunGetCheckpoint(player.Id, player.Guid, runInfo.Time, runInfo.Way)
+			cps := context.Runs.RunGetCheckpoint(player.Number, player.Guid, runInfo.Time, runInfo.Way)
 			//TODO: Send to ujm
 			context.RconText(false, runInfo.Playernumber, "%s: %s (%v)", runInfo.Playername, runInfo.Time, cps)
 		}

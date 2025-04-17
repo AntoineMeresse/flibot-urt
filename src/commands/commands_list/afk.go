@@ -9,7 +9,7 @@ func Afk(cmd *models.CommandsArgs) {
 		player, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
 		if err == nil {
 			// TODO: Check if player isn't running.
-			cmd.RconCommand("forceteam %s spec", player.Id)
+			cmd.RconCommand("forceteam %s spec", player.Number)
 		} else {
 			cmd.RconText(err.Error())
 		}
