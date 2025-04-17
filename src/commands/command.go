@@ -53,6 +53,7 @@ func replaceShortcutByKnownCommand(cmd *string) {
 
 func extractCmdInfos(actionParams []string) (command commandInfo) {
 	text := actionParams[2]
+	msg := strings.Join(actionParams[2:], " ")
 	if isCommand(text) {
 		var name string
 		if utils.IsVoteCommand(text) {
@@ -64,10 +65,10 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 		if command, ok := Commands[name]; ok {
 			isGlobal := isCommandGlobal(text)
 			params := utils.CleanEmptyElements(actionParams[3:])
-			return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: name, params: params, message: text}
+			return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: name, params: params, message: msg}
 		}
 	}
-	return commandInfo{command: Command{sendToBridge: true}}
+	return commandInfo{command: Command{sendToBridge: true}, message: msg}
 }
 
 func checkPlayerRights(playerNumber string, command Command, context *models.Context) (canAccess bool, required int, got int) {
@@ -128,7 +129,7 @@ func HandleCommand(actionParams []string, context *models.Context) {
 	}
 	err := commandInfos.sendCommandToBridge()
 	if err != nil {
-		log.Error(err)
+		//Todo: uncomment log.Error(err)
 	}
 }
 

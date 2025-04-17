@@ -29,6 +29,7 @@ type DataPersister interface {
 
 	// Player
 	SaveNewPlayer(name string, guid string, ipAddress string) error
+	InitRight(guid string) error
 	UpdatePlayer() error
 
 	// Role

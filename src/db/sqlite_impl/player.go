@@ -1,8 +1,8 @@
 package sqlite_impl
 
 import (
+	"fmt"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/sirupsen/logrus"
 )
 
 func createDb_Player() string {
@@ -20,23 +20,20 @@ func createDb_Player() string {
 
 func (db SqliteDB) SaveNewPlayer(name string, guid string, ipAddress string) error {
 	today := utils.GetTodayDateFormated()
-	// Step 1: register player
-	errPlayer := db.sqliteTransaction("SaveNewPlayer - Player",
+	err := db.sqliteTransaction("SaveNewPlayer",
 		"INSERT INTO player(name, guid, ip_address, time_joined, aliases) values (?, ?, ?, ?, ?)",
 		name, guid, ipAddress, today, name)
-	if errPlayer != nil {
-		logrus.Errorf("Save new player error: %s", errPlayer.Error())
-		//return errPlayer
+	if err != nil {
+		return fmt.Errorf("could not save player in db. Error: %s", err.Error())
 	}
-	// Step 2: Add Rights
-	errRight := db.sqliteTransaction("SaveNewPlayer - Player",
-		"INSERT INTO admin(guid, role) values (?, ?)",
-		guid, 0)
-	if errRight != nil {
-		logrus.Errorf("Save new player right error: %s", errRight.Error())
-		return errRight
+	return nil
+}
+
+func (db SqliteDB) InitRight(guid string) error {
+	err := db.sqliteTransaction("InitRight", "INSERT INTO admin(guid, role) values (?, ?)", guid, 0)
+	if err != nil {
+		return fmt.Errorf("could not save player right in db. Error: %s", err.Error())
 	}
-	logrus.Infof("New player was register in db. Player guid: %s", guid)
 	return nil
 }
 
