@@ -54,6 +54,7 @@ var Commands = map[string]Command{
 	"player":      {commandslist.PlayersGet, 90, "!player", false},
 	"runs":        {commandslist.RunsDescribe, 90, "!runs", false},
 	"runsHistory": {commandslist.RunsHistory, 90, "!runsHistory", false},
+	"syncPlayers": {commandslist.SyncPlayers, 90, "!syncPlayers", false},
 }
 
 var Alias = map[string]string{
@@ -85,4 +86,5 @@ var Alias = map[string]string{
 	"rh":            "runsHistory",
 	"site":          "website",
 	"rights":        "putgroup",
+	"sync":          "syncPlayers",
 }
