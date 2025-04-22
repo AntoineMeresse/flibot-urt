@@ -133,7 +133,7 @@ func FormatTimeToDate(t time.Time) string {
 }
 
 func GetTodayDateFormated() string {
-	return FormatTimeToDate(time.Now())
+	return FormatTimeToDate(time.Now().Local())
 }
 
 func BytesNumberConverter(b int64) string {

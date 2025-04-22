@@ -35,7 +35,7 @@ type PlayerRunInfo struct {
 	Time         string `json:"time"`
 	Demopath     string `json:"demopath"`
 	Playernumber string `json:"playernumber"`
-	Utj          string `json:"utj"`
+	Utj          string `json:"g_utj"`
 }
 
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
