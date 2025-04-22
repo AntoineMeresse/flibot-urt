@@ -1,11 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
 )
 
-func Register(cmd *models.CommandsArgs) {
+func Register(cmd *context.CommandsArgs) {
 	player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
 	clientMsg := "Successfully registered!"
 	if err == nil {

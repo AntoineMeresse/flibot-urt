@@ -1,10 +1,10 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Overbounces(cmd *models.CommandsArgs) {
+func Overbounces(cmd *context.CommandsArgs) {
 	if len(cmd.Params) == 1 {
 		value := cmd.Params[0]
 		if value == "0" || value == "1" {
@@ -14,5 +14,5 @@ func Overbounces(cmd *models.CommandsArgs) {
 		}
 	}
 	v := cmd.RconCommandExtractValue("g_overbounces")
-	cmd.RconUsageWithText("Current value is: %s", v);
+	cmd.RconUsageWithText("Current value is: %s", v)
 }

@@ -2,15 +2,14 @@ package voteslist
 
 import (
 	"fmt"
-
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Cyclemap(param string, context *models.Context) {
-	context.Rcon.RconCommand("cyclemap")
+func Cyclemap(_ string, c *context.Context) {
+	c.Rcon.RconCommand("cyclemap")
 	// set currentmap
 }
 
-func CyclemapMessage(context *models.Context, msg string, param string) (bool, string) {
-	return true, fmt.Sprintf(msg, context.GetNextMap())
+func CyclemapMessage(c *context.Context, msg string, _ string) (bool, string) {
+	return true, fmt.Sprintf(msg, c.GetNextMap())
 }

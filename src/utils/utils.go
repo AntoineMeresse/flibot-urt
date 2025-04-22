@@ -14,9 +14,9 @@ import (
 	"github.com/maruel/natural"
 )
 
-func CleanEmptyElements(datas []string) []string { 
+func CleanEmptyElements(data []string) []string {
 	var res []string
-	for _, value := range(datas) {
+	for _, value := range data {
 		if value != "" {
 			res = append(res, value)
 		}
@@ -24,9 +24,9 @@ func CleanEmptyElements(datas []string) []string {
 	return res
 }
 
-func CleanDuplicateElements(datas []string) []string {
+func CleanDuplicateElements(data []string) []string {
 	var res []string
-	for _, value := range(datas) {
+	for _, value := range data {
 		if !slices.Contains(res, value) {
 			res = append(res, value)
 		}
@@ -45,16 +45,16 @@ func RandomValueFromSlice(list []string) string {
 
 func GetKeysSorted(myMap map[string][]string) (sortedKeys []string) {
 	keys := make([]string, 0, len(myMap))
- 
-    for k := range myMap{
-        keys = append(keys, k)
-    }
 
-    sort.Strings(keys)
+	for k := range myMap {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
 	return keys
 }
 
-func NaturalSort(stringSlice []string) []string { 
+func NaturalSort(stringSlice []string) []string {
 	cpy := append([]string{}, stringSlice...)
 	sort.Sort(natural.StringSlice(cpy))
 	return cpy
@@ -62,7 +62,7 @@ func NaturalSort(stringSlice []string) []string {
 
 func DecolorString(str string) string {
 	re := regexp.MustCompile(`\^\d`)
-	return re.ReplaceAllString(str, "");
+	return re.ReplaceAllString(str, "")
 }
 
 func IsDigitOnly(str string) bool {
@@ -74,30 +74,29 @@ func ExtractNumber(str string) (int, error) {
 }
 
 func IsVoteCommand(text string) bool {
-	return text == "+" || text == "-" ||text == "v"
+	return text == "+" || text == "-" || text == "v"
 }
 
 func ToShorterChunkArraySep(strList []string, sep string, exceptFirst bool) []string {
 	maxLength := 75
-	res := []string{}
-	lign := ""
-
+	var res []string
+	line := ""
 
 	for i, current := range strList {
-		newLign := ""
+		newLine := ""
 		if i == 0 && exceptFirst {
-			newLign = lign + current 
+			newLine = line + current
 		} else {
-			newLign = lign + current + sep 
+			newLine = line + current + sep
 		}
-		if len(newLign) <= maxLength {
-			lign = newLign
+		if len(newLine) <= maxLength {
+			line = newLine
 		} else {
-			res = append(res, lign)
-			lign = current + sep
+			res = append(res, line)
+			line = current + sep
 		}
 	}
-	res = append(res, lign[0:len(lign)-len(sep)])
+	res = append(res, line[0:len(line)-len(sep)])
 	return res
 }
 
@@ -110,23 +109,23 @@ func ToShorterChunkString(str string) []string {
 }
 
 func GetColorRun(i int) string {
-	if (i == 0) {
+	if i == 0 {
 		return yellow
-	} else if (i == 1) {
+	} else if i == 1 {
 		return green
-	} else if (i == 2) {
+	} else if i == 2 {
 		return bronze
 	}
 	return white
 }
 
 func truncate(num float64, precision int) float64 {
-    output := math.Pow(10, float64(precision))
-    return float64(math.Round(num * output)) / output
+	output := math.Pow(10, float64(precision))
+	return math.Round(num*output) / output
 }
 
 func RandomFloat(min float64, max float64, precision int) float64 {
-	return truncate(rand.Float64() * max + min, precision)
+	return truncate(rand.Float64()*max+min, precision)
 }
 
 func FormatTimeToDate(t time.Time) string {

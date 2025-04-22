@@ -2,11 +2,11 @@ package commands
 
 import (
 	"fmt"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
@@ -53,7 +53,7 @@ func replaceShortcutByKnownCommand(cmd *string) {
 
 func extractCmdInfos(actionParams []string) (command commandInfo) {
 	text := actionParams[2]
-	msg := strings.Join(actionParams[2:], " ")
+	message := strings.Join(actionParams[2:], " ")
 	if isCommand(text) {
 		var name string
 		if utils.IsVoteCommand(text) {
@@ -65,13 +65,13 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 		if command, ok := Commands[name]; ok {
 			isGlobal := isCommandGlobal(text)
 			params := utils.CleanEmptyElements(actionParams[3:])
-			return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: name, params: params, message: msg}
+			return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: name, params: params, message: message}
 		}
 	}
-	return commandInfo{command: Command{sendToBridge: true}, message: msg}
+	return commandInfo{command: Command{sendToBridge: true}, message: message}
 }
 
-func checkPlayerRights(playerNumber string, command Command, context *models.Context) (canAccess bool, required int, got int) {
+func checkPlayerRights(playerNumber string, command Command, c *context.Context) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
 
 	if command.Level == 0 {
@@ -79,8 +79,8 @@ func checkPlayerRights(playerNumber string, command Command, context *models.Con
 		return true, 0, 0
 	}
 
-	player, err := context.Players.GetPlayer(playerNumber)
-	var canUseCmd bool = false
+	player, err := c.Players.GetPlayer(playerNumber)
+	var canUseCmd = false
 	role := 0
 
 	if err == nil {
@@ -92,7 +92,7 @@ func checkPlayerRights(playerNumber string, command Command, context *models.Con
 	return canUseCmd, command.Level, role
 }
 
-func overrideParamsForCommands(commandName string, role int, cmdArgs *models.CommandsArgs) {
+func overrideParamsForCommands(commandName string, role int, cmdArgs *context.CommandsArgs) {
 	if commandName == "help" {
 		var cmdList []string
 		for key, value := range Commands {
@@ -104,27 +104,27 @@ func overrideParamsForCommands(commandName string, role int, cmdArgs *models.Com
 	}
 }
 
-func HandleCommand(actionParams []string, context *models.Context) {
+func HandleCommand(actionParams []string, c *context.Context) {
 	playerNumber := actionParams[0]
 	commandInfos := extractCmdInfos(actionParams)
 	if commandInfos.isValid {
-		canAccess, level, role := checkPlayerRights(playerNumber, commandInfos.command, context)
+		canAccess, level, role := checkPlayerRights(playerNumber, commandInfos.command, c)
 		if canAccess {
 			displayCommandInfos(actionParams[2], playerNumber, commandInfos.params, commandInfos.isGlobal)
-			args := models.CommandsArgs{
-				Context:  context,
+			args := context.CommandsArgs{
+				Context:  c,
 				PlayerId: playerNumber,
 				Params:   commandInfos.params,
 				IsGlobal: commandInfos.isGlobal,
 				Usage:    commandInfos.command.Usage,
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)
-			commandInfos.command.Function.(func(*models.CommandsArgs))(&args)
+			commandInfos.command.Function.(func(*context.CommandsArgs))(&args)
 		} else {
 			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ",
 				playerNumber, actionParams[2], level, role,
 			)
-			context.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, actionParams[2], level, role)
+			c.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, actionParams[2], level, role)
 		}
 	}
 	err := commandInfos.sendCommandToBridge()

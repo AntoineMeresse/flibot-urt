@@ -1,9 +1,9 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Ready(cmd *models.CommandsArgs) {
+func Ready(cmd *context.CommandsArgs) {
 	cmd.RconCommand("ready %s", cmd.PlayerId)
 }

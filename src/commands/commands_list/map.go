@@ -1,13 +1,13 @@
 package commandslist
 
 import (
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"time"
 
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func MapFn(cmd *models.CommandsArgs) {
+func MapFn(cmd *context.CommandsArgs) {
 	if len(cmd.Params) == 1 {
 		mapName, err := cmd.Context.GetMapWithCriteria(cmd.Params[0])
 		if err != nil {

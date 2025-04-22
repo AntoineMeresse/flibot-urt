@@ -2,18 +2,17 @@ package voteslist
 
 import (
 	"fmt"
-
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func MapVote(param string, context *models.Context) {
-	context.RconCommand("map %s", param)
+func MapVote(param string, c *context.Context) {
+	c.RconCommand("map %s", param)
 }
 
-func MapMessage(context *models.Context, msg string, param string) (bool, string) {
-	mapname, err := context.GetMapWithCriteria(param)
+func MapMessage(c *context.Context, msg string, param string) (bool, string) {
+	mapname, err := c.GetMapWithCriteria(param)
 	if err != nil {
-		context.RconText(true, "", err.Error())
+		c.RconText(true, "", err.Error())
 		return false, ""
 	} else {
 		return true, fmt.Sprintf(msg, *mapname)

@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
 type MapSearchResult struct {
 	Matching []string `json:"matching"`
 }
@@ -19,14 +18,14 @@ func (api *Api) GetMapsWithPattern(criteria string) []string {
 
 	if err == nil {
 		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res MapSearchResult;
+			var res MapSearchResult
 			if err := json.Unmarshal(body, &res); err == nil {
 				// logrus.Debugf("GetMapWithPattern (%s): %v", url, res)
 				return res.Matching
-			} 
+			}
 			return []string{""}
-		} 
-	} 
+		}
+	}
 	return []string{""}
 }
 
@@ -37,12 +36,12 @@ func (api *Api) MapSync() error {
 }
 
 type ServersListStatus []map[string]ServerStatus
-	
+
 type ServerStatus struct {
-	Mapname string `json:"mapname"`
-	NbPlayers int `json:"nbPlayers"`
-	Ingame []string `json:"ingame"`
-	Spec   []string `json:"spec"`
+	Mapname   string   `json:"mapname"`
+	NbPlayers int      `json:"nbPlayers"`
+	Ingame    []string `json:"ingame"`
+	Spec      []string `json:"spec"`
 }
 
 func (api *Api) GetServerStatus() (ServersListStatus, error) {
@@ -52,7 +51,7 @@ func (api *Api) GetServerStatus() (ServersListStatus, error) {
 	if err == nil {
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			log.Debugf("Status: %s", string(body))
-			var res ServersListStatus;
+			var res ServersListStatus
 			if err := json.Unmarshal(body, &res); err == nil {
 				log.Debugf("GetServerStatus (%s): %v", url, res)
 				return res, nil
@@ -60,7 +59,7 @@ func (api *Api) GetServerStatus() (ServersListStatus, error) {
 				log.Error(err.Error())
 				return ServersListStatus{}, err
 			}
-		} 
-	} 
+		}
+	}
 	return ServersListStatus{}, err
 }

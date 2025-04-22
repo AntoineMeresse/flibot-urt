@@ -2,20 +2,20 @@ package commandslist
 
 import (
 	"fmt"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func MapList(cmd *models.CommandsArgs) {
+func MapList(cmd *context.CommandsArgs) {
 	maps := cmd.Context.GetMapList()
-	new := []string{}
-	new = append(new, fmt.Sprintf(msg.MAP_LIST, len(maps)))
+	var newMapList []string
+	newMapList = append(newMapList, fmt.Sprintf(msg.MAP_LIST, len(maps)))
 	if len(maps) > 5 {
-		new = append(new, maps[:5]...)
-		new = append(new, "...")
+		newMapList = append(newMapList, maps[:5]...)
+		newMapList = append(newMapList, "...")
 	} else {
-		new = append(new, maps...)
+		newMapList = append(newMapList, maps...)
 	}
-	cmd.RconList(new)
+	cmd.RconList(newMapList)
 }

@@ -1,17 +1,17 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ServerStatus(cmd *models.CommandsArgs) {
+func ServerStatus(cmd *context.CommandsArgs) {
 	cmd.RconText("Status !")
 	infos, err := cmd.Context.Api.GetServerStatus()
 
 	if err != nil {
 		cmd.RconText(err.Error())
-		return;
+		return
 	}
 
 	for _, serverlist := range infos {
@@ -21,14 +21,14 @@ func ServerStatus(cmd *models.CommandsArgs) {
 			if len(serverInfos.Ingame) > 0 {
 				ingame := []string{"^7  |---------> ^2In game^7: "}
 				ingame = append(ingame, serverInfos.Ingame...)
-				for _, ingamePlayerLine := range utils.ToShorterChunkArraySep(ingame,", ", true) {
+				for _, ingamePlayerLine := range utils.ToShorterChunkArraySep(ingame, ", ", true) {
 					cmd.RconText(ingamePlayerLine)
 				}
 			}
 			if len(serverInfos.Spec) > 0 {
 				inspec := []string{"^7  |---------> ^1In spec^7: "}
 				inspec = append(inspec, serverInfos.Spec...)
-				for _, specPlayerLine := range utils.ToShorterChunkArraySep(inspec,", ", true) {
+				for _, specPlayerLine := range utils.ToShorterChunkArraySep(inspec, ", ", true) {
 					cmd.RconText(specPlayerLine)
 				}
 			}

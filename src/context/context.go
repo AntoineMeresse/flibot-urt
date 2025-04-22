@@ -1,6 +1,7 @@
-package models
+package context
 
 import (
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"net/http"
 	"sync"
 	"time"
@@ -16,18 +17,18 @@ import (
 type Context struct {
 	DB          db.DataPersister
 	Rcon        quake3rcon.Rcon
-	UrtConfig   UrtConfig
-	Players     Players
+	UrtConfig   models.UrtConfig
+	Players     models.Players
 	Settings    ServerSettings
 	Api         *api.Api
-	VoteChannel chan Vote
-	Runs        RunsInfo
+	VoteChannel chan models.Vote
+	Runs        models.RunsInfo
 }
 
 type RconFunction func(format string, a ...any)
 
 func (context *Context) Init() {
-	context.UrtConfig.loadEnvVariables()
+	context.UrtConfig.LoadEnvVariables()
 
 	context.initRcon()
 	context.initSettings()
@@ -40,11 +41,11 @@ func (context *Context) Init() {
 }
 
 func (context *Context) initPlayers() {
-	context.Players = Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*Player)}
+	context.Players = models.Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*models.Player)}
 }
 
 func (context *Context) initRuns() {
-	context.Runs = RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*RunPlayerInfo), History: make(map[string][]int)}
+	context.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
 }
 
 func (context *Context) initApi() {
@@ -88,4 +89,8 @@ func (context *Context) MapSync() {
 	} else {
 		context.RconText(true, "", "^7Bridge map sync (All servers)")
 	}
+}
+
+func (context *Context) NewVote(v models.Vote) {
+	context.VoteChannel <- v
 }

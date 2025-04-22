@@ -1,21 +1,21 @@
 package actionslist
 
 import (
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ClientUserinfo(actionParams []string, context *models.Context) {
+func ClientUserinfo(actionParams []string, c *context.Context) {
 	log.Debugf("Client User Info: %v", actionParams)
 	if len(actionParams) > 1 {
 		playerNumber := actionParams[0]
 		infoString := strings.Join(actionParams[1:], "")
 		infos := splitInfos(infoString)
-		context.Players.UpdatePlayer(playerNumber, infos)
+		c.Players.UpdatePlayer(playerNumber, infos)
 	}
 }
 

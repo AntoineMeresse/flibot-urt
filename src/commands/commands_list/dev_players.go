@@ -2,12 +2,12 @@ package commandslist
 
 import (
 	"fmt"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	log "github.com/sirupsen/logrus"
 )
 
-func PlayersList(cmd *models.CommandsArgs) {
+func PlayersList(cmd *context.CommandsArgs) {
 	cmd.RconText("Players: ")
 	cmd.Context.Players.Mutex.RLock()
 	for key, value := range cmd.Context.Players.PlayerMap {
@@ -18,7 +18,7 @@ func PlayersList(cmd *models.CommandsArgs) {
 	cmd.Context.Players.Mutex.RUnlock()
 }
 
-func PlayersGet(cmd *models.CommandsArgs) {
+func PlayersGet(cmd *context.CommandsArgs) {
 	if len(cmd.Params) > 0 {
 		searchCriteria := cmd.Params[0]
 		cmd.RconText("Player with criteria (%s): ", searchCriteria)

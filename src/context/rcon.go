@@ -1,6 +1,8 @@
-package models
+package context
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (context *Context) RconText(isGlobal bool, playerId string, text string, a ...any) {
 	msg := fmt.Sprintf(text, a...)

@@ -1,19 +1,17 @@
-package models
+package context
 
 import (
 	"fmt"
-
 	"github.com/sirupsen/logrus"
 )
 
 type CommandsArgs struct {
-	Context *Context
+	Context  *Context
 	PlayerId string
-	Params []string 
-	IsGlobal bool 
-	Usage string
+	Params   []string
+	IsGlobal bool
+	Usage    string
 }
-
 
 func (c *CommandsArgs) RconText(text string, a ...any) {
 	c.Context.RconText(c.IsGlobal, c.PlayerId, text, a...)
@@ -32,8 +30,8 @@ func (c *CommandsArgs) RconUsage() {
 }
 
 func (c *CommandsArgs) RconUsageWithText(text string, a ...any) {
-	additionnalText := fmt.Sprintf(text, a...)
-	c.RconText("^5Usage^3: %s. %s", c.Usage, additionnalText)
+	additionalText := fmt.Sprintf(text, a...)
+	c.RconText("^5Usage^3: %s. %s", c.Usage, additionalText)
 }
 
 func (c *CommandsArgs) RconList(list []string) {
@@ -55,8 +53,9 @@ func (c *CommandsArgs) RconCommandExtractValue(command string, a ...any) string 
 func (c *CommandsArgs) GetPlayerGuid() (guid string) {
 	player, err := c.Context.Players.GetPlayer(c.PlayerId)
 
-	if (err != nil) {
+	if err != nil {
 		logrus.Errorf("Couldn't find player with (id: %s). %s", c.PlayerId, err.Error())
+		return ""
 	}
 
 	return player.Guid

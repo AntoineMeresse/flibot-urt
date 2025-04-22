@@ -1,13 +1,13 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func Extend(cmd *models.CommandsArgs) {
-	extendTime := -1;
-	
+func Extend(cmd *context.CommandsArgs) {
+	extendTime := -1
+
 	if len(cmd.Params) == 0 {
 		extendTime = 60
 	} else if len(cmd.Params) > 0 {
@@ -15,11 +15,11 @@ func Extend(cmd *models.CommandsArgs) {
 
 		if err == nil {
 			if t > 0 && t < 1000 {
-				extendTime = t;
+				extendTime = t
 			}
-		} 
+		}
 	}
-	
+
 	if extendTime > 0 {
 		cmd.RconCommand("extend %d", extendTime)
 	} else {

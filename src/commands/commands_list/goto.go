@@ -1,18 +1,18 @@
 package commandslist
 
 import (
-	goto_shared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	gotoshared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func Goto(cmd *models.CommandsArgs) {
+func Goto(cmd *context.CommandsArgs) {
 	if len(cmd.Params) == 0 {
-		locationDisplayList := goto_shared.GetDisplayLocation(cmd.Context)
+		locationDisplayList := gotoshared.GetDisplayLocation(cmd.Context)
 		cmd.RconList(locationDisplayList)
 	} else {
 		jumpName := cmd.Params[0]
-		if exists, _  := goto_shared.DoesPositionExist(cmd.Context, jumpName); exists {
+		if exists, _ := gotoshared.DoesPositionExist(cmd.Context, jumpName); exists {
 			cmd.RconCommand("forceteam %s free", cmd.PlayerId)
 			cmd.RconCommand("loadJumpPos %s %s", cmd.PlayerId, jumpName)
 		} else {

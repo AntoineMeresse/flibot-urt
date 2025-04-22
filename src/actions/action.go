@@ -1,15 +1,14 @@
 package actions
 
 import (
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func HandleAction(workerId int, action string, actionParams []string, context *models.Context) {
+func HandleAction(workerId int, action string, actionParams []string, c *context.Context) {
 	// log.Debugf("[Worker %d] ", workerId)
 	if val, ok := Actions[action]; ok {
-		val.(func([]string, *models.Context))(actionParams, context)
+		val.(func([]string, *context.Context))(actionParams, c)
 	} else {
 		log.Errorf("----> Not a known action: %s\n", action)
 	}

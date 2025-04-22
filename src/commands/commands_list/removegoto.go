@@ -1,15 +1,15 @@
 package commandslist
 
 import (
-	goto_shared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	gotoshared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
+	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func RemoveGoto(cmd *models.CommandsArgs) {
+func RemoveGoto(cmd *context.CommandsArgs) {
 	if len(cmd.Params) > 0 {
 		jumpName := cmd.Params[0]
-		deleted := goto_shared.RemovePosition(cmd.Context, jumpName)
+		deleted := gotoshared.RemovePosition(cmd.Context, jumpName)
 		if deleted {
 			cmd.RconText(msg.GOTO_REMOVE, jumpName)
 		} else {

@@ -24,6 +24,20 @@ type RunsInfo struct {
 	History    map[string][]int
 }
 
+type PlayerRunInfo struct {
+	Server       string `json:"server"`
+	ServerName   string `json:"server_name"`
+	Fps          string `json:"fps"`
+	Mapname      string `json:"mapname"`
+	Playername   string `json:"playername"`
+	Guid         string `json:"guid"`
+	Way          string `json:"way"`
+	Time         string `json:"time"`
+	Demopath     string `json:"demopath"`
+	Playernumber string `json:"playernumber"`
+	Utj          string `json:"utj"`
+}
+
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
 	log.Debugf("Starting run %s", playerNumber)
 	runs.RunMutex.Lock()

@@ -14,14 +14,20 @@ type SqliteDB struct {
 }
 
 func InitSqliteDb(dbName string) (SqliteDB, error) {
-	db, err := sql.Open("sqlite3", dbName);
+	db, err := sql.Open("sqlite3", dbName)
 
 	if err != nil {
 		log.Fatal(err)
 	} else {
 		// Add mapoptions table
 		// Merge checkpoints/utjruns => runs ?
-		initTables := fmt.Sprintf("%s\n%s\n%s\n%s", createDb_Player(), createDb_Checkpoints(), createDb_Pen(), createDb_Admin())
+		initTables := fmt.Sprintf("%s\n%s\n%s\n%s\n%s",
+			createDb_Player(),
+			createDb_Checkpoints(),
+			createDb_Pen(),
+			createDb_Admin(),
+			createDbRuns(),
+		)
 		log.Debugf("Init tables: %s", initTables)
 
 		_, err := db.Exec(initTables)
@@ -33,7 +39,7 @@ func InitSqliteDb(dbName string) (SqliteDB, error) {
 		}
 	}
 
-	return SqliteDB{DB: db}, err;
+	return SqliteDB{DB: db}, err
 }
 
 func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
@@ -48,7 +54,7 @@ func InitSqliteDbDevOnly(dbName string) (SqliteDB, error) {
 	// potd, _ := db.Pen_PenOfTheDay()
 	// log.Debugf("%v", potd)
 
-	return db, initError;
+	return db, initError
 }
 
 func (db SqliteDB) Close() {
