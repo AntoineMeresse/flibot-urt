@@ -2,6 +2,7 @@ package actionslist
 
 import (
 	"encoding/json"
+	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	log "github.com/sirupsen/logrus"
@@ -53,16 +54,25 @@ func RunLog(actionParams []string, c *context.Context) {
 	} else {
 		if player, err := c.Players.GetPlayer(runInfo.Playernumber); err == nil {
 			cps := c.Runs.RunGetCheckpoint(player.Number, player.Guid, runInfo.Time, runInfo.Way)
-			if runInfo.Utj == "0" {
-				//TODO: Send to ujm
-				log.Debugf("RunLog: CP: %v", cps)
-			}
 
 			if err := c.DB.HandleRun(runInfo, cps); err != nil {
 				log.Errorf("RunLog: Error handling run: %v", err)
 			}
 
+			var demoResponse api.SendDemoResponse
+			if runInfo.Utj == "0" {
+				demoResponse, err = c.Api.PostRunDemo(runInfo, c.UrtConfig.DemoPath)
+
+				if err != nil {
+					log.Errorf("RunLog: Error posting run: %v", err)
+				}
+
+				log.Debugf("RunLog: (cp: %v)", cps)
+
+			}
+
 			c.RconText(false, runInfo.Playernumber, "%s: %s (%v)", runInfo.Playername, runInfo.Time, cps)
+			c.RconText(false, runInfo.Playernumber, "Demo response: %v", demoResponse)
 		}
 	}
 }

@@ -26,6 +26,7 @@ type UrtConfig struct {
 	BasePath      string
 	DownloadPath  string
 	GotosPath     string
+	DemoPath      string
 	MapRepository string
 	LogFile       string
 	WorkerNumber  int
@@ -44,6 +45,7 @@ func (u *UrtConfig) LoadEnvVariables() {
 		path := strings.TrimSuffix(u.BasePath, "/")
 		u.DownloadPath = fmt.Sprintf("%s/%s", path, "q3ut4/download")
 		u.GotosPath = fmt.Sprintf("%s/%s", path, "q3ut4/gotos")
+		u.DemoPath = fmt.Sprintf("%s/%s", path, "q3ut4/serverdemos")
 	}
 	u.MapRepository = os.Getenv("urtRepo")
 
@@ -82,4 +84,8 @@ func (u *UrtConfig) initWorkerNumber() {
 	} else {
 		log.Error("Please specify a number between 1 & 99 for the env variable: botWorkerNumber")
 	}
+}
+
+func (s ServerConfig) GetServerUrl() string {
+	return fmt.Sprintf("%s:%s", s.Ip, s.Port)
 }

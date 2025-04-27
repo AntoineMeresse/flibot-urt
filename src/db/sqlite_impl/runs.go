@@ -54,13 +54,11 @@ func (db SqliteDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error
 
 			cps := fmt.Sprintf("%v", checkpoints)
 			runDate := utils.GetTodayDateFormated()
-			req := fmt.Sprintf("UPDATE runs SET runtime='%d', checkpoints='%s', run_date='%s' WHERE guid='%s' AND utj='%s'",
-				time, cps, runDate, info.Guid, info.Utj)
+			req := "UPDATE runs SET runtime=?, checkpoints=?, run_date=? WHERE guid=? AND utj=?"
 
 			logrus.Debugf("HandleRun: Improvement. Need to update. Req: %s", req)
 
-			// TODO: fix
-			err = db.sqliteTransaction("HandleRun Update", req)
+			err = db.sqliteTransaction("HandleRun Update", req, time, cps, runDate, info.Guid, info.Utj)
 
 			if err != nil {
 				return err

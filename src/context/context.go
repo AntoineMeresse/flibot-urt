@@ -55,6 +55,7 @@ func (context *Context) initApi() {
 		BridgeUrl:      "https://ujm-servers.ovh",
 		BridgeLocalUrl: "https://ujm-servers.ovh/local",
 		Client:         http.Client{Timeout: time.Second * 2},
+		ServerUrl:      context.UrtConfig.ServerConfig.GetServerUrl(),
 	}
 }
 
@@ -69,7 +70,7 @@ func (context *Context) initRcon() {
 }
 
 func (context *Context) initDb() {
-	database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db")
+	database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
 
 	if dbErr != nil {

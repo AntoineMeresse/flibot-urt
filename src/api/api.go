@@ -11,6 +11,7 @@ type Api struct {
 	UjmUrl         string
 	Apikey         string
 	Client         http.Client
+	ServerUrl      string
 }
 
 // UjmGetWithBody Sending a body inside a get request is a bad practice, we should change that on ujm side.

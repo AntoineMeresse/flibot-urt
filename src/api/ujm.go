@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/sirupsen/logrus"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
 )
 
 type MapInfos struct {
@@ -189,4 +192,125 @@ func (api *Api) GetPersonalBestInformation(mapname string, guid string) (Persona
 	}
 
 	return PersonalBestInfos{}, err
+}
+
+type DemoBody struct {
+	Playerguid  string `json:"playerguid"`
+	Playername  string `json:"playername"`
+	Serverip    string `json:"serverip"`
+	Servername  string `json:"servername"`
+	Serverfps   string `json:"serverfps"`
+	Runtime     string `json:"runtime"`
+	Mapfilename string `json:"mapfilename"`
+	Waynumber   string `json:"waynumber"`
+	Apikey      string `json:"apikey"`
+}
+
+type SendDemoResponse struct {
+	Added        int    `json:"added"`
+	Improvement  string `json:"improvement"`
+	Wrdifference string `json:"wrdifference"`
+}
+
+func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendDemoResponse, error) {
+	logrus.Debugf("[PostRunDemo]")
+
+	d := &DemoBody{
+		Playerguid:  p.Guid,
+		Playername:  p.Playername,
+		Serverip:    api.ServerUrl,
+		Servername:  p.ServerName,
+		Serverfps:   p.Fps,
+		Runtime:     p.Time,
+		Mapfilename: p.Mapname,
+		Waynumber:   p.Way,
+		Apikey:      api.Apikey,
+	}
+
+	demoResponse, err := api.postRunWithDemo(d, p.GetDemoName(), demoDirectory)
+
+	if err != nil {
+		logrus.Errorf("[PostRunDemo]: Could not upload with demo file. Error: %s", err.Error())
+		demoResponse, err = api.PostRunWithoutDemo(d)
+	}
+
+	return demoResponse, err
+}
+
+func (api *Api) postRunWithDemo(demoBody *DemoBody, demoName string, demoDirectory string) (SendDemoResponse, error) {
+	url := fmt.Sprintf("%s/runs/addrunwithdemo", api.UjmUrl)
+
+	var requestBody bytes.Buffer
+	writer := multipart.NewWriter(&requestBody)
+
+	// File: "json"
+	jsonBytes, err := json.Marshal(*demoBody)
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	jsonPart, err := writer.CreateFormFile("json", "json")
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+	_, err = jsonPart.Write(jsonBytes)
+
+	// File: "upload_file"
+	path := fmt.Sprintf("%s/%s", demoDirectory, demoName)
+	b, err := os.ReadFile(path)
+
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	filePart, err := writer.CreateFormFile("upload_file", demoName)
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	_, err = io.Copy(filePart, bytes.NewReader(b))
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	resp, err := api.Client.Post(url, writer.FormDataContentType(), &requestBody)
+
+	return handlePostDemoResponse(err, resp, url, "PostRunWithDemo")
+}
+
+func (api *Api) PostRunWithoutDemo(demoBody *DemoBody) (SendDemoResponse, error) {
+	url := fmt.Sprintf("%s/runs/addrun", api.UjmUrl)
+
+	j, err := json.Marshal(*demoBody)
+	if err != nil {
+		logrus.Errorf("[PostRunWithoutDemo] Json marshal error: %v", err)
+	}
+
+	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(j))
+
+	return handlePostDemoResponse(err, resp, url, "PostRunWithoutDemo")
+}
+
+func handlePostDemoResponse(err error, resp *http.Response, url string, functionName string) (SendDemoResponse, error) {
+	logrus.Debugf("[%s] Url: %s", functionName, url)
+
+	if err == nil {
+		logrus.Debugf("[%s] Response: %d", functionName, resp.StatusCode)
+		if resp.StatusCode == 200 {
+			if body, err := io.ReadAll(resp.Body); err == nil {
+				logrus.Debugf("[%s] Demo body: %s", functionName, string(body))
+				var res SendDemoResponse
+				if err := json.Unmarshal(body, &res); err == nil {
+					return res, nil
+				}
+			}
+		}
+		return SendDemoResponse{}, fmt.Errorf("[%s]: Send demo status: %d", functionName, resp.StatusCode)
+	}
+	return SendDemoResponse{}, fmt.Errorf("[%s] Demo body error: %v", functionName, err)
 }

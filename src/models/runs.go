@@ -4,6 +4,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -36,6 +37,11 @@ type PlayerRunInfo struct {
 	Demopath     string `json:"demopath"`
 	Playernumber string `json:"playernumber"`
 	Utj          string `json:"g_utj"`
+}
+
+func (p *PlayerRunInfo) GetDemoName() string {
+	s := strings.Split(p.Demopath, "/")
+	return s[len(s)-1]
 }
 
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
