@@ -15,13 +15,13 @@ func configureLogger() {
 	log.SetReportCaller(true)
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
-		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {                                                     
-			fileName := " " + path.Base(frame.File) + ":" + strconv.Itoa(frame.Line)  + " | "      
-			//return frame.Function, fileName                                        
-			return "", fmt.Sprintf("%25.25s", fileName)                                                      
-		},    
+		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
+			fileName := " " + path.Base(frame.File) + ":" + strconv.Itoa(frame.Line) + " | "
+			//return frame.Function, fileName
+			return "", fmt.Sprintf("%25.25s", fileName)
+		},
 		DisableLevelTruncation: true,
-		PadLevelText: true,
+		PadLevelText:           true,
 	})
 	log.SetOutput(os.Stdout)
 }

@@ -204,12 +204,14 @@ type DemoBody struct {
 	Mapfilename string `json:"mapfilename"`
 	Waynumber   string `json:"waynumber"`
 	Apikey      string `json:"apikey"`
+	PlayerIp    string `json:"playerip"`
 }
 
 type SendDemoResponse struct {
 	Added        int    `json:"added"`
 	Improvement  string `json:"improvement"`
 	Wrdifference string `json:"wrdifference"`
+	Process      bool
 }
 
 func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendDemoResponse, error) {
@@ -225,6 +227,7 @@ func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendD
 		Mapfilename: p.Mapname,
 		Waynumber:   p.Way,
 		Apikey:      api.Apikey,
+		PlayerIp:    p.PlayerIp,
 	}
 
 	demoResponse, err := api.postRunWithDemo(d, p.GetDemoName(), demoDirectory)
@@ -306,6 +309,7 @@ func handlePostDemoResponse(err error, resp *http.Response, url string, function
 				logrus.Debugf("[%s] Demo body: %s", functionName, string(body))
 				var res SendDemoResponse
 				if err := json.Unmarshal(body, &res); err == nil {
+					res.Process = true
 					return res, nil
 				}
 			}

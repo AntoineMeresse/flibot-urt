@@ -37,6 +37,7 @@ type PlayerRunInfo struct {
 	Demopath     string `json:"demopath"`
 	Playernumber string `json:"playernumber"`
 	Utj          string `json:"g_utj"`
+	PlayerIp     string
 }
 
 func (p *PlayerRunInfo) GetDemoName() string {

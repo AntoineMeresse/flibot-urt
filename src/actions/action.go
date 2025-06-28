@@ -7,6 +7,8 @@ import (
 
 func HandleAction(workerId int, action string, actionParams []string, c *context.Context) {
 	// log.Debugf("[Worker %d] ", workerId)
+	log.Debugf("")
+	log.Debugf("-------------------------------------------------------------------------------------------------------------")
 	if val, ok := Actions[action]; ok {
 		val.(func([]string, *context.Context))(actionParams, c)
 	} else {

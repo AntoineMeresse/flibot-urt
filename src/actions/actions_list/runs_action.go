@@ -54,6 +54,7 @@ func RunLog(actionParams []string, c *context.Context) {
 	} else {
 		if player, err := c.Players.GetPlayer(runInfo.Playernumber); err == nil {
 			cps := c.Runs.RunGetCheckpoint(player.Number, player.Guid, runInfo.Time, runInfo.Way)
+			runInfo.PlayerIp = player.Ip
 
 			if err := c.DB.HandleRun(runInfo, cps); err != nil {
 				log.Errorf("RunLog: Error handling run: %v", err)
@@ -62,17 +63,29 @@ func RunLog(actionParams []string, c *context.Context) {
 			var demoResponse api.SendDemoResponse
 			if runInfo.Utj == "0" {
 				demoResponse, err = c.Api.PostRunDemo(runInfo, c.UrtConfig.DemoPath)
-
 				if err != nil {
 					log.Errorf("RunLog: Error posting run: %v", err)
 				}
-
-				log.Debugf("RunLog: (cp: %v)", cps)
-
 			}
+
+			processRunData(c, demoResponse)
 
 			c.RconText(false, runInfo.Playernumber, "%s: %s (%v)", runInfo.Playername, runInfo.Time, cps)
 			c.RconText(false, runInfo.Playernumber, "Demo response: %v", demoResponse)
 		}
+	}
+}
+
+func processRunData(c *context.Context, r api.SendDemoResponse) {
+	if r.Process {
+		discordMsg := "discord: "
+		ingameMsg := "ingame: "
+		global := true
+
+		if r.Improvement != "" {
+
+		}
+
+		c.RconText(global, "", discordMsg+" | "+ingameMsg)
 	}
 }
