@@ -35,7 +35,7 @@ func (q *Queries) CreatePen(ctx context.Context, arg CreatePenParams) (Pen, erro
 	return i, err
 }
 
-const getPenByDate = `-- name: GetPenByDate :many
+const getAllPenByDate = `-- name: GetAllPenByDate :many
 SELECT pen.id, pen.guid, pen.date, pen.size, player.name
 FROM pen
 JOIN player ON pen.guid = player.guid
@@ -44,12 +44,12 @@ ORDER BY size ASC
 LIMIT $2
 `
 
-type GetPenByDateParams struct {
+type GetAllPenByDateParams struct {
 	Date  pgtype.Date
 	Limit int32
 }
 
-type GetPenByDateRow struct {
+type GetAllPenByDateRow struct {
 	ID   int32
 	Guid string
 	Date pgtype.Date
@@ -57,15 +57,15 @@ type GetPenByDateRow struct {
 	Name string
 }
 
-func (q *Queries) GetPenByDate(ctx context.Context, arg GetPenByDateParams) ([]GetPenByDateRow, error) {
-	rows, err := q.db.Query(ctx, getPenByDate, arg.Date, arg.Limit)
+func (q *Queries) GetAllPenByDate(ctx context.Context, arg GetAllPenByDateParams) ([]GetAllPenByDateRow, error) {
+	rows, err := q.db.Query(ctx, getAllPenByDate, arg.Date, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetPenByDateRow
+	var items []GetAllPenByDateRow
 	for rows.Next() {
-		var i GetPenByDateRow
+		var i GetAllPenByDateRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Guid,
@@ -165,4 +165,17 @@ func (q *Queries) GetPensOrderBySizeDesc(ctx context.Context, limit int32) ([]Ge
 		return nil, err
 	}
 	return items, nil
+}
+
+const getPlayerPenByDate = `-- name: GetPlayerPenByDate :one
+SELECT size 
+FROM pen
+WHERE date = $1
+`
+
+func (q *Queries) GetPlayerPenByDate(ctx context.Context, date pgtype.Date) (float64, error) {
+	row := q.db.QueryRow(ctx, getPlayerPenByDate, date)
+	var size float64
+	err := row.Scan(&size)
+	return size, err
 }

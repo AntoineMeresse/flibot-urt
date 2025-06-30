@@ -46,6 +46,7 @@ type DataPersister interface {
 	UpdatePlayer() error
 
 	PenAdd(guid string, size float64) error
+	PenPlayerGetDailySize(guid string) (float64, error)
 	PenPenOfTheDay() (string, []PenData, error)
 	PenPenHallOfFame() ([]PenData, error)
 	PenPenHallOfShame() ([]PenData, error)

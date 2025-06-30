@@ -3,7 +3,12 @@ INSERT INTO pen (guid, date, size)
 VALUES ($1, $2, $3)
 RETURNING *;
 
--- name: GetPenByDate :many
+-- name: GetPlayerPenByDate :one
+SELECT size 
+FROM pen
+WHERE date = $1;
+
+-- name: GetAllPenByDate :many
 SELECT pen.*, player.name
 FROM pen
 JOIN player ON pen.guid = player.guid
