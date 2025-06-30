@@ -1,16 +1,18 @@
 package context
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"context"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/db"
-	"github.com/AntoineMeresse/flibot-urt/src/db/sqlite_impl"
+	"github.com/AntoineMeresse/flibot-urt/src/db/postgres_impl"
 	quake3rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
 
@@ -69,15 +71,18 @@ func (context *Context) initRcon() {
 	context.Rcon.Connect()
 }
 
-func (context *Context) initDb() {
-	database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
+func (c *Context) initDb() {
+	// database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
 
+	uri := "postgres://user:password@localhost:5432/mydb"
+	database, dbErr := postgres_impl.InitPostGresDb(context.TODO(), uri)
+
 	if dbErr != nil {
-		panic("Error trying to instantiate db")
+		log.Fatalf("Error trying to instantiate db. Err: %v", dbErr)
 	}
 
-	context.DB = database
+	c.DB = database
 }
 
 func (context *Context) MapSync() {

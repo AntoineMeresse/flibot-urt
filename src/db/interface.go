@@ -2,8 +2,11 @@ package db
 
 import (
 	"database/sql"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"log"
+	"os"
 	"time"
+
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
@@ -27,11 +30,19 @@ func (p PenData) GetDate() string {
 	return utils.FormatTimeToDate(p.Date)
 }
 
+func ReadSchema(path string) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("failed to read SQL file: %v", err)
+	}
+
+	return string(data)
+}
+
 type DataPersister interface {
 	Close()
 
-	SaveNewPlayer(name string, guid string, ipAddress string) error
-	InitRight(guid string) error
+	SaveNewPlayer(name string, guid string, ipAddress string) (int, error)
 	UpdatePlayer() error
 
 	PenAdd(guid string, size float64) error

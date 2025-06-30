@@ -1,8 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	"fmt"
 	"strings"
+
+	"github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/sirupsen/logrus"
 )
 
 func Register(cmd *context.CommandsArgs) {
@@ -10,11 +13,11 @@ func Register(cmd *context.CommandsArgs) {
 	clientMsg := "Successfully registered!"
 	if err == nil {
 		errMsg := ""
-		if errSavePlayer := cmd.Context.DB.SaveNewPlayer(player.Name, player.Guid, player.Ip); errSavePlayer != nil {
+		if id, errSavePlayer := cmd.Context.DB.SaveNewPlayer(player.Name, player.Guid, player.Ip); errSavePlayer != nil {
+			logrus.Errorf("[Register] Error: %v", errSavePlayer)
 			errMsg += "An error occurred while performing your registration."
-		}
-		if errInitRight := cmd.Context.DB.InitRight(player.Guid); errInitRight != nil {
-			errMsg += " Could not initialize your rights."
+		} else {
+			clientMsg += fmt.Sprintf(" Player id: %d", id)
 		}
 		if errMsg != "" {
 			clientMsg = strings.Trim(errMsg, " ") + " Please try again and contact an admin if the problem persists."
