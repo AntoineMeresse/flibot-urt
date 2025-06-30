@@ -11,7 +11,7 @@ import (
 type Pen struct {
 	ID   int32
 	Guid string
-	Date pgtype.Timestamp
+	Date pgtype.Date
 	Size float64
 }
 

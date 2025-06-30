@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS runs (
 CREATE TABLE IF NOT EXISTS pen (
     id SERIAL PRIMARY KEY,
     guid TEXT NOT NULL REFERENCES player(guid),
-    date TIMESTAMP NOT NULL,
+    date DATE NOT NULL,
     size DOUBLE PRECISION NOT NULL,
     UNIQUE (guid, date)
 );

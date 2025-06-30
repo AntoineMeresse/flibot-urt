@@ -19,7 +19,7 @@ RETURNING id, guid, date, size
 
 type CreatePenParams struct {
 	Guid string
-	Date pgtype.Timestamp
+	Date pgtype.Date
 	Size float64
 }
 
@@ -36,31 +36,42 @@ func (q *Queries) CreatePen(ctx context.Context, arg CreatePenParams) (Pen, erro
 }
 
 const getPenByDate = `-- name: GetPenByDate :many
-SELECT id, guid, date, size FROM pen
+SELECT pen.id, pen.guid, pen.date, pen.size, player.name
+FROM pen
+JOIN player ON pen.guid = player.guid
 WHERE date = $1
-ORDER BY id
+ORDER BY size ASC
 LIMIT $2
 `
 
 type GetPenByDateParams struct {
-	Date  pgtype.Timestamp
+	Date  pgtype.Date
 	Limit int32
 }
 
-func (q *Queries) GetPenByDate(ctx context.Context, arg GetPenByDateParams) ([]Pen, error) {
+type GetPenByDateRow struct {
+	ID   int32
+	Guid string
+	Date pgtype.Date
+	Size float64
+	Name string
+}
+
+func (q *Queries) GetPenByDate(ctx context.Context, arg GetPenByDateParams) ([]GetPenByDateRow, error) {
 	rows, err := q.db.Query(ctx, getPenByDate, arg.Date, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Pen
+	var items []GetPenByDateRow
 	for rows.Next() {
-		var i Pen
+		var i GetPenByDateRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Guid,
 			&i.Date,
 			&i.Size,
+			&i.Name,
 		); err != nil {
 			return nil, err
 		}
@@ -73,25 +84,36 @@ func (q *Queries) GetPenByDate(ctx context.Context, arg GetPenByDateParams) ([]P
 }
 
 const getPensOrderBySizeAsc = `-- name: GetPensOrderBySizeAsc :many
-SELECT id, guid, date, size FROM pen
+SELECT pen.id, pen.guid, pen.date, pen.size, player.name
+FROM pen
+JOIN player ON pen.guid = player.guid
 ORDER BY size ASC
 LIMIT $1
 `
 
-func (q *Queries) GetPensOrderBySizeAsc(ctx context.Context, limit int32) ([]Pen, error) {
+type GetPensOrderBySizeAscRow struct {
+	ID   int32
+	Guid string
+	Date pgtype.Date
+	Size float64
+	Name string
+}
+
+func (q *Queries) GetPensOrderBySizeAsc(ctx context.Context, limit int32) ([]GetPensOrderBySizeAscRow, error) {
 	rows, err := q.db.Query(ctx, getPensOrderBySizeAsc, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Pen
+	var items []GetPensOrderBySizeAscRow
 	for rows.Next() {
-		var i Pen
+		var i GetPensOrderBySizeAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Guid,
 			&i.Date,
 			&i.Size,
+			&i.Name,
 		); err != nil {
 			return nil, err
 		}
@@ -104,25 +126,36 @@ func (q *Queries) GetPensOrderBySizeAsc(ctx context.Context, limit int32) ([]Pen
 }
 
 const getPensOrderBySizeDesc = `-- name: GetPensOrderBySizeDesc :many
-SELECT id, guid, date, size FROM pen
+SELECT pen.id, pen.guid, pen.date, pen.size, player.name
+FROM pen
+JOIN player ON pen.guid = player.guid
 ORDER BY size DESC
 LIMIT $1
 `
 
-func (q *Queries) GetPensOrderBySizeDesc(ctx context.Context, limit int32) ([]Pen, error) {
+type GetPensOrderBySizeDescRow struct {
+	ID   int32
+	Guid string
+	Date pgtype.Date
+	Size float64
+	Name string
+}
+
+func (q *Queries) GetPensOrderBySizeDesc(ctx context.Context, limit int32) ([]GetPensOrderBySizeDescRow, error) {
 	rows, err := q.db.Query(ctx, getPensOrderBySizeDesc, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Pen
+	var items []GetPensOrderBySizeDescRow
 	for rows.Next() {
-		var i Pen
+		var i GetPensOrderBySizeDescRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Guid,
 			&i.Date,
 			&i.Size,
+			&i.Name,
 		); err != nil {
 			return nil, err
 		}
