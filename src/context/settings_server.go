@@ -30,8 +30,6 @@ func (context *Context) SetMapList() {
 	var res []string
 
 	file, err := os.Open(context.UrtConfig.DownloadPath)
-	defer file.Close()
-
 	if err == nil {
 		names, err := file.Readdirnames(0)
 		if err == nil {
@@ -42,6 +40,7 @@ func (context *Context) SetMapList() {
 			}
 		}
 	}
+	defer file.Close()
 
 	context.Settings.Maplist = res
 	log.Println(context.Settings.Maplist)
