@@ -2,11 +2,15 @@ package actionslist
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
+
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
-	"strings"
 )
 
 func ClientJumpRunStarted(actionParams []string, c *context.Context) {
@@ -67,25 +71,42 @@ func RunLog(actionParams []string, c *context.Context) {
 					log.Errorf("RunLog: Error posting run: %v", err)
 				}
 			}
-
-			processRunData(c, demoResponse)
-
-			c.RconText(false, runInfo.Playernumber, "%s: %s (%v)", runInfo.Playername, runInfo.Time, cps)
-			c.RconText(false, runInfo.Playernumber, "Demo response: %v", demoResponse)
+			processRunData(c, demoResponse, player.Number)
 		}
 	}
 }
 
-func processRunData(c *context.Context, r api.SendDemoResponse) {
-	if r.Process {
-		discordMsg := "discord: "
-		ingameMsg := "ingame: "
-		global := true
+func processRunData(c *context.Context, r api.SendDemoResponse, playerNumber string) {
+	logrus.Debugf("SendDemoResponse: %+v", r)
+	// discordMsg := "discord: "
+	ingameMsg := ""
+	global := false
 
-		if r.Improvement != "" {
+	if r.Improvement != "" {
+		if utils.IsImprovement(r.Improvement) {
+			ingameMsg += fmt.Sprintf("^5PB ^7difference: ^2%s^7", r.Improvement)
+			global = true
+		} else {
+			ingameMsg += fmt.Sprintf("^5PB ^7difference: ^1%s^7", r.Improvement)
+		}
+	}
 
+	if r.Wrdifference != "" {
+		if ingameMsg != "" {
+			ingameMsg += " | "
 		}
 
-		c.RconText(global, "", discordMsg+" | "+ingameMsg)
+		if utils.IsImprovement(r.Wrdifference) {
+			global = true
+			ingameMsg += fmt.Sprintf("^5WR ^7difference: ^2%s^7", r.Wrdifference)
+		} else {
+			ingameMsg += fmt.Sprintf("^5WR ^7difference: ^1%s^7", r.Wrdifference)
+		}
 	}
+
+	if r.Rank != nil {
+		ingameMsg += fmt.Sprintf("  ^7(^3%s^7)", *r.Rank)
+	}
+
+	c.RconText(global, playerNumber, ingameMsg)
 }

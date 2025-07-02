@@ -148,3 +148,11 @@ func BytesNumberConverter(b int64) string {
 	}
 	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "kMGTPE"[exp])
 }
+
+func isZero(v string) bool {
+	return v == "0" || v == "00.000" || v == "0s"
+}
+
+func IsImprovement(v string) bool {
+	return !strings.Contains(v, "-") && !isZero(v)
+}

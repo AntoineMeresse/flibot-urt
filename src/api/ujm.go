@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
-	"github.com/sirupsen/logrus"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+
+	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/sirupsen/logrus"
 )
 
 type MapInfos struct {
@@ -208,9 +209,10 @@ type DemoBody struct {
 }
 
 type SendDemoResponse struct {
-	Added        int    `json:"added"`
-	Improvement  string `json:"improvement"`
-	Wrdifference string `json:"wrdifference"`
+	Added        int     `json:"added"`
+	Improvement  string  `json:"improvement"`
+	Wrdifference string  `json:"wrdifference"`
+	Rank         *string `json:"rank"`
 	Process      bool
 }
 
