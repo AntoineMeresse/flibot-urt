@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	mydb "github.com/AntoineMeresse/flibot-urt/src/db"
@@ -136,5 +137,54 @@ func (db *PostGresqlDB) PenPlayerGetDailySize(guid string) (float64, error) {
 }
 
 func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error {
-	return fmt.Errorf("To implement")
+	logrus.Debugf("HandleRun: %v | %v", info, checkpoints)
+	runtime, err := strconv.Atoi(info.Time)
+	if err != nil {
+		return err
+	}
+
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+
+	previousTime, err := db.queries.GetRuntimeByMapWayUTJ(c, postgres_genererated.GetRuntimeByMapWayUTJParams{
+		Mapname: info.Mapname,
+		Way:     info.Way,
+		Utj:     info.Utj,
+	})
+
+	if err == nil {
+		timeDiff := int(previousTime) - runtime
+		logrus.Debugf("HandleRun: Time diff: %dms", timeDiff)
+
+		if timeDiff > 0 {
+			if err = db.queries.UpdateRunByGuidAndUTJ(c, postgres_genererated.UpdateRunByGuidAndUTJParams{
+				Runtime:     int32(runtime),
+				Checkpoints: fmt.Sprintf("%v", checkpoints),
+				RunDate:     pgtype.Timestamp{Time: time.Now(), Valid: true},
+				Guid:        info.Guid,
+				Utj:         info.Utj,
+			}); err != nil {
+				return err
+			}
+			logrus.Debugf("HandleRun: Successful update time: %d for guid: %s", runtime, info.Guid)
+		} else {
+			logrus.Debugf("HandleRun: Not an improvement")
+		}
+	} else {
+		logrus.Debugf("HandleRun: No run found. Create a new entry in db")
+		if err = db.queries.CreateRun(c, postgres_genererated.CreateRunParams{
+			Guid:        info.Guid,
+			Utj:         info.Utj,
+			Mapname:     info.Mapname,
+			Way:         info.Way,
+			Runtime:     int32(runtime),
+			Checkpoints: fmt.Sprintf("%v", checkpoints),
+			RunDate:     pgtype.Timestamp{Time: time.Now(), Valid: true},
+			Demopath:    info.Demopath,
+		}); err != nil {
+			return err
+		}
+		logrus.Debugf("HandleRun: Created new entry in db")
+	}
+	return nil
 }

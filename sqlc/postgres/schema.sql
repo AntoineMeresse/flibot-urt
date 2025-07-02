@@ -14,13 +14,13 @@ CREATE TABLE IF NOT EXISTS player (
 CREATE TABLE IF NOT EXISTS runs (
     id SERIAL PRIMARY KEY,
     guid TEXT NOT NULL REFERENCES player(guid),
-    utj INTEGER NOT NULL,
+    utj TEXT NOT NULL,
     mapname TEXT NOT NULL,
     way TEXT NOT NULL,
     runtime INTEGER NOT NULL,
     checkpoints TEXT NOT NULL,
     run_date TIMESTAMP NOT NULL,
-    demopath TEXT
+    demopath TEXT NOT NULL
 );
 
 

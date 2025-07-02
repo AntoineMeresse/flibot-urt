@@ -28,11 +28,11 @@ type Player struct {
 type Run struct {
 	ID          int32
 	Guid        string
-	Utj         int32
+	Utj         string
 	Mapname     string
 	Way         string
 	Runtime     int32
 	Checkpoints string
 	RunDate     pgtype.Timestamp
-	Demopath    pgtype.Text
+	Demopath    string
 }
