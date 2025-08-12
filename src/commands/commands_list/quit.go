@@ -1,9 +1,9 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Quit(cmd *context.CommandsArgs) {
+func Quit(cmd *appcontext.CommandsArgs) {
 	cmd.RconCommand("kick %s \"%s\"", cmd.PlayerId, "This player isn't good enough for this map !")
 }

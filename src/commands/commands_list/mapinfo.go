@@ -1,13 +1,14 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func MapInformation(cmd *context.CommandsArgs) {
+func MapInformation(cmd *appcontext.CommandsArgs) {
 	mapName := cmd.Context.Settings.Mapname
 	if len(cmd.Params) == 1 {
 		mapName = cmd.Params[0]

@@ -1,13 +1,14 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func Help(cmd *context.CommandsArgs) {
+func Help(cmd *appcontext.CommandsArgs) {
 	cmdList := utils.ToShorterChunkString(strings.Join(utils.NaturalSort(cmd.Params), ", "))
 	cmd.RconList(cmdList)
 }

@@ -1,7 +1,7 @@
 package vote
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	voteslist "github.com/AntoineMeresse/flibot-urt/src/vote/votes_list"
 )
 
@@ -20,6 +20,6 @@ var Votes = map[string]VoteInfo{
 	"nextmap": {voteslist.Nextmap, voteslist.MapMessage, "Changing nextmap to %s", "nextmap [mapname]^3"},
 }
 
-func noFormatting(_ *context.Context, str string, _ string) (bool, string) {
+func noFormatting(_ *appcontext.AppContext, str string, _ string) (bool, string) {
 	return true, str
 }

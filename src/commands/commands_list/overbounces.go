@@ -1,10 +1,10 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Overbounces(cmd *context.CommandsArgs) {
+func Overbounces(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 1 {
 		value := cmd.Params[0]
 		if value == "0" || value == "1" {

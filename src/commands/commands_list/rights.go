@@ -1,12 +1,13 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
-	"github.com/sirupsen/logrus"
 	"strconv"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/sirupsen/logrus"
 )
 
-func SetRights(cmd *context.CommandsArgs) {
+func SetRights(cmd *appcontext.CommandsArgs) {
 	logrus.Debugf("Set rights: %v", cmd.Params)
 	if len(cmd.Params) < 2 {
 		cmd.RconText(cmd.Usage)

@@ -2,11 +2,12 @@ package commandslist
 
 import (
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"os"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func MapRemove(cmd *context.CommandsArgs) {
+func MapRemove(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		removeMap(cmd, cmd.Context.GetCurrentMap())
 	} else {
@@ -16,7 +17,7 @@ func MapRemove(cmd *context.CommandsArgs) {
 	}
 }
 
-func removeMap(cmd *context.CommandsArgs, mapSearch string) {
+func removeMap(cmd *appcontext.CommandsArgs, mapSearch string) {
 	mapName, err := cmd.Context.GetMapWithCriteria(mapSearch)
 
 	if err != nil {

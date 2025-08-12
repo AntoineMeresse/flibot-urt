@@ -1,10 +1,10 @@
 package actionslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	log "github.com/sirupsen/logrus"
 )
 
-func DefaultAction(actionParams []string, _ *context.Context) {
+func DefaultAction(actionParams []string, _ *appcontext.AppContext) {
 	log.Debugf("DefaultAction: %v", actionParams)
 }

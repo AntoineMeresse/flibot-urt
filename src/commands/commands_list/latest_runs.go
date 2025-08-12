@@ -1,11 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/sirupsen/logrus"
 )
 
-func LatestRuns(cmd *context.CommandsArgs) {
+func LatestRuns(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetLatestRuns()
 
 	if err != nil {

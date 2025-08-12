@@ -1,10 +1,10 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Afk(cmd *context.CommandsArgs) {
+func Afk(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) > 0 {
 		player, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
 		if err == nil {

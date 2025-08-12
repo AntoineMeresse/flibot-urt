@@ -2,16 +2,17 @@ package voteslist
 
 import (
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func Extend(param string, c *context.Context) {
+func Extend(param string, c *appcontext.AppContext) {
 	c.RconCommand("extend %d", getTime(param))
 }
 
-func ExtendMessage(_ *context.Context, msg string, param string) (bool, string) {
+func ExtendMessage(_ *appcontext.AppContext, msg string, param string) (bool, string) {
 	return true, fmt.Sprintf(msg, getTime(param))
 }
 

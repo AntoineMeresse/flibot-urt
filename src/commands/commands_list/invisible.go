@@ -1,9 +1,9 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Invisible(cmd *context.CommandsArgs) {
+func Invisible(cmd *appcontext.CommandsArgs) {
 	cmd.RconCommand("invisible %s", cmd.PlayerId)
 }

@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	"github.com/AntoineMeresse/flibot-urt/src/api"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
-func ClientJumpRunStarted(actionParams []string, c *context.Context) {
+func ClientJumpRunStarted(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("ClientJumpRunStarted: %v", actionParams)
 	if len(actionParams) < 4 {
 		log.Error("ClientJumpRunStarted: Invalid parameters")
@@ -22,12 +22,12 @@ func ClientJumpRunStarted(actionParams []string, c *context.Context) {
 	c.Runs.RunStart(actionParams[0], actionParams[3])
 }
 
-func ClientJumpRunCanceled(actionParams []string, c *context.Context) {
+func ClientJumpRunCanceled(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("ClientJumpRunCanceled: %v", actionParams)
 	c.Runs.RunCanceled(actionParams[0])
 }
 
-func ClientJumpRunStopped(actionParams []string, c *context.Context) {
+func ClientJumpRunStopped(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("ClientJumpRunStopped: %v", actionParams)
 	if len(actionParams) < 7 {
 		log.Error("ClientJumpRunStopped: Invalid parameters")
@@ -38,7 +38,7 @@ func ClientJumpRunStopped(actionParams []string, c *context.Context) {
 	}
 }
 
-func ClientJumpRunCheckpoint(actionParams []string, c *context.Context) {
+func ClientJumpRunCheckpoint(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("ClientJumpRunCheckpoint: %v", actionParams)
 	if len(actionParams) < 7 {
 		log.Error("ClientJumpRunCheckpoint: Invalid parameters")
@@ -47,7 +47,7 @@ func ClientJumpRunCheckpoint(actionParams []string, c *context.Context) {
 	c.Runs.AddCheckpoint(actionParams[0], actionParams[6])
 }
 
-func RunLog(actionParams []string, c *context.Context) {
+func RunLog(actionParams []string, c *appcontext.AppContext) {
 	runJson := strings.Join(actionParams, "")
 	runJson = strings.Replace(runJson, "'", "\"", -1)
 	log.Debugf("RunLog: %v", runJson)
@@ -76,7 +76,7 @@ func RunLog(actionParams []string, c *context.Context) {
 	}
 }
 
-func processRunData(c *context.Context, r api.SendDemoResponse, playerNumber string) {
+func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string) {
 	logrus.Debugf("SendDemoResponse: %+v", r)
 	// discordMsg := "discord: "
 	ingameMsg := ""

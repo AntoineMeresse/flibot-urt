@@ -1,11 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ServerStatus(cmd *context.CommandsArgs) {
+func ServerStatus(cmd *appcontext.CommandsArgs) {
 	cmd.RconText("Status !")
 	infos, err := cmd.Context.Api.GetServerStatus()
 

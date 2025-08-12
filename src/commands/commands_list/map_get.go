@@ -2,15 +2,16 @@ package commandslist
 
 import (
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"time"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func MapGet(cmd *context.CommandsArgs) {
+func MapGet(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		cmd.RconText("Please specify one or more maps.")
 	} else {
@@ -20,7 +21,7 @@ func MapGet(cmd *context.CommandsArgs) {
 	}
 }
 
-func downloadMap(mapSearch string, cmd *context.CommandsArgs) {
+func downloadMap(mapSearch string, cmd *appcontext.CommandsArgs) {
 	// context.SetMapList()
 	unique, mapname := uniqueMapExist(mapSearch, cmd)
 	if unique {
@@ -42,7 +43,7 @@ func downloadMap(mapSearch string, cmd *context.CommandsArgs) {
 	}
 }
 
-func uniqueMapExist(search string, cmd *context.CommandsArgs) (bool, string) {
+func uniqueMapExist(search string, cmd *appcontext.CommandsArgs) (bool, string) {
 	maps := cmd.Context.Api.GetMapsWithPattern(search)
 	if len(maps) == 0 {
 		cmd.RconText(msg.DOWNLOAD_NO_MAP, search)

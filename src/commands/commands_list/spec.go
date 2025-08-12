@@ -1,9 +1,9 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Spec(cmd *context.CommandsArgs) {
+func Spec(cmd *appcontext.CommandsArgs) {
 	cmd.RconCommand("forceteam %s spec", cmd.PlayerId)
 }

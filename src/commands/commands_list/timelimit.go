@@ -1,11 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func Timelimit(cmd *context.CommandsArgs) {
+func Timelimit(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 1 {
 		t, err := utils.ExtractNumber(cmd.Params[0])
 

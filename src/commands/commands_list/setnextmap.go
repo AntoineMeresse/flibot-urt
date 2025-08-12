@@ -1,14 +1,14 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func SetNextMap(cmd *context.CommandsArgs) {
+func SetNextMap(cmd *appcontext.CommandsArgs) {
 	ChangeNextMap(cmd)
 }
 
-func ChangeNextMap(cmd *context.CommandsArgs) {
+func ChangeNextMap(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) >= 1 {
 		mapName, err := cmd.Context.GetMapWithCriteria(cmd.Params[0])
 		if err != nil {

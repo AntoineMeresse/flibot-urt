@@ -2,22 +2,23 @@ package goto_shared
 
 import (
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"os"
 	"slices"
 	"strings"
 	"unicode"
 
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func DoesPositionExist(c *context.Context, jumpName string) (exists bool, path string) {
+func DoesPositionExist(c *appcontext.AppContext, jumpName string) (exists bool, path string) {
 	locationPath := fmt.Sprintf("%s/%s/%s.pos", c.UrtConfig.GotosPath, c.GetCurrentMap(), jumpName)
 	_, err := os.Stat(locationPath)
 	return !os.IsNotExist(err), locationPath
 }
 
-func getGotosList(c *context.Context) []string {
+func getGotosList(c *appcontext.AppContext) []string {
 	mapPath := fmt.Sprintf("%s/%s", c.UrtConfig.GotosPath, c.GetCurrentMap())
 
 	file, err := os.Open(mapPath)
@@ -70,7 +71,7 @@ func groupGotos(gotoPositions []string) map[string][]string {
 	return res
 }
 
-func GetDisplayLocation(c *context.Context) []string {
+func GetDisplayLocation(c *appcontext.AppContext) []string {
 	var res []string
 	gotos := getGotosList(c)
 	if len(gotos) == 0 {
@@ -102,7 +103,7 @@ func GetDisplayLocation(c *context.Context) []string {
 	return res
 }
 
-func GetJumpNameForSavePos(c *context.Context, jumpName string) string {
+func GetJumpNameForSavePos(c *appcontext.AppContext, jumpName string) string {
 	if len(jumpName) == 1 {
 		if unicode.IsLetter(rune(jumpName[0])) {
 			gotos := getGotosList(c)
@@ -118,7 +119,7 @@ func GetJumpNameForSavePos(c *context.Context, jumpName string) string {
 	return jumpName
 }
 
-func RemovePosition(c *context.Context, jumpName string) bool {
+func RemovePosition(c *appcontext.AppContext, jumpName string) bool {
 	exists, path := DoesPositionExist(c, jumpName)
 	err := os.Remove(path)
 	if err != nil {

@@ -1,10 +1,10 @@
 package actionslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	log "github.com/sirupsen/logrus"
 )
 
-func Tell(actionParams []string, _ *context.Context) {
+func Tell(actionParams []string, _ *appcontext.AppContext) {
 	log.Debugf("Tell: %v", actionParams)
 }

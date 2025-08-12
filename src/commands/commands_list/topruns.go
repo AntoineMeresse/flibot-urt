@@ -1,20 +1,20 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	log "github.com/sirupsen/logrus"
 )
 
-func ToprunsInformation(cmd *context.CommandsArgs) {
+func ToprunsInformation(cmd *appcontext.CommandsArgs) {
 	displayRunsInformation(cmd, true)
 }
 
-func TopInformation(cmd *context.CommandsArgs) {
+func TopInformation(cmd *appcontext.CommandsArgs) {
 	displayRunsInformation(cmd, false)
 }
 
-func displayRunsInformation(cmd *context.CommandsArgs, displayAll bool) {
+func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 	mapName := cmd.Context.Settings.Mapname
 	if len(cmd.Params) == 1 {
 		mapName = cmd.Params[0]

@@ -1,10 +1,11 @@
 package vote
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"strings"
 	"time"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/sirupsen/logrus"
@@ -22,7 +23,7 @@ type VoteSystem struct {
 	VoteNo  map[string]int // use of map cause golang has no set
 }
 
-func InitVoteSystem(voteChannel <-chan models.Vote, c *context.Context) {
+func InitVoteSystem(voteChannel <-chan models.Vote, c *appcontext.AppContext) {
 	voteSystem := VoteSystem{CanVote: true, Cancel: false, VoteYes: make(map[string]int), VoteNo: make(map[string]int)}
 	logrus.Debugf("VoteSystem initiated: %v", voteSystem)
 
@@ -39,7 +40,7 @@ func (voteSystem *VoteSystem) reset() {
 	clear(voteSystem.VoteNo)
 }
 
-func voteLogic(c *context.Context, voteSystem *VoteSystem, vote models.Vote) {
+func voteLogic(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote) {
 	if vote.Params == nil {
 		logrus.Errorf("Vote params can't be null %v", vote)
 		return
@@ -56,7 +57,7 @@ func isOnlyVote(vote models.Vote) (isVote bool, value string) {
 	return len(vote.Params) == 1 && utils.IsVoteCommand(vote.Params[0]), vote.Params[0]
 }
 
-func createVote(c *context.Context, voteSystem *VoteSystem, vote models.Vote) {
+func createVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote) {
 	if voteSystem.CanVote {
 		if continueVote, endFunction, msg := getVoteInfos(c, vote); continueVote {
 			voteSystem.CanVote = false
@@ -110,7 +111,7 @@ func (voteSystem *VoteSystem) addVetoVote() {
 	voteSystem.Cancel = true
 }
 
-func voteKeysMessage(cpt *int, c *context.Context) {
+func voteKeysMessage(cpt *int, c *appcontext.AppContext) {
 	if *cpt == 10 {
 		*cpt = 0
 	}
@@ -120,12 +121,12 @@ func voteKeysMessage(cpt *int, c *context.Context) {
 	*cpt += 2
 }
 
-func hasMajority(c *context.Context, voteSystem *VoteSystem) bool {
+func hasMajority(c *appcontext.AppContext, voteSystem *VoteSystem) bool {
 	majority := (len(c.Players.PlayerMap) / 2) + 1
 	return len(voteSystem.VoteYes) >= majority || len(voteSystem.VoteNo) >= majority
 }
 
-func endVote(c *context.Context, voteSystem *VoteSystem, vote models.Vote, endFunction interface{}) {
+func endVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote, endFunction interface{}) {
 	if !voteSystem.Cancel {
 		if len(voteSystem.VoteYes) > len(voteSystem.VoteNo) {
 			c.RconBigText("^2Vote Passed")
@@ -139,11 +140,11 @@ func endVote(c *context.Context, voteSystem *VoteSystem, vote models.Vote, endFu
 	voteSystem.reset()
 }
 
-func getVoteInfos(c *context.Context, vote models.Vote) (bool, interface{}, string) {
+func getVoteInfos(c *appcontext.AppContext, vote models.Vote) (bool, interface{}, string) {
 	infos, exists := Votes[vote.Params[0]]
 	param := strings.Join(vote.Params[1:], " ")
 	if exists {
-		continueVote, msg := infos.msgFn.(func(*context.Context, string, string) (bool, string))(c, infos.messageFormat, param)
+		continueVote, msg := infos.msgFn.(func(*appcontext.AppContext, string, string) (bool, string))(c, infos.messageFormat, param)
 		return continueVote, infos.function, msg
 	} else {
 		c.RconText(false, vote.PlayerId, "Vote [%s] does not exist", vote.Params[0])
@@ -151,8 +152,8 @@ func getVoteInfos(c *context.Context, vote models.Vote) (bool, interface{}, stri
 	return false, nil, ""
 }
 
-func execVote(c *context.Context, vote models.Vote, endFunction interface{}) {
+func execVote(c *appcontext.AppContext, vote models.Vote, endFunction interface{}) {
 	time.Sleep(1 * time.Second)
 	param := strings.Join(vote.Params[1:], " ")
-	endFunction.(func(string, *context.Context))(param, c)
+	endFunction.(func(string, *appcontext.AppContext))(param, c)
 }

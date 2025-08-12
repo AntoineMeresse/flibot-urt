@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"time"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
@@ -16,7 +17,7 @@ func main() {
 	myLogChannel := make(chan string)
 	voteChannel := make(chan models.Vote)
 
-	c := &context.Context{VoteChannel: voteChannel}
+	c := &appcontext.AppContext{VoteChannel: voteChannel}
 	c.Init()
 
 	defer c.Rcon.CloseConnection()

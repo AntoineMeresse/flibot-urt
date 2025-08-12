@@ -1,10 +1,10 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func NextMap(cmd *context.CommandsArgs) {
+func NextMap(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		cmd.RconText(cmd.Context.GetNextMap())
 		return

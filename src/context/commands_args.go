@@ -1,12 +1,13 @@
-package context
+package appcontext
 
 import (
 	"fmt"
+
 	"github.com/sirupsen/logrus"
 )
 
 type CommandsArgs struct {
-	Context  *Context
+	Context  *AppContext
 	PlayerId string
 	Params   []string
 	IsGlobal bool

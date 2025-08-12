@@ -1,12 +1,12 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	log "github.com/sirupsen/logrus"
 )
 
-func PersonnalBest(cmd *context.CommandsArgs) {
+func PersonnalBest(cmd *appcontext.CommandsArgs) {
 	mapName := cmd.Context.Settings.Mapname
 	if len(cmd.Params) == 1 {
 		mapName = cmd.Params[0]

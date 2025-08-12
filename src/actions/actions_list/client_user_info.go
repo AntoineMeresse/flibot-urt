@@ -1,15 +1,16 @@
 package actionslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func ClientUserinfo(actionParams []string, c *context.Context) {
+func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("Client User Info: %v", actionParams)
 	if len(actionParams) > 1 {
 		playerNumber := actionParams[0]

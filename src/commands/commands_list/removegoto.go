@@ -2,11 +2,11 @@ package commandslist
 
 import (
 	gotoshared "github.com/AntoineMeresse/flibot-urt/src/commands/shared/goto"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func RemoveGoto(cmd *context.CommandsArgs) {
+func RemoveGoto(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) > 0 {
 		jumpName := cmd.Params[0]
 		deleted := gotoshared.RemovePosition(cmd.Context, jumpName)

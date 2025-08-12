@@ -1,11 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 )
 
-func VoteVeto(cmd *context.CommandsArgs) {
+func VoteVeto(cmd *appcontext.CommandsArgs) {
 	cmd.Context.RconCommand("veto")
 
 	v := models.Vote{Params: []string{"v"}, PlayerId: cmd.PlayerId}

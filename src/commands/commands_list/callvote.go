@@ -2,13 +2,14 @@ package commandslist
 
 import (
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
 )
 
-func Callvote(cmd *context.CommandsArgs) {
+func Callvote(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		voteList := []string{"Votes: "}
 		for key, value := range vote.Votes {

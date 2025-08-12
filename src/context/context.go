@@ -1,4 +1,4 @@
-package context
+package appcontext
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 	quake3rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
 
-type Context struct {
+type AppContext struct {
 	DB          db.DataPersister
 	Rcon        quake3rcon.Rcon
 	UrtConfig   models.UrtConfig
@@ -29,7 +29,7 @@ type Context struct {
 
 type RconFunction func(format string, a ...any)
 
-func (context *Context) Init() {
+func (context *AppContext) Init() {
 	context.UrtConfig.LoadEnvVariables()
 
 	context.initRcon()
@@ -42,15 +42,15 @@ func (context *Context) Init() {
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", context.Rcon.ServerIp, context.Rcon.ServerPort)
 }
 
-func (context *Context) initPlayers() {
+func (context *AppContext) initPlayers() {
 	context.Players = models.Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*models.Player)}
 }
 
-func (context *Context) initRuns() {
+func (context *AppContext) initRuns() {
 	context.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
 }
 
-func (context *Context) initApi() {
+func (context *AppContext) initApi() {
 	context.Api = &api.Api{
 		UjmUrl:         context.UrtConfig.ApiConfig.Url,
 		Apikey:         context.UrtConfig.ApiConfig.ApiKey,
@@ -61,7 +61,7 @@ func (context *Context) initApi() {
 	}
 }
 
-func (context *Context) initRcon() {
+func (context *AppContext) initRcon() {
 	context.Rcon = quake3rcon.Rcon{
 		ServerIp:   context.UrtConfig.ServerConfig.Ip,
 		ServerPort: context.UrtConfig.ServerConfig.Port,
@@ -71,7 +71,7 @@ func (context *Context) initRcon() {
 	context.Rcon.Connect()
 }
 
-func (c *Context) initDb() {
+func (c *AppContext) initDb() {
 	// database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
 
@@ -85,7 +85,7 @@ func (c *Context) initDb() {
 	c.DB = database
 }
 
-func (context *Context) MapSync() {
+func (context *AppContext) MapSync() {
 	mapSyncErr := context.Api.MapSync()
 	if mapSyncErr != nil {
 		log.Errorf("Error while trying to sync map: %s", mapSyncErr.Error())
@@ -97,6 +97,6 @@ func (context *Context) MapSync() {
 	}
 }
 
-func (context *Context) NewVote(v models.Vote) {
+func (context *AppContext) NewVote(v models.Vote) {
 	context.VoteChannel <- v
 }

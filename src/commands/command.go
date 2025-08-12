@@ -2,11 +2,11 @@ package commands
 
 import (
 	"fmt"
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
@@ -71,7 +71,7 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 	return commandInfo{command: Command{sendToBridge: true}, message: message}
 }
 
-func checkPlayerRights(playerNumber string, command Command, c *context.Context) (canAccess bool, required int, got int) {
+func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppContext) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
 
 	if command.Level == 0 {
@@ -92,7 +92,7 @@ func checkPlayerRights(playerNumber string, command Command, c *context.Context)
 	return canUseCmd, command.Level, role
 }
 
-func overrideParamsForCommands(commandName string, role int, cmdArgs *context.CommandsArgs) {
+func overrideParamsForCommands(commandName string, role int, cmdArgs *appcontext.CommandsArgs) {
 	if commandName == "help" {
 		var cmdList []string
 		for key, value := range Commands {
@@ -104,14 +104,14 @@ func overrideParamsForCommands(commandName string, role int, cmdArgs *context.Co
 	}
 }
 
-func HandleCommand(actionParams []string, c *context.Context) {
+func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 	playerNumber := actionParams[0]
 	commandInfos := extractCmdInfos(actionParams)
 	if commandInfos.isValid {
 		canAccess, level, role := checkPlayerRights(playerNumber, commandInfos.command, c)
 		if canAccess {
 			displayCommandInfos(actionParams[2], playerNumber, commandInfos.params, commandInfos.isGlobal)
-			args := context.CommandsArgs{
+			args := appcontext.CommandsArgs{
 				Context:  c,
 				PlayerId: playerNumber,
 				Params:   commandInfos.params,
@@ -119,7 +119,7 @@ func HandleCommand(actionParams []string, c *context.Context) {
 				Usage:    commandInfos.command.Usage,
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)
-			commandInfos.command.Function.(func(*context.CommandsArgs))(&args)
+			commandInfos.command.Function.(func(*appcontext.CommandsArgs))(&args)
 		} else {
 			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ",
 				playerNumber, actionParams[2], level, role,

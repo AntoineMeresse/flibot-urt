@@ -1,9 +1,9 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Stamina(cmd *context.CommandsArgs) {
+func Stamina(cmd *appcontext.CommandsArgs) {
 	cmd.RconCommand("customstamina %s", cmd.PlayerId)
 }

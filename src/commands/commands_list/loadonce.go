@@ -1,9 +1,9 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Loadonce(cmd *context.CommandsArgs) {
+func Loadonce(cmd *appcontext.CommandsArgs) {
 	cmd.RconCommand("simpleload %s", cmd.PlayerId)
 }

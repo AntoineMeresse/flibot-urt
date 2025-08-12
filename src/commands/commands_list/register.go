@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/sirupsen/logrus"
 )
 
-func Register(cmd *context.CommandsArgs) {
+func Register(cmd *appcontext.CommandsArgs) {
 	player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
 	clientMsg := "Successfully registered!"
 	if err == nil {

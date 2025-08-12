@@ -1,11 +1,11 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func Extend(cmd *context.CommandsArgs) {
+func Extend(cmd *appcontext.CommandsArgs) {
 	extendTime := -1
 
 	if len(cmd.Params) == 0 {

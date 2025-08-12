@@ -1,13 +1,14 @@
 package commandslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
 	"strings"
+
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	"github.com/sirupsen/logrus"
 )
 
-func LatestMaps(cmd *context.CommandsArgs) {
+func LatestMaps(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetLatestMaps()
 
 	if err != nil {

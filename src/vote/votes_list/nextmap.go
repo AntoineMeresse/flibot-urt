@@ -1,9 +1,9 @@
 package voteslist
 
 import (
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
-func Nextmap(param string, c *context.Context) {
+func Nextmap(param string, c *appcontext.AppContext) {
 	c.RconCommand("g_nextmap %s", param)
 }

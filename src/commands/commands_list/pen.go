@@ -3,12 +3,12 @@ package commandslist
 import (
 	"strings"
 
-	"github.com/AntoineMeresse/flibot-urt/src/context"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/sirupsen/logrus"
 )
 
-func Pen(cmd *context.CommandsArgs) {
+func Pen(cmd *appcontext.CommandsArgs) {
 	player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
 	if err != nil {
 		cmd.RconText(err.Error())
@@ -34,7 +34,7 @@ func Pen(cmd *context.CommandsArgs) {
 	}
 }
 
-func PenOfTheDay(cmd *context.CommandsArgs) {
+func PenOfTheDay(cmd *appcontext.CommandsArgs) {
 	date, datas, err := cmd.Context.DB.PenPenOfTheDay()
 
 	if err != nil {
@@ -48,7 +48,7 @@ func PenOfTheDay(cmd *context.CommandsArgs) {
 	}
 }
 
-func PenHallOfFame(cmd *context.CommandsArgs) {
+func PenHallOfFame(cmd *appcontext.CommandsArgs) {
 	datas, err := cmd.Context.DB.PenPenHallOfFame()
 
 	if err != nil {
@@ -62,7 +62,7 @@ func PenHallOfFame(cmd *context.CommandsArgs) {
 	}
 }
 
-func PenHallOfShame(cmd *context.CommandsArgs) {
+func PenHallOfShame(cmd *appcontext.CommandsArgs) {
 	datas, err := cmd.Context.DB.PenPenHallOfShame()
 
 	if err != nil {

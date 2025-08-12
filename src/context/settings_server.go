@@ -1,4 +1,4 @@
-package context
+package appcontext
 
 import (
 	"fmt"
@@ -16,17 +16,17 @@ type ServerSettings struct {
 	Maplist []string
 }
 
-func (context *Context) SetMapName(mapName string) {
+func (context *AppContext) SetMapName(mapName string) {
 	context.Settings.Mapname = mapName
 }
 
-func (context *Context) SetNextMap(nextMapName string) {
+func (context *AppContext) SetNextMap(nextMapName string) {
 	log.Debugf("[SetNextMap] Changing nextmap from %s to %s", context.GetNextMap(), nextMapName)
 	context.RconCommand("g_nextmap %s", nextMapName)
 	context.Settings.Nextmap = nextMapName
 }
 
-func (context *Context) SetMapList() {
+func (context *AppContext) SetMapList() {
 	var res []string
 
 	file, err := os.Open(context.UrtConfig.DownloadPath)
@@ -46,12 +46,12 @@ func (context *Context) SetMapList() {
 	log.Println(context.Settings.Maplist)
 }
 
-func (context *Context) initMapName() {
+func (context *AppContext) initMapName() {
 	context.Settings.Mapname = context.Rcon.RconCommandExtractValue("mapname")
 	log.Debugf("Current map is: %s\n", context.Settings.Mapname)
 }
 
-func (context *Context) initNextMapName() {
+func (context *AppContext) initNextMapName() {
 	if len(context.Settings.Maplist) < 2 {
 		context.Settings.Nextmap = context.Settings.Mapname
 	} else {
@@ -64,19 +64,19 @@ func (context *Context) initNextMapName() {
 	log.Debugf("Nexmap is: %s\n", context.Settings.Nextmap)
 }
 
-func (context *Context) initSettings() {
+func (context *AppContext) initSettings() {
 	context.SetMapList()
 	context.initMapName()
 	context.initNextMapName()
 }
 
-func (context *Context) IsMapAlreadyDownloaded(mapname string) bool {
+func (context *AppContext) IsMapAlreadyDownloaded(mapname string) bool {
 	res := slices.Contains(context.GetMapList(), mapname)
 	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
 	return res
 }
 
-func (context *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *string, err error) {
+func (context *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap *string, err error) {
 	res := []string{}
 
 	for _, m := range context.GetMapList() {
@@ -108,14 +108,14 @@ func (context *Context) GetMapWithCriteria(searchCriteria string) (uniqueMap *st
 
 ////////////////////////////////////////////////////////////////
 
-func (context *Context) GetCurrentMap() string {
+func (context *AppContext) GetCurrentMap() string {
 	return context.Settings.Mapname
 }
 
-func (context *Context) GetNextMap() string {
+func (context *AppContext) GetNextMap() string {
 	return context.Settings.Nextmap
 }
 
-func (context *Context) GetMapList() []string {
+func (context *AppContext) GetMapList() []string {
 	return context.Settings.Maplist
 }
