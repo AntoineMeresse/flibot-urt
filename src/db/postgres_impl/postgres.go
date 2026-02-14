@@ -26,7 +26,7 @@ type PostGresqlDB struct {
 	queries *postgres_genererated.Queries
 }
 
-func InitPostGresDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
+func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
 	conn, err := pgx.Connect(ctx, uri)
 	if err != nil {
 		return nil, err
@@ -187,4 +187,23 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 		logrus.Debugf("HandleRun: Created new entry in db")
 	}
 	return nil
+}
+
+func (db *PostGresqlDB) GetPlayerByGuid(guid string) models.Player {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+
+	if playerDb, err := db.queries.GetPLayerByGuid(c, guid); err != nil {
+		logrus.Errorf("[GetPlayerByGuid] Error: %v", err)
+		return models.Player{}
+	} else {
+		logrus.Debugf("Player found in db: %+v", playerDb)
+		return models.Player{
+			Role: int(playerDb.Role),
+			Name: playerDb.Name,
+			Guid: guid,
+			Id:   string(playerDb.ID),
+			// Aliases: playerDb.Aliases,
+		}
+	}
 }

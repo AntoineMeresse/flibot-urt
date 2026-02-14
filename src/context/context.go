@@ -7,18 +7,18 @@ import (
 	"time"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/quake3_rcon"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/db"
 	"github.com/AntoineMeresse/flibot-urt/src/db/postgres_impl"
-	quake3rcon "github.com/AntoineMeresse/quake3-rcon-go"
 )
 
 type AppContext struct {
 	DB          db.DataPersister
-	Rcon        quake3rcon.Rcon
+	Rcon        quake3_rcon.Rcon
 	UrtConfig   models.UrtConfig
 	Players     models.Players
 	Settings    ServerSettings
@@ -29,54 +29,53 @@ type AppContext struct {
 
 type RconFunction func(format string, a ...any)
 
-func (context *AppContext) Init() {
-	context.UrtConfig.LoadEnvVariables()
+func (c *AppContext) Init() {
+	c.UrtConfig.LoadEnvVariables()
 
-	context.initRcon()
-	context.initSettings()
-	context.initPlayers()
-	context.initRuns()
-	context.initApi()
-	context.initDb()
+	c.initRcon()
+	c.initSettings()
+	c.initPlayers()
+	c.initRuns()
+	c.initApi()
+	c.initDb()
 
-	log.Debugf("-------> Flibot started (/connect %s:%s)\n", context.Rcon.ServerIp, context.Rcon.ServerPort)
+	log.Debugf("-------> Flibot started (/connect %s:%s)\n", c.Rcon.ServerIp, c.Rcon.ServerPort)
 }
 
-func (context *AppContext) initPlayers() {
-	context.Players = models.Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*models.Player)}
+func (c *AppContext) initPlayers() {
+	c.Players = models.Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*models.Player)}
 }
 
-func (context *AppContext) initRuns() {
-	context.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
+func (c *AppContext) initRuns() {
+	c.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
 }
 
-func (context *AppContext) initApi() {
-	context.Api = &api.Api{
-		UjmUrl:         context.UrtConfig.ApiConfig.Url,
-		Apikey:         context.UrtConfig.ApiConfig.ApiKey,
+func (c *AppContext) initApi() {
+	c.Api = &api.Api{
+		UjmUrl:         c.UrtConfig.ApiConfig.Url,
+		Apikey:         c.UrtConfig.ApiConfig.ApiKey,
 		BridgeUrl:      "https://ujm-servers.ovh",
 		BridgeLocalUrl: "https://ujm-servers.ovh/local",
 		Client:         http.Client{Timeout: time.Second * 2},
-		ServerUrl:      context.UrtConfig.ServerConfig.GetServerUrl(),
+		ServerUrl:      c.UrtConfig.ServerConfig.GetServerUrl(),
 	}
 }
 
-func (context *AppContext) initRcon() {
-	context.Rcon = quake3rcon.Rcon{
-		ServerIp:   context.UrtConfig.ServerConfig.Ip,
-		ServerPort: context.UrtConfig.ServerConfig.Port,
-		Password:   context.UrtConfig.ServerConfig.Password,
+func (c *AppContext) initRcon() {
+	c.Rcon = quake3_rcon.Rcon{
+		ServerIp:   c.UrtConfig.ServerConfig.Ip,
+		ServerPort: c.UrtConfig.ServerConfig.Port,
+		Password:   c.UrtConfig.ServerConfig.Password,
 	}
 
-	context.Rcon.Connect()
+	c.Rcon.Connect()
 }
 
 func (c *AppContext) initDb() {
 	// database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
 
-	uri := "postgres://user:password@localhost:5432/mydb"
-	database, dbErr := postgres_impl.InitPostGresDb(context.TODO(), uri)
+	database, dbErr := postgres_impl.InitPostGresqlDb(context.TODO(), c.UrtConfig.DbUri)
 
 	if dbErr != nil {
 		log.Fatalf("Error trying to instantiate db. Err: %v", dbErr)
@@ -85,18 +84,18 @@ func (c *AppContext) initDb() {
 	c.DB = database
 }
 
-func (context *AppContext) MapSync() {
-	mapSyncErr := context.Api.MapSync()
+func (c *AppContext) MapSync() {
+	mapSyncErr := c.Api.MapSync()
 	if mapSyncErr != nil {
 		log.Errorf("Error while trying to sync map: %s", mapSyncErr.Error())
-		context.RconCommand("reloadMaps")
-		context.SetMapList()
-		context.RconText(true, "", "^7Local map sync")
+		c.RconCommand("reloadMaps")
+		c.SetMapList()
+		c.RconText(true, "", "^7Local map sync")
 	} else {
-		context.RconText(true, "", "^7Bridge map sync (All servers)")
+		c.RconText(true, "", "^7Bridge map sync (All servers)")
 	}
 }
 
-func (context *AppContext) NewVote(v models.Vote) {
-	context.VoteChannel <- v
+func (c *AppContext) NewVote(v models.Vote) {
+	c.VoteChannel <- v
 }

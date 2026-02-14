@@ -2,9 +2,10 @@ package models
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"strings"
 	"sync"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
@@ -36,23 +37,10 @@ func (p *Player) hasInfoChange(infos map[string]string) bool {
 	return p.Name != infos["name"] || p.Guid != infos["cl_guid"]
 }
 
-func (players *Players) UpdatePlayer(playerNumber string, infos map[string]string) {
-	currentPlayer := players.PlayerMap[playerNumber]
-
-	if currentPlayer == nil {
-		logrus.Warnf("Player %s not found. Creating it", playerNumber)
-		currentPlayer = &Player{}
-		players.AddPlayer(playerNumber, currentPlayer)
-	}
-
+func (players *Players) UpdatePlayer(currentPlayer *Player, infos map[string]string) bool {
+	logrus.Debug("UpdatePlayer called")
 	if currentPlayer.hasInfoChange(infos) {
 		players.Mutex.Lock()
-		if currentPlayer.Guid == "" {
-			logrus.Debugf("Player %v has no guid. Init player with: %v", playerNumber, infos)
-			// TODO: fetch role & aliases
-			currentPlayer.Role = 100
-			currentPlayer.Aliases = []string{}
-		}
 		if name, ok := infos["name"]; ok {
 			currentPlayer.Name = utils.DecolorString(name)
 		}
@@ -64,7 +52,9 @@ func (players *Players) UpdatePlayer(playerNumber string, infos map[string]strin
 			currentPlayer.Ip = ipAddress
 		}
 		players.Mutex.Unlock()
+		return true
 	}
+	return false
 }
 
 func (players *Players) UpdatePlayerRights(playerNumber string, level int) {

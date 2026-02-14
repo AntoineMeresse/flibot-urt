@@ -15,8 +15,27 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 	if len(actionParams) > 1 {
 		playerNumber := actionParams[0]
 		infoString := strings.Join(actionParams[1:], "")
-		infos := splitInfos(infoString)
-		c.Players.UpdatePlayer(playerNumber, infos)
+		info := splitInfos(infoString)
+
+		if guid, ok := info["cl_guid"]; ok {
+			currentPlayer := c.Players.PlayerMap[playerNumber]
+
+			if currentPlayer == nil {
+				player := c.DB.GetPlayerByGuid(guid)
+				currentPlayer = &player
+				c.Players.AddPlayer(playerNumber, currentPlayer)
+				log.Warnf("Player %s not found. Creating it (%v)", playerNumber, player)
+			}
+
+			// Only player update
+			wasUpdated := c.Players.UpdatePlayer(currentPlayer, info)
+			if wasUpdated {
+				log.Infof("Need to update db with new player info: %v", *currentPlayer)
+			}
+		} else {
+			log.Warn("Could not find guid in client user info")
+			// c.Players.UpdatePlayer(playerNumber, info, c.DB.GetPlayerByGuid("not_found"))
+		}
 	}
 }
 

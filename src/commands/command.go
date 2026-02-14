@@ -74,10 +74,6 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppContext) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
 
-	if command.Level == 0 {
-		log.Debug("Command that can be used by everyone.")
-		return true, 0, 0
-	}
 
 	player, err := c.Players.GetPlayer(playerNumber)
 	var canUseCmd = false
@@ -87,6 +83,11 @@ func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppCo
 		role = player.Role
 		log.Debugf("checkPlayerRights | player (%v)", player)
 		canUseCmd = role >= command.Level
+	}
+
+	if command.Level == 0 {
+		log.Trace("Command that can be used by everyone.")
+		canUseCmd = true
 	}
 
 	return canUseCmd, command.Level, role

@@ -16,20 +16,20 @@ type ServerSettings struct {
 	Maplist []string
 }
 
-func (context *AppContext) SetMapName(mapName string) {
-	context.Settings.Mapname = mapName
+func (c *AppContext) SetMapName(mapName string) {
+	c.Settings.Mapname = mapName
 }
 
-func (context *AppContext) SetNextMap(nextMapName string) {
-	log.Debugf("[SetNextMap] Changing nextmap from %s to %s", context.GetNextMap(), nextMapName)
-	context.RconCommand("g_nextmap %s", nextMapName)
-	context.Settings.Nextmap = nextMapName
+func (c *AppContext) SetNextMap(nextMapName string) {
+	log.Debugf("[SetNextMap] Changing nextmap from %s to %s", c.GetNextMap(), nextMapName)
+	c.RconCommand("g_nextmap %s", nextMapName)
+	c.Settings.Nextmap = nextMapName
 }
 
-func (context *AppContext) SetMapList() {
+func (c *AppContext) SetMapList() {
 	var res []string
 
-	file, err := os.Open(context.UrtConfig.DownloadPath)
+	file, err := os.Open(c.UrtConfig.DownloadPath)
 	if err == nil {
 		names, err := file.Readdirnames(0)
 		if err == nil {
@@ -42,44 +42,44 @@ func (context *AppContext) SetMapList() {
 	}
 	defer file.Close()
 
-	context.Settings.Maplist = res
-	log.Println(context.Settings.Maplist)
+	c.Settings.Maplist = res
+	log.Println(c.Settings.Maplist)
 }
 
-func (context *AppContext) initMapName() {
-	context.Settings.Mapname = context.Rcon.RconCommandExtractValue("mapname")
-	log.Debugf("Current map is: %s\n", context.Settings.Mapname)
+func (c *AppContext) initMapName() {
+	c.Settings.Mapname = c.Rcon.RconCommandExtractValue("mapname")
+	log.Debugf("Current map is: %s\n", c.Settings.Mapname)
 }
 
-func (context *AppContext) initNextMapName() {
-	if len(context.Settings.Maplist) < 2 {
-		context.Settings.Nextmap = context.Settings.Mapname
+func (c *AppContext) initNextMapName() {
+	if len(c.Settings.Maplist) < 2 {
+		c.Settings.Nextmap = c.Settings.Mapname
 	} else {
-		nextmap := utils.RandomValueFromSlice(context.Settings.Maplist)
-		for nextmap != "" && nextmap == context.Settings.Mapname {
-			nextmap = utils.RandomValueFromSlice(context.Settings.Maplist)
+		nextmap := utils.RandomValueFromSlice(c.Settings.Maplist)
+		for nextmap != "" && nextmap == c.Settings.Mapname {
+			nextmap = utils.RandomValueFromSlice(c.Settings.Maplist)
 		}
-		context.Settings.Nextmap = nextmap
+		c.Settings.Nextmap = nextmap
 	}
-	log.Debugf("Nexmap is: %s\n", context.Settings.Nextmap)
+	log.Debugf("Nexmap is: %s\n", c.Settings.Nextmap)
 }
 
-func (context *AppContext) initSettings() {
-	context.SetMapList()
-	context.initMapName()
-	context.initNextMapName()
+func (c *AppContext) initSettings() {
+	c.SetMapList()
+	c.initMapName()
+	c.initNextMapName()
 }
 
-func (context *AppContext) IsMapAlreadyDownloaded(mapname string) bool {
-	res := slices.Contains(context.GetMapList(), mapname)
+func (c *AppContext) IsMapAlreadyDownloaded(mapname string) bool {
+	res := slices.Contains(c.GetMapList(), mapname)
 	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
 	return res
 }
 
-func (context *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap *string, err error) {
+func (c *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap *string, err error) {
 	res := []string{}
 
-	for _, m := range context.GetMapList() {
+	for _, m := range c.GetMapList() {
 		if strings.Contains(strings.ToLower(m), strings.ToLower(searchCriteria)) {
 			res = append(res, m)
 			log.Debugf("Map found with criteria (%s): %s", searchCriteria, m)
@@ -108,14 +108,14 @@ func (context *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap 
 
 ////////////////////////////////////////////////////////////////
 
-func (context *AppContext) GetCurrentMap() string {
-	return context.Settings.Mapname
+func (c *AppContext) GetCurrentMap() string {
+	return c.Settings.Mapname
 }
 
-func (context *AppContext) GetNextMap() string {
-	return context.Settings.Nextmap
+func (c *AppContext) GetNextMap() string {
+	return c.Settings.Nextmap
 }
 
-func (context *AppContext) GetMapList() []string {
-	return context.Settings.Maplist
+func (c *AppContext) GetMapList() []string {
+	return c.Settings.Maplist
 }

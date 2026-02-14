@@ -31,6 +31,7 @@ type UrtConfig struct {
 	LogFile       string
 	WorkerNumber  int
 	ApiConfig     ApiConfig
+	DbUri 	      string
 }
 
 func (u *UrtConfig) LoadEnvVariables() {
@@ -57,6 +58,8 @@ func (u *UrtConfig) LoadEnvVariables() {
 	u.ApiConfig.ApiKey = os.Getenv("ujmApiKey")
 
 	u.LogFile = os.Getenv("logFilePath")
+	u.DbUri = os.Getenv("dbUri")
+
 	u.initWorkerNumber()
 }
 
