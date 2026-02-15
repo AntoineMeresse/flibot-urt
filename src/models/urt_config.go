@@ -16,8 +16,9 @@ type ServerConfig struct {
 }
 
 type ApiConfig struct {
-	Url    string
-	ApiKey string
+	Url            string
+	ApiKey         string
+	DiscordWebhook string
 }
 
 type UrtConfig struct {
@@ -61,6 +62,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("ujmApiKey", "ujmApiKey")
 	viper.BindEnv("urtPath", "urtPath")
 	viper.BindEnv("botWorkerNumber", "botWorkerNumber")
+	viper.BindEnv("discordWebhook", "discordWebhook")
 
 	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
@@ -77,6 +79,7 @@ func (u *UrtConfig) LoadConfig() {
 
 	u.ApiConfig.Url = viper.GetString("ujmUrl")
 	u.ApiConfig.ApiKey = viper.GetString("ujmApiKey")
+	u.ApiConfig.DiscordWebhook = viper.GetString("discordWebhook")
 
 	u.LogFile = viper.GetString("logFilePath")
 	u.DbUri = viper.GetString("dbUri")

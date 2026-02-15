@@ -72,6 +72,13 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 				}
 			}
 			processRunData(c, demoResponse, player.Number)
+			go func() {
+				msg := fmt.Sprintf("[Flibot] %s finished %s of %s in %s.", runInfo.Playername, runInfo.Way,
+					runInfo.Mapname, runInfo.Time)
+				if err := c.Api.SendFileToWebhook(runInfo.GetDemoName(), msg); err != nil {
+					log.Errorf("Webhook send failed: %v", err)
+				}
+			}()
 		}
 	}
 }

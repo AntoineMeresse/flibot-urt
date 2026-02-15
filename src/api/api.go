@@ -12,6 +12,7 @@ type Api struct {
 	Apikey         string
 	Client         http.Client
 	ServerUrl      string
+	DiscordWebhook string
 }
 
 // UjmGetWithBody Sending a body inside a get request is a bad practice, we should change that on ujm side.

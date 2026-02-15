@@ -40,6 +40,7 @@ func (c *AppContext) Init() {
 	c.initDb()
 
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", c.Rcon.ServerIp, c.Rcon.ServerPort)
+	c.RconText(true, "", "^3 Flibot initialized ^5:)")
 }
 
 func (c *AppContext) initPlayers() {
@@ -60,6 +61,7 @@ func (c *AppContext) initApi() {
 		BridgeLocalUrl: "https://ujm-servers.ovh/local",
 		Client:         http.Client{Timeout: time.Second * 2},
 		ServerUrl:      c.UrtConfig.ServerConfig.GetServerUrl(),
+		DiscordWebhook: c.UrtConfig.ApiConfig.DiscordWebhook,
 	}
 }
 
