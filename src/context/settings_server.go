@@ -65,9 +65,11 @@ func (c *AppContext) initNextMapName() {
 }
 
 func (c *AppContext) initSettings() {
+	log.Debug("Initializing settings... [Start]")
 	c.SetMapList()
 	c.initMapName()
 	c.initNextMapName()
+	log.Debug("Initializing settings... [End]")
 }
 
 func (c *AppContext) IsMapAlreadyDownloaded(mapname string) bool {

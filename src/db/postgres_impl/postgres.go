@@ -33,7 +33,7 @@ func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
 	}
 
 	queries := postgres_genererated.New(conn)
-	schema := mydb.ReadSchema("/home/antoine/dev/go/flibot-urt/sqlc/postgres/schema.sql")
+	schema := mydb.ReadSchema("./sqlc/postgres/schema.sql")
 	_, err = conn.Exec(ctx, schema)
 
 	if err != nil {

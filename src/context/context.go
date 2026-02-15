@@ -30,7 +30,7 @@ type AppContext struct {
 type RconFunction func(format string, a ...any)
 
 func (c *AppContext) Init() {
-	c.UrtConfig.LoadEnvVariables()
+	c.UrtConfig.LoadConfig()
 
 	c.initRcon()
 	c.initSettings()
@@ -43,10 +43,12 @@ func (c *AppContext) Init() {
 }
 
 func (c *AppContext) initPlayers() {
+	log.Debug("Initializing players...")
 	c.Players = models.Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*models.Player)}
 }
 
 func (c *AppContext) initRuns() {
+	log.Debug("Initializing runs...")
 	c.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
 }
 
@@ -74,7 +76,7 @@ func (c *AppContext) initRcon() {
 func (c *AppContext) initDb() {
 	// database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
-
+	log.Debug("Initializing Db...")
 	database, dbErr := postgres_impl.InitPostGresqlDb(context.TODO(), c.UrtConfig.DbUri)
 
 	if dbErr != nil {

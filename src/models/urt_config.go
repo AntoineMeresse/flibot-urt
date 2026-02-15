@@ -5,9 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type ServerConfig struct {
@@ -31,61 +30,75 @@ type UrtConfig struct {
 	LogFile       string
 	WorkerNumber  int
 	ApiConfig     ApiConfig
-	DbUri 	      string
+	DbUri         string
 }
 
-func (u *UrtConfig) LoadEnvVariables() {
-	err := godotenv.Load()
+func (u *UrtConfig) LoadConfig() {
+	// Defaults
+	viper.SetDefault("serverport", "27960")
+	viper.SetDefault("botWorkerNumber", 1)
 
-	if err != nil {
-		panic("Error trying to load env variables")
+	// Config file
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("/app")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Debugf("No config file found: %s", err)
 	}
 
-	u.BasePath = os.Getenv("urtPath")
+	// Env variables (override config file)
+	viper.AutomaticEnv()
+
+	// Bind env
+	viper.BindEnv("dbUri", "dbUri")
+	viper.BindEnv("serverip", "serverip")
+	viper.BindEnv("serverport", "serverport")
+	viper.BindEnv("password", "password")
+	viper.BindEnv("logFilePath", "logFilePath")
+	viper.BindEnv("urtRepo", "urtRepo")
+	viper.BindEnv("ujmUrl", "ujmUrl")
+	viper.BindEnv("ujmApiKey", "ujmApiKey")
+	viper.BindEnv("urtPath", "urtPath")
+	viper.BindEnv("botWorkerNumber", "botWorkerNumber")
+
+	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
 		path := strings.TrimSuffix(u.BasePath, "/")
 		u.DownloadPath = fmt.Sprintf("%s/%s", path, "q3ut4/download")
 		u.GotosPath = fmt.Sprintf("%s/%s", path, "q3ut4/gotos")
 		u.DemoPath = fmt.Sprintf("%s/%s", path, "q3ut4/serverdemos")
 	}
-	u.MapRepository = os.Getenv("urtRepo")
+	u.MapRepository = viper.GetString("urtRepo")
 
-	u.ServerConfig.Ip = os.Getenv("serverip")
-	u.ServerConfig.Port = os.Getenv("serverport")
-	u.ServerConfig.Password = os.Getenv("password")
+	u.ServerConfig.Ip = viper.GetString("serverip")
+	u.ServerConfig.Port = viper.GetString("serverport")
+	u.ServerConfig.Password = viper.GetString("password")
 
-	u.ApiConfig.Url = os.Getenv("ujmUrl")
-	u.ApiConfig.ApiKey = os.Getenv("ujmApiKey")
+	u.ApiConfig.Url = viper.GetString("ujmUrl")
+	u.ApiConfig.ApiKey = viper.GetString("ujmApiKey")
 
-	u.LogFile = os.Getenv("logFilePath")
-	u.DbUri = os.Getenv("dbUri")
+	u.LogFile = viper.GetString("logFilePath")
+	u.DbUri = viper.GetString("dbUri")
+
+	log.Info("Db uri: ", u.DbUri)
+	log.Info("Direct env: ", os.Getenv("dbUri"))
 
 	u.initWorkerNumber()
 }
 
 func (u *UrtConfig) initWorkerNumber() {
-	workerValue, found := os.LookupEnv("botWorkerNumber")
-	u.WorkerNumber = 1
-	if !found {
-		log.Debug("Worker number not specify in conf. Will use default: 1")
+	value := viper.GetInt("botWorkerNumber")
+
+	if value <= 0 || value >= 100 {
+		log.Error("Please specify a number between 1 & 99 for botWorkerNumber")
+		u.WorkerNumber = 1
 		return
 	}
 
-	value, err := utils.ExtractNumber(workerValue)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Tracef("Worker from config file: %d", value)
-
-	if value > 0 && value < 100 {
-		if value != 1 {
-			u.WorkerNumber = value
-			log.Debugf("Worker number has been modify in configuration to: %d (Default: 1)", value)
-		}
-	} else {
-		log.Error("Please specify a number between 1 & 99 for the env variable: botWorkerNumber")
+	u.WorkerNumber = value
+	if value != 1 {
+		log.Debugf("Worker number has been modify in configuration to: %d (Default: 1)", value)
 	}
 }
 
