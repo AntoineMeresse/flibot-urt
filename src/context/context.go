@@ -40,7 +40,7 @@ func (c *AppContext) Init() {
 	c.initDb()
 
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", c.Rcon.ServerIp, c.Rcon.ServerPort)
-	c.RconText(true, "", "^3 Flibot initialized ^5:)")
+	c.RconText(true, "", "^6 Flibot initialized ^5:)")
 }
 
 func (c *AppContext) initPlayers() {

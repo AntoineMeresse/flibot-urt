@@ -25,7 +25,7 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 				currentPlayer = &player
 				c.Players.AddPlayer(playerNumber, currentPlayer)
 				log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
-				c.RconText(false, playerNumber, "Welcome back on server. This is a test server so some features might be broken.")
+				c.RconText(false, playerNumber, "^4Welcome back on server. This is a ^1test server^4 so some features might be broken.")
 			}
 
 			// Only player update
