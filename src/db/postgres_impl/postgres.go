@@ -189,13 +189,13 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 	return nil
 }
 
-func (db *PostGresqlDB) GetPlayerByGuid(guid string) models.Player {
+func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
 
 	if playerDb, err := db.queries.GetPLayerByGuid(c, guid); err != nil {
 		logrus.Errorf("[GetPlayerByGuid] Error: %v", err)
-		return models.Player{}
+		return models.Player{}, false
 	} else {
 		logrus.Debugf("Player found in db: %+v", playerDb)
 		return models.Player{
@@ -204,6 +204,6 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) models.Player {
 			Guid: guid,
 			Id:   string(playerDb.ID),
 			// Aliases: playerDb.Aliases,
-		}
+		}, true
 	}
 }

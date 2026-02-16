@@ -42,7 +42,7 @@ func ReadSchema(path string) string {
 type DataPersister interface {
 	Close()
 
-	GetPlayerByGuid(guid string) models.Player
+	GetPlayerByGuid(guid string) (models.Player, bool)
 	SaveNewPlayer(name string, guid string, ipAddress string) (int, error)
 	UpdatePlayer() error
 

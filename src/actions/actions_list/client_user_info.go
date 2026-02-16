@@ -21,8 +21,9 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 			currentPlayer := c.Players.PlayerMap[playerNumber]
 
 			if currentPlayer == nil {
-				player := c.DB.GetPlayerByGuid(guid)
+				player, _ := c.DB.GetPlayerByGuid(guid)
 				currentPlayer = &player
+
 				c.Players.AddPlayer(playerNumber, currentPlayer)
 				log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
 				c.RconText(false, playerNumber, "^4Welcome back on server. This is a ^1test server^4 so some features might be ^1broken^4.")

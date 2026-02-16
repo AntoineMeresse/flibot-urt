@@ -4,9 +4,8 @@ import (
 	"time"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-	"github.com/AntoineMeresse/flibot-urt/src/models"
-
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
 )
 
@@ -24,7 +23,7 @@ func main() {
 	defer c.DB.Close()
 
 	// Initialize tail
-	go logparser.InitLogparser(myLogChannel, c.UrtConfig.LogFile)
+	go logparser.InitLogParser(myLogChannel, c)
 
 	// Handle each line
 	for i := 0; i < c.UrtConfig.WorkerNumber; i++ {
