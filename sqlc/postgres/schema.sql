@@ -32,3 +32,16 @@ CREATE TABLE IF NOT EXISTS pen (
     size DOUBLE PRECISION NOT NULL,
     UNIQUE (guid, date)
 );
+
+
+-- Positions
+CREATE TABLE IF NOT EXISTS position (
+    id SERIAL PRIMARY KEY,
+    mapname TEXT NOT NULL,
+    location TEXT NOT NULL,
+    x DOUBLE PRECISION NOT NULL,
+    y DOUBLE PRECISION NOT NULL,
+    z DOUBLE PRECISION NOT NULL,
+    angle DOUBLE PRECISION NOT NULL DEFAULT 0,
+    UNIQUE (mapname, location)
+);
