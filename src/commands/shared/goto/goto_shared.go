@@ -2,43 +2,22 @@ package goto_shared
 
 import (
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 	"unicode"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
-func DoesPositionExist(c *appcontext.AppContext, jumpName string) (exists bool, path string) {
-	locationPath := fmt.Sprintf("%s/%s/%s.pos", c.UrtConfig.GotosPath, c.GetCurrentMap(), jumpName)
-	_, err := os.Stat(locationPath)
-	return !os.IsNotExist(err), locationPath
+func DoesPositionExist(c *appcontext.AppContext, location string) bool {
+	_, err := c.DB.PositionGet(c.GetCurrentMap(), location)
+	return err == nil
 }
 
 func getGotosList(c *appcontext.AppContext) []string {
-	mapPath := fmt.Sprintf("%s/%s", c.UrtConfig.GotosPath, c.GetCurrentMap())
-
-	file, err := os.Open(mapPath)
-	if err != nil {
-		return nil
-	}
-
-	locations, err := file.Readdirnames(0)
-
-	if err != nil {
-		return nil
-	}
-
-	var res []string
-
-	for _, v := range locations {
-		res = append(res, strings.TrimSuffix(v, ".pos"))
-	}
-
-	return utils.NaturalSort(res)
+	names, _ := c.DB.PositionList(c.GetCurrentMap())
+	return utils.NaturalSort(names)
 }
 
 func splitPosition(position string) (elem string, value string) {
@@ -119,11 +98,6 @@ func GetJumpNameForSavePos(c *appcontext.AppContext, jumpName string) string {
 	return jumpName
 }
 
-func RemovePosition(c *appcontext.AppContext, jumpName string) bool {
-	exists, path := DoesPositionExist(c, jumpName)
-	err := os.Remove(path)
-	if err != nil {
-		return false
-	}
-	return exists
+func RemovePosition(c *appcontext.AppContext, location string) bool {
+	return c.DB.PositionDelete(c.GetCurrentMap(), location)
 }

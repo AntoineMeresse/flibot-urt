@@ -189,6 +189,57 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 	return nil
 }
 
+func (db *PostGresqlDB) PositionSave(mapname, location string, x, y, z, angle float64) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	_, err := db.queries.CreatePosition(c, postgres_genererated.CreatePositionParams{
+		Mapname:  mapname,
+		Location: location,
+		X:        x,
+		Y:        y,
+		Z:        z,
+		Angle:    angle,
+	})
+	return err
+}
+
+func (db *PostGresqlDB) PositionGet(mapname, location string) (mydb.PositionData, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	pos, err := db.queries.GetPositionByMapAndLocation(c, postgres_genererated.GetPositionByMapAndLocationParams{
+		Mapname:  mapname,
+		Location: location,
+	})
+	if err != nil {
+		return mydb.PositionData{}, err
+	}
+	return mydb.PositionData{X: pos.X, Y: pos.Y, Z: pos.Z, Angle: pos.Angle}, nil
+}
+
+func (db *PostGresqlDB) PositionList(mapname string) ([]string, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	positions, err := db.queries.ListPositionsByMap(c, mapname)
+	if err != nil {
+		return nil, err
+	}
+	names := make([]string, 0, len(positions))
+	for _, p := range positions {
+		names = append(names, p.Location)
+	}
+	return names, nil
+}
+
+func (db *PostGresqlDB) PositionDelete(mapname, location string) bool {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	err := db.queries.DeletePosition(c, postgres_genererated.DeletePositionParams{
+		Mapname:  mapname,
+		Location: location,
+	})
+	return err == nil
+}
+
 func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

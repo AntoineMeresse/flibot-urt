@@ -39,6 +39,13 @@ func ReadSchema(path string) string {
 	return string(data)
 }
 
+type PositionData struct {
+	X     float64
+	Y     float64
+	Z     float64
+	Angle float64
+}
+
 type DataPersister interface {
 	Close()
 
@@ -53,4 +60,9 @@ type DataPersister interface {
 	PenPenHallOfShame() ([]PenData, error)
 
 	HandleRun(info models.PlayerRunInfo, checkpoints []int) error
+
+	PositionSave(mapname, location string, x, y, z, angle float64) error
+	PositionGet(mapname, location string) (PositionData, error)
+	PositionList(mapname string) ([]string, error)
+	PositionDelete(mapname, location string) bool
 }

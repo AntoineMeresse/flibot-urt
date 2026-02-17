@@ -14,6 +14,9 @@ var Actions = map[string]interface{}{
 	"saytell:":               actionslist.SayTell,
 	"PlayersDump:":           actionslist.PLayersDump,
 
+	// Positions
+	"SavedPosition:": actionslist.SavedPosition,
+
 	// Runs
 	"ClientJumpRunStarted:":    actionslist.ClientJumpRunStarted,
 	"ClientJumpRunCanceled:":   actionslist.ClientJumpRunCanceled,

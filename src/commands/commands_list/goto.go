@@ -12,11 +12,12 @@ func Goto(cmd *appcontext.CommandsArgs) {
 		cmd.RconList(locationDisplayList)
 	} else {
 		jumpName := cmd.Params[0]
-		if exists, _ := gotoshared.DoesPositionExist(cmd.Context, jumpName); exists {
-			cmd.RconCommand("forceteam %s free", cmd.PlayerId)
-			cmd.RconCommand("loadJumpPos %s %s", cmd.PlayerId, jumpName)
-		} else {
+		pos, err := cmd.Context.DB.PositionGet(cmd.Context.GetCurrentMap(), jumpName)
+		if err != nil {
 			cmd.RconText(msg.GOTO_NO_LOCATION, jumpName)
+			return
 		}
+		cmd.RconCommand("forceteam %s free", cmd.PlayerId)
+		cmd.RconCommand("goToPosition %s %g %g %g %g", cmd.PlayerId, pos.X, pos.Y, pos.Z, pos.Angle)
 	}
 }

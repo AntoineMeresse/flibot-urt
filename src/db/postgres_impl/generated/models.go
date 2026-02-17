@@ -25,6 +25,16 @@ type Player struct {
 	Aliases    string
 }
 
+type Position struct {
+	ID       int32
+	Mapname  string
+	Location string
+	X        float64
+	Y        float64
+	Z        float64
+	Angle    float64
+}
+
 type Run struct {
 	ID          int32
 	Guid        string

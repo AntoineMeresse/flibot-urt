@@ -1,0 +1,212 @@
+================================================================================
+FLIBOT-URT CODE REVIEW REPORT
+================================================================================
+
+================================================================================
+1. CRITICAL (potential crashes / data races)
+================================================================================
+
+PANICS / NIL DEREFERENCES
+--------------------------
+
+[settings_server.go]
+  defer file.Close() is placed outside the err == nil block, so if os.Open
+  fails, file is nil and the defer panics.
+
+[runs_action.go:27]
+  ClientJumpRunCanceled accesses actionParams[0] with no length guard, unlike
+  all other run handlers.
+
+[models/runs.go:69]
+  AddCheckpoint will nil-dereference if the bot restarts mid-run (player
+  missing from PlayerRuns map).
+
+[ujm.go]
+  PostRunWithoutDemo calls api.Client.Post with a nil buffer if json.Marshal
+  fails.
+
+DATA RACES
+----------
+
+[quake3_rcon/rcon.go]
+  The Rcon UDP connection is shared across multiple goroutines (log workers +
+  vote goroutine) with no mutex — concurrent reads/writes to the socket.
+
+[vote.go]
+  VoteSystem fields (CanVote, VoteYes, VoteNo) are read and written from
+  concurrent goroutines with no synchronization.
+
+[context/context.go]
+  AppContext.Settings (Mapname, Nextmap) has no lock — written by log workers,
+  read by commands simultaneously.
+
+================================================================================
+2. HIGH (wrong behavior, silently)
+================================================================================
+
+[postgres.go]
+  PenPlayerGetDailySize ignores the guid argument entirely. The SQL query has
+  no WHERE guid = $1, so it returns any player's pen size for today, not the
+  requesting player's.
+
+[postgres.go]
+  HandleRun compares against the global best time instead of the player's own
+  PR. GetRuntimeByMapWayUTJ has no guid filter, so a player who beats their
+  own record but not the global WR will not get their time updated.
+
+[bridge.go]
+  GetMapsWithPattern returns []string{""} on error. Callers check len == 0 to
+  detect failure but get len == 1 with an empty string, so map commands try to
+  download a file named "".
+
+[action_map.go]
+  No ClientDisconnect handler. Players are added to PlayerMap on join but never
+  removed on disconnect. Stale players affect vote majority counts and memory
+  grows forever on long-running servers.
+
+[ujm.go, bridge.go]
+  ~8 HTTP response bodies are never closed. Connection pool will exhaust under
+  load. Only discord.go and download.go handle this correctly.
+
+================================================================================
+3. MEDIUM (bugs / dead code / stubs)
+================================================================================
+
+BUGS
+----
+
+[models/runs.go]
+  RunStopped logs "RunCanceled" — copy-paste bug.
+
+[postgres.go:65]
+  UpdatePlayer() returns fmt.Errorf("To implement"). Player name/IP changes
+  are detected in client_user_info.go but never persisted to the database.
+
+[runs_action.go]
+  RunLog reuses the outer err variable from json.Unmarshal for the
+  PostRunDemo call. processRunData is still called with an empty demoResponse
+  on API failure.
+
+[sqlite_pen.go:37]
+  rows.Scan error is ignored in PenAdd when checking for an existing pen.
+
+[sqlite_runs.go]
+  rows is never closed in the else (no existing run) branch — resource leak.
+
+DEAD CODE / STUBS
+-----------------
+
+[command.go]
+  sendCommandToBridge always returns an error and is always silently suppressed
+  with a // TODO comment. The entire bridge command feature is dead.
+
+[bridge.go:34]
+  MapSync always errors and falls back to local sync. The log line
+  "Bridge map sync (All servers)" never executes.
+
+[sqlite_impl]
+  Does not implement the Position* interface methods added during this session.
+  The SQLite backend can no longer compile as a valid DataPersister.
+
+[sqlite_impl/sqlite_checkpoints.go]
+  Creates a checkpoints table with no read/write methods, not used anywhere.
+
+[models/runs.go]
+  RunCompare struct is defined and never instantiated or used.
+
+[utils/colors.go]
+  All 9 color constants are unexported and never referenced anywhere.
+  GetColorRun in utils.go hardcodes the color strings directly, making this
+  file completely dead code.
+
+[urt_config.go]
+  UrtConfig.GotosPath is computed but never used now that gotos are in the DB.
+
+[quake3_rcon/rcon.go]
+  SplitReadInfos and PrintSplitReadInfos are exported but never called.
+
+[context/commands_args.go]
+  CommandsArgs.GetPlayerGuid() is defined but never called by any command.
+
+[commands_list/syncplayers.go]
+  SyncPlayers sends the "players" rcon command but does nothing with the
+  response. The PlayerMap is never updated.
+
+[db/interface.go]
+  ReadSchema is in the shared db package but only ever called from postgres.go.
+  It should live in the postgres package.
+
+================================================================================
+4. LOW (naming / style)
+================================================================================
+
+TYPOS
+-----
+
+  "PLayersDump"       capital L typo propagated into the function name and
+                      action map key.
+  "postgres_genererated"  double r typo in the import alias, present in every
+                      file that imports the generated package.
+  "PersonnalBest"     double n — should be PersonalBest.
+  "Nexmap is: %s"     missing t — should be Nextmap.
+  "Interation n°%d"   should be Iteration.
+  "GetPLayerByGuid"   capital L typo inherited from the sqlc query name.
+
+STYLE / CONSISTENCY
+-------------------
+
+[runs_action.go]
+  Imports logrus twice — once bare and once aliased as log. Same package,
+  two import entries.
+
+[action_map.go / command_map.go]
+  interface{} used for the action and command dispatch maps while any is used
+  elsewhere. The interface{} dispatch also loses all compile-time type safety:
+  a function registered with the wrong signature causes a runtime panic instead
+  of a build error.
+
+[db/interface.go]
+  PenPenOfTheDay, PenPenHallOfFame, PenPenHallOfShame — double "Pen" prefix
+  on interface methods is redundant.
+
+[command_map.go]
+  Dev-only commands use camelCase ("runsHistory", "syncPlayers") while all
+  others are lowercase, requiring players to type the capital letter.
+
+[commands/shared/goto]
+  Package declared as goto_shared (underscore) — non-idiomatic Go naming.
+  The import alias gotoshared is correct but the package name should match.
+
+================================================================================
+5. UNIMPLEMENTED FEATURES (planned but never done)
+================================================================================
+
+  - UpdatePlayer DB method (postgres returns "To implement" error)
+  - ClientDisconnect action handler
+  - Player aliases: schema column exists, never written or read
+  - !afk has a // TODO: Check if player isn't running comment
+  - Cyclemap vote does not update c.Settings.Mapname after execution
+  - No input sanitization on RCON commands — player-supplied strings flow
+    directly into rcon (potential command injection via ; or \n characters)
+  - Bridge map sync (MapSync always falls back to local)
+  - sendCommandToBridge / cross-server chat relay never implemented
+
+================================================================================
+PRIORITY SUMMARY
+================================================================================
+
+  Fix immediately:
+    - Nil dereference in SetMapList (crash if GotosPath is invalid)
+    - Missing ClientDisconnect handler (stale state + memory leak)
+    - PenPlayerGetDailySize ignoring guid (wrong player data returned)
+    - Unclosed HTTP response bodies in ujm.go and bridge.go
+    - Rcon mutex (data race on shared UDP connection)
+
+  Fix soon:
+    - HandleRun global vs personal best comparison
+    - GetMapsWithPattern returning []string{""} instead of nil
+    - ClientJumpRunCanceled bounds check
+    - AddCheckpoint nil dereference on bot restart
+    - VoteSystem data race
+
+================================================================================
