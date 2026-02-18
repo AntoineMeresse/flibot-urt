@@ -14,6 +14,11 @@ func Register(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
+	if player.Role >= registeredRole {
+		cmd.RconText("You are already registered.")
+		return
+	}
+
 	if err := cmd.Context.DB.SetPlayerRole(player.Guid, registeredRole); err != nil {
 		logrus.Errorf("[Register] Error: %v", err)
 		cmd.RconText("An error occurred while performing your registration. Please try again and contact an admin if the problem persists.")
