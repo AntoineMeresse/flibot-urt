@@ -12,7 +12,7 @@ import (
 )
 
 type Command struct {
-	Function     interface{}
+	Function     func(*appcontext.CommandsArgs)
 	Level        int
 	Usage        string
 	sendToBridge bool
@@ -120,7 +120,7 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 				Usage:    commandInfos.command.Usage,
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)
-			commandInfos.command.Function.(func(*appcontext.CommandsArgs))(&args)
+			commandInfos.command.Function(&args)
 		} else {
 			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ",
 				playerNumber, actionParams[2], level, role,

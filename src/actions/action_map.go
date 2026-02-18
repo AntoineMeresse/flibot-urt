@@ -1,8 +1,13 @@
 package actions
 
-import actionslist "github.com/AntoineMeresse/flibot-urt/src/actions/actions_list"
+import (
+	actionslist "github.com/AntoineMeresse/flibot-urt/src/actions/actions_list"
+	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+)
 
-var Actions = map[string]interface{}{
+type ActionFunc func([]string, *appcontext.AppContext)
+
+var Actions = map[string]ActionFunc{
 	"ClientBegin:":           actionslist.ClientBegin,
 	"say:":                   actionslist.Say,
 	"ClientConnect:":         actionslist.ClientConnect,

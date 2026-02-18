@@ -10,7 +10,7 @@ func HandleAction(workerId int, action string, actionParams []string, c *appcont
 	log.Debugf("")
 	log.Debugf("-------------------------------------------------------------------------------------------------------------")
 	if val, ok := Actions[action]; ok {
-		val.(func([]string, *appcontext.AppContext))(actionParams, c)
+		val(actionParams, c)
 	} else {
 		log.Errorf("----> Not a known action: %s\n", action)
 	}
