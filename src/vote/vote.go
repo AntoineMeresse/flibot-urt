@@ -2,6 +2,7 @@ package vote
 
 import (
 	"strings"
+	"sync"
 	"time"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
@@ -16,7 +17,7 @@ const (
 )
 
 type VoteSystem struct {
-	// Mutex needed ?
+	mu      sync.RWMutex
 	CanVote bool
 	Cancel  bool
 	VoteYes map[string]int // use of map cause golang has no set
@@ -25,7 +26,7 @@ type VoteSystem struct {
 
 func InitVoteSystem(voteChannel <-chan models.Vote, c *appcontext.AppContext) {
 	voteSystem := VoteSystem{CanVote: true, Cancel: false, VoteYes: make(map[string]int), VoteNo: make(map[string]int)}
-	logrus.Debugf("VoteSystem initiated: %v", voteSystem)
+	logrus.Debugf("VoteSystem initiated: %v", &voteSystem)
 
 	for vote := range voteChannel {
 		logrus.Debugf("New vote incoming: %v", vote)
@@ -34,6 +35,8 @@ func InitVoteSystem(voteChannel <-chan models.Vote, c *appcontext.AppContext) {
 }
 
 func (voteSystem *VoteSystem) reset() {
+	voteSystem.mu.Lock()
+	defer voteSystem.mu.Unlock()
 	voteSystem.CanVote = true
 	voteSystem.Cancel = false
 	clear(voteSystem.VoteYes)
@@ -58,28 +61,32 @@ func isOnlyVote(vote models.Vote) (isVote bool, value string) {
 }
 
 func createVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote) {
-	if voteSystem.CanVote {
-		if continueVote, endFunction, msg := getVoteInfos(c, vote); continueVote {
-			voteSystem.CanVote = false
-			c.RconText(false, vote.PlayerId, "New vote incoming: %v", vote)
-			iteration := 0
-			secondsToEnd := SecondsPerVote * 2 // To avoid to deal with float
-			cpt := 0
-			for iteration <= secondsToEnd && !voteSystem.Cancel {
-				voteKeysMessage(&cpt, c)
-				c.RconBigText("%s | ^2Yes^7: %2d / ^1No^7 : %2d (%02d s)", msg, len(voteSystem.VoteYes), len(voteSystem.VoteNo), (secondsToEnd-iteration)/2)
-				iteration += 1
-				time.Sleep(500 * time.Millisecond)
-				if hasMajority(c, voteSystem) {
-					break
-				}
-			}
-			endVote(c, voteSystem, vote, endFunction)
-			voteSystem.CanVote = true
-		}
-	} else {
+	if !voteSystem.tryClaimVote() {
 		c.RconText(false, vote.PlayerId, "Can't ^1start^3 a new vote !")
+		return
 	}
+
+	continueVote, endFunction, msg := getVoteInfos(c, vote)
+	if !continueVote {
+		voteSystem.reset()
+		return
+	}
+
+	c.RconText(false, vote.PlayerId, "New vote incoming: %v", vote)
+	iteration := 0
+	secondsToEnd := SecondsPerVote * 2 // To avoid to deal with float
+	cpt := 0
+	for iteration <= secondsToEnd && !voteSystem.isCanceled() {
+		voteKeysMessage(&cpt, c)
+		yes, no := voteSystem.voteCounts()
+		c.RconBigText("%s | ^2Yes^7: %2d / ^1No^7 : %2d (%02d s)", msg, yes, no, (secondsToEnd-iteration)/2)
+		iteration += 1
+		time.Sleep(500 * time.Millisecond)
+		if hasMajority(c, voteSystem) {
+			break
+		}
+	}
+	endVote(c, voteSystem, vote, endFunction)
 }
 
 func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
@@ -91,23 +98,28 @@ func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
 		} else {
 			voteSystem.addNoVote(vote.PlayerId)
 		}
-		logrus.Debugf("Vote system values %v", *voteSystem)
 		return true
 	}
 	return false
 }
 
 func (voteSystem *VoteSystem) addYesVote(playerId string) {
+	voteSystem.mu.Lock()
+	defer voteSystem.mu.Unlock()
 	delete(voteSystem.VoteNo, playerId)
 	voteSystem.VoteYes[playerId] = 0
 }
 
 func (voteSystem *VoteSystem) addNoVote(playerId string) {
+	voteSystem.mu.Lock()
+	defer voteSystem.mu.Unlock()
 	delete(voteSystem.VoteYes, playerId)
 	voteSystem.VoteNo[playerId] = 0
 }
 
 func (voteSystem *VoteSystem) addVetoVote() {
+	voteSystem.mu.Lock()
+	defer voteSystem.mu.Unlock()
 	voteSystem.Cancel = true
 }
 
@@ -123,12 +135,14 @@ func voteKeysMessage(cpt *int, c *appcontext.AppContext) {
 
 func hasMajority(c *appcontext.AppContext, voteSystem *VoteSystem) bool {
 	majority := (len(c.Players.PlayerMap) / 2) + 1
-	return len(voteSystem.VoteYes) >= majority || len(voteSystem.VoteNo) >= majority
+	yes, no := voteSystem.voteCounts()
+	return yes >= majority || no >= majority
 }
 
 func endVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote, endFunction interface{}) {
-	if !voteSystem.Cancel {
-		if len(voteSystem.VoteYes) > len(voteSystem.VoteNo) {
+	canceled, yesWins := voteSystem.outcome()
+	if !canceled {
+		if yesWins {
 			c.RconBigText("^2Vote Passed")
 			execVote(c, vote, endFunction)
 		} else {
@@ -146,9 +160,8 @@ func getVoteInfos(c *appcontext.AppContext, vote models.Vote) (bool, interface{}
 	if exists {
 		continueVote, msg := infos.msgFn.(func(*appcontext.AppContext, string, string) (bool, string))(c, infos.messageFormat, param)
 		return continueVote, infos.function, msg
-	} else {
-		c.RconText(false, vote.PlayerId, "Vote [%s] does not exist", vote.Params[0])
 	}
+	c.RconText(false, vote.PlayerId, "Vote [%s] does not exist", vote.Params[0])
 	return false, nil, ""
 }
 
@@ -156,4 +169,32 @@ func execVote(c *appcontext.AppContext, vote models.Vote, endFunction interface{
 	time.Sleep(1 * time.Second)
 	param := strings.Join(vote.Params[1:], " ")
 	endFunction.(func(string, *appcontext.AppContext))(param, c)
+}
+
+func (voteSystem *VoteSystem) tryClaimVote() bool {
+	voteSystem.mu.Lock()
+	defer voteSystem.mu.Unlock()
+	if !voteSystem.CanVote {
+		return false
+	}
+	voteSystem.CanVote = false
+	return true
+}
+
+func (voteSystem *VoteSystem) isCanceled() bool {
+	voteSystem.mu.RLock()
+	defer voteSystem.mu.RUnlock()
+	return voteSystem.Cancel
+}
+
+func (voteSystem *VoteSystem) voteCounts() (yes, no int) {
+	voteSystem.mu.RLock()
+	defer voteSystem.mu.RUnlock()
+	return len(voteSystem.VoteYes), len(voteSystem.VoteNo)
+}
+
+func (voteSystem *VoteSystem) outcome() (canceled bool, yesWins bool) {
+	voteSystem.mu.RLock()
+	defer voteSystem.mu.RUnlock()
+	return voteSystem.Cancel, len(voteSystem.VoteYes) > len(voteSystem.VoteNo)
 }
