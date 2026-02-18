@@ -33,6 +33,7 @@ var Commands = map[string]Command{
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit", true},
 	"register":   {commandslist.Register, 0, "!register", true},
+	"admins":     {commandslist.Admins, 0, "!admins", true},
 	"website":    {commandslist.Website, 0, "!website", true},
 	"discord":    {commandslist.Discord, 0, "!discord", true},
 
