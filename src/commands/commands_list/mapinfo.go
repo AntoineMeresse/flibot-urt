@@ -9,7 +9,7 @@ import (
 )
 
 func MapInformation(cmd *appcontext.CommandsArgs) {
-	mapName := cmd.Context.Settings.Mapname
+	mapName := cmd.Context.GetCurrentMap()
 	if len(cmd.Params) == 1 {
 		mapName = cmd.Params[0]
 	}

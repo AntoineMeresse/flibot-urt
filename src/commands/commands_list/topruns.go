@@ -15,7 +15,7 @@ func TopInformation(cmd *appcontext.CommandsArgs) {
 }
 
 func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
-	mapName := cmd.Context.Settings.Mapname
+	mapName := cmd.Context.GetCurrentMap()
 	if len(cmd.Params) == 1 {
 		mapName = cmd.Params[0]
 	}
