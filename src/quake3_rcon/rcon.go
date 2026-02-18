@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -24,6 +25,7 @@ type Rcon struct {
 	ServerPort string
 	Password   string
 	Connection net.Conn
+	mu         sync.Mutex
 }
 
 func (r *Rcon) Connect() {
@@ -74,6 +76,9 @@ func (r *Rcon) Read() (response string) {
 }
 
 func (r *Rcon) RconCommand(command string) (res string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	if r.Connection == nil {
 		return ""
 	}
