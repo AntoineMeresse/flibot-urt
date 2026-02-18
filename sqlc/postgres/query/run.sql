@@ -5,8 +5,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 -- name: GetRuntimeByMapWayUTJ :one
 SELECT runtime
 FROM runs
-WHERE mapname = $1 AND way = $2 AND utj = $3
-ORDER BY runtime ASC
+WHERE guid = $1 AND mapname = $2 AND way = $3 AND utj = $4
 LIMIT 1;
 
 -- name: UpdateRunByGuidAndUTJ :exec

@@ -44,19 +44,24 @@ func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) error {
 const getRuntimeByMapWayUTJ = `-- name: GetRuntimeByMapWayUTJ :one
 SELECT runtime
 FROM runs
-WHERE mapname = $1 AND way = $2 AND utj = $3
-ORDER BY runtime ASC
+WHERE guid = $1 AND mapname = $2 AND way = $3 AND utj = $4
 LIMIT 1
 `
 
 type GetRuntimeByMapWayUTJParams struct {
+	Guid    string
 	Mapname string
 	Way     string
 	Utj     string
 }
 
 func (q *Queries) GetRuntimeByMapWayUTJ(ctx context.Context, arg GetRuntimeByMapWayUTJParams) (int32, error) {
-	row := q.db.QueryRow(ctx, getRuntimeByMapWayUTJ, arg.Mapname, arg.Way, arg.Utj)
+	row := q.db.QueryRow(ctx, getRuntimeByMapWayUTJ,
+		arg.Guid,
+		arg.Mapname,
+		arg.Way,
+		arg.Utj,
+	)
 	var runtime int32
 	err := row.Scan(&runtime)
 	return runtime, err

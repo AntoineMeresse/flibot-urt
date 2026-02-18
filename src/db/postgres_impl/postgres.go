@@ -147,6 +147,7 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 	defer cancel()
 
 	previousTime, err := db.queries.GetRuntimeByMapWayUTJ(c, postgres_genererated.GetRuntimeByMapWayUTJParams{
+		Guid:    info.Guid,
 		Mapname: info.Mapname,
 		Way:     info.Way,
 		Utj:     info.Utj,
