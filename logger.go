@@ -1,27 +1,20 @@
 package main
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
-	"path"
-	"runtime"
-	"strconv"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/lmittmann/tint"
 )
 
 func configureLogger() {
-	log.SetLevel(log.DebugLevel)
-	log.SetReportCaller(true)
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp: true,
-		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-			fileName := " " + path.Base(frame.File) + ":" + strconv.Itoa(frame.Line) + " | "
-			//return frame.Function, fileName
-			return "", fmt.Sprintf("%25.25s", fileName)
-		},
-		DisableLevelTruncation: true,
-		PadLevelText:           true,
-	})
-	log.SetOutput(os.Stdout)
+	levelStr := os.Getenv("LOG_LEVEL")
+
+	var level slog.Level
+	if err := level.UnmarshalText([]byte(levelStr)); err != nil {
+		level = slog.LevelDebug
+	}
+
+	h := tint.NewHandler(os.Stdout, &tint.Options{Level: level})
+	slog.SetDefault(slog.New(h))
 }

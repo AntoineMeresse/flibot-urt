@@ -2,10 +2,9 @@ package models
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 	"sync"
-
-	"github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
@@ -26,7 +25,7 @@ type Players struct {
 }
 
 func (players *Players) AddPlayer(playerNumber string, player *Player) {
-	logrus.Debugf("AddPlayer: %s -> %v", playerNumber, player)
+	slog.Debug("AddPlayer", "number", playerNumber, "player", player)
 	players.Mutex.Lock()
 	player.Number = playerNumber
 	players.PlayerMap[playerNumber] = player
@@ -38,7 +37,7 @@ func (p *Player) hasInfoChange(infos map[string]string) bool {
 }
 
 func (players *Players) UpdatePlayer(currentPlayer *Player, infos map[string]string) bool {
-	logrus.Debug("UpdatePlayer called")
+	slog.Debug("UpdatePlayer called")
 	if currentPlayer.hasInfoChange(infos) {
 		players.Mutex.Lock()
 		if name, ok := infos["name"]; ok {
@@ -60,7 +59,7 @@ func (players *Players) UpdatePlayer(currentPlayer *Player, infos map[string]str
 func (players *Players) UpdatePlayerRights(playerNumber string, level int) {
 	currentPlayer := players.PlayerMap[playerNumber]
 	if currentPlayer == nil {
-		logrus.Warnf("Player %s not found. Can't update rights.", playerNumber)
+		slog.Warn("Player not found. Can't update rights.", "number", playerNumber)
 		return
 	}
 	players.Mutex.Lock()

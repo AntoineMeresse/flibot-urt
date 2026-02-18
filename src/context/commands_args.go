@@ -2,8 +2,7 @@ package appcontext
 
 import (
 	"fmt"
-
-	"github.com/sirupsen/logrus"
+	"log/slog"
 )
 
 type CommandsArgs struct {
@@ -43,7 +42,7 @@ func (c *CommandsArgs) RconList(list []string) {
 
 func (c *CommandsArgs) RconCommand(command string, a ...any) (res string) {
 	cmd := fmt.Sprintf(command, a...)
-	logrus.Debugf("Rcon command: %s", cmd)
+	slog.Debug("Rcon command", "cmd", cmd)
 	return c.Context.Rcon.RconCommand(cmd)
 }
 
@@ -55,7 +54,7 @@ func (c *CommandsArgs) GetPlayerGuid() (guid string) {
 	player, err := c.Context.Players.GetPlayer(c.PlayerId)
 
 	if err != nil {
-		logrus.Errorf("Couldn't find player with (id: %s). %s", c.PlayerId, err.Error())
+		slog.Error("Couldn't find player", "id", c.PlayerId, "err", err)
 		return ""
 	}
 

@@ -1,11 +1,10 @@
 package commandslist
 
 import (
+	"log/slog"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func MapInformation(cmd *appcontext.CommandsArgs) {
@@ -17,7 +16,7 @@ func MapInformation(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetMapInformation(mapName)
 
 	if err != nil {
-		log.Errorf("[MapInformation] Error while trying to get infos from Api: %s", err.Error())
+		slog.Error("MapInformation: error from API", "err", err)
 		cmd.RconText("Could not find map information for (%s)", mapName)
 		return
 	}

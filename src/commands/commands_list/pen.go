@@ -1,11 +1,11 @@
 package commandslist
 
 import (
+	"log/slog"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/sirupsen/logrus"
 )
 
 func Pen(cmd *appcontext.CommandsArgs) {
@@ -21,7 +21,7 @@ func Pen(cmd *appcontext.CommandsArgs) {
 	pen := "B===D"
 
 	if err != nil {
-		logrus.Debugf("Error: %v | Type: %T", err, err)
+		slog.Debug("PenAdd error", "err", err)
 		if strings.Contains(err.Error(), "duplicate key") {
 			size, err := cmd.Context.DB.PenPlayerGetDailySize(player.Guid)
 			if err != nil {

@@ -1,17 +1,16 @@
 package actionslist
 
 import (
+	"log/slog"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
-	log.Debugf("Client User Info: %v", actionParams)
+	slog.Debug("Client User Info", "params", actionParams)
 	if len(actionParams) > 1 {
 		playerNumber := actionParams[0]
 		infoString := strings.Join(actionParams[1:], "")
@@ -25,17 +24,17 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 				currentPlayer = &player
 
 				c.Players.AddPlayer(playerNumber, currentPlayer)
-				log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
+				slog.Debug("Player not found. Creating it", "number", playerNumber, "player", player)
 				c.RconText(false, playerNumber, "^4Welcome back on server. This is a ^1test server^4 so some features might be ^1broken^4.")
 			}
 
 			// Only player update
 			wasUpdated := c.Players.UpdatePlayer(currentPlayer, info)
 			if wasUpdated {
-				log.Infof("Need to update db with new player info: %v", *currentPlayer)
+				slog.Info("Need to update db with new player info", "player", *currentPlayer)
 			}
 		} else {
-			log.Warn("Could not find guid in client user info")
+			slog.Warn("Could not find guid in client user info")
 			// c.Players.UpdatePlayer(playerNumber, info, c.DB.GetPlayerByGuid("not_found"))
 		}
 	}

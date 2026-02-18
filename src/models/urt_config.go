@@ -2,10 +2,10 @@ package models
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -45,7 +45,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/app")
 	if err := viper.ReadInConfig(); err != nil {
-		log.Debugf("No config file found: %s", err)
+		slog.Debug("No config file found", "err", err)
 	}
 
 	// Env variables (override config file)
@@ -84,8 +84,8 @@ func (u *UrtConfig) LoadConfig() {
 	u.LogFile = viper.GetString("logFilePath")
 	u.DbUri = viper.GetString("dbUri")
 
-	log.Info("Db uri: ", u.DbUri)
-	log.Info("Direct env: ", os.Getenv("dbUri"))
+	slog.Info("Db uri", "uri", u.DbUri)
+	slog.Info("Direct env", "dbUri", os.Getenv("dbUri"))
 
 	u.initWorkerNumber()
 }
@@ -94,14 +94,14 @@ func (u *UrtConfig) initWorkerNumber() {
 	value := viper.GetInt("botWorkerNumber")
 
 	if value <= 0 || value >= 100 {
-		log.Error("Please specify a number between 1 & 99 for botWorkerNumber")
+		slog.Error("Please specify a number between 1 & 99 for botWorkerNumber")
 		u.WorkerNumber = 1
 		return
 	}
 
 	u.WorkerNumber = value
 	if value != 1 {
-		log.Debugf("Worker number has been modify in configuration to: %d (Default: 1)", value)
+		slog.Debug("Worker number changed", "value", value, "default", 1)
 	}
 }
 

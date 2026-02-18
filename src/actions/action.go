@@ -1,17 +1,16 @@
 package actions
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-	log "github.com/sirupsen/logrus"
 )
 
 func HandleAction(workerId int, action string, actionParams []string, c *appcontext.AppContext) {
-	// log.Debugf("[Worker %d] ", workerId)
-	log.Debugf("")
-	log.Debugf("-------------------------------------------------------------------------------------------------------------")
+	slog.Debug("-------------------------------------------------------------------------------------------------------------")
 	if val, ok := Actions[action]; ok {
 		val(actionParams, c)
 	} else {
-		log.Errorf("----> Not a known action: %s\n", action)
+		slog.Error("----> Not a known action:", "action", action)
 	}
 }

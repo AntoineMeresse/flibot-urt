@@ -2,9 +2,8 @@ package commands
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
@@ -30,9 +29,9 @@ type commandInfo struct {
 func (info *commandInfo) sendCommandToBridge() error {
 	// TODO: implement logic
 	if info.command.sendToBridge {
-		log.Debugf("Sending command to bridge: %s", info.message)
+		slog.Debug("Sending command to bridge", "message", info.message)
 	} else {
-		log.Debugf("Not sending command to bridge: %s", info.message)
+		slog.Debug("Not sending command to bridge", "message", info.message)
 	}
 	return fmt.Errorf("sendCommandToBridge not implemented yet")
 }
@@ -72,8 +71,7 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 }
 
 func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppContext) (canAccess bool, required int, got int) {
-	log.Debugf("-------------------------------------------------------------")
-
+	slog.Debug("-------------------------------------------------------------")
 
 	player, err := c.Players.GetPlayer(playerNumber)
 	var canUseCmd = false
@@ -81,12 +79,12 @@ func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppCo
 
 	if err == nil {
 		role = player.Role
-		log.Debugf("checkPlayerRights | player (%v)", player)
+		slog.Debug("checkPlayerRights | player", "player", player)
 		canUseCmd = role >= command.Level
 	}
 
 	if command.Level == 0 {
-		log.Trace("Command that can be used by everyone.")
+		slog.Debug("Command that can be used by everyone.")
 		canUseCmd = true
 	}
 
@@ -122,21 +120,20 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 			overrideParamsForCommands(commandInfos.name, role, &args)
 			commandInfos.command.Function(&args)
 		} else {
-			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ",
-				playerNumber, actionParams[2], level, role,
-			)
+			slog.Error(fmt.Sprintf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d)",
+				playerNumber, actionParams[2], level, role))
 			c.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, actionParams[2], level, role)
 		}
 	}
 	err := commandInfos.sendCommandToBridge()
 	if err != nil {
-		//Todo: uncomment log.Error(err)
+		//Todo: uncomment slog.Error(err.Error())
 	}
 }
 
 func displayCommandInfos(commandName string, playerNumber string, commandParams []string, isGlobal bool) {
-	log.Debugf("Command: %s", commandName)
-	log.Debugf("    |-> isGlobal: %v", isGlobal)
-	log.Debugf("    |-> Playernumber: %s", playerNumber)
-	log.Debugf("    |-> Params (%d): %v\n", len(commandParams), commandParams)
+	slog.Debug("Command", "name", commandName)
+	slog.Debug("    |-> isGlobal", "isGlobal", isGlobal)
+	slog.Debug("    |-> Playernumber", "playerNumber", playerNumber)
+	slog.Debug(fmt.Sprintf("    |-> Params (%d)", len(commandParams)), "params", commandParams)
 }

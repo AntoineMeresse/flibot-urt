@@ -1,9 +1,11 @@
 package commandslist
 
 import (
+	"fmt"
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 func ToprunsInformation(cmd *appcontext.CommandsArgs) {
@@ -23,7 +25,7 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 	infos, err := cmd.Context.Api.GetToprunsInformation(mapName)
 
 	if err != nil {
-		log.Errorf("[ToprunsInformation] Error while trying to get infos from Api: %s", err.Error())
+		slog.Error("ToprunsInformation: error from API", "err", err)
 		cmd.RconText("Could not find topruns for (%s)", mapName)
 		return
 	}
@@ -40,14 +42,14 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 	}
 
 	waysNumber := 1
-	log.Debug("Start displayRunsInformation")
+	slog.Debug("Start displayRunsInformation")
 	for way, runinfos := range infos.RunsInfos {
 		cmd.RconText("^7|-> Runs for ^5way %s^7 :", way)
 		if !displayAll {
 			runinfos = runinfos[:1]
 		}
 		for i, run := range runinfos {
-			log.Debugf("Iteration n°%d displayRunsInformation", i)
+			slog.Debug(fmt.Sprintf("Interation n°%d displayRunsInformation", i))
 			cmd.RconText("^7|-------->%2d) %s%s^7 | %s | %s", i+1, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
 		}
 		if waysNumber != len(infos.RunsInfos) {
@@ -55,5 +57,5 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 		}
 		waysNumber += 1
 	}
-	log.Debug("End displayRunsInformation")
+	slog.Debug("End displayRunsInformation")
 }

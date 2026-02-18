@@ -1,9 +1,10 @@
 package logs
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/nxadm/tail"
-	"github.com/sirupsen/logrus"
 )
 
 func InitLogParser(myLogChannel chan string, c *appcontext.AppContext) {
@@ -15,13 +16,13 @@ func InitLogParser(myLogChannel chan string, c *appcontext.AppContext) {
 	}
 
 	go func() {
-		logrus.Infof("Sending playersDump command after logfile initialized.")
+		slog.Info("Sending playersDump command after logfile initialized")
 		c.RconCommand("playersDump")
 	}()
 
 	for line := range logs.Lines {
-		logrus.Tracef("Channel: %v | New line in server log file: %s", myLogChannel, line.Text)
+		slog.Debug("New line in server log file", "line", line.Text)
 		myLogChannel <- line.Text
-		logrus.Trace("New line after channel push")
+		slog.Debug("New line after channel push")
 	}
 }

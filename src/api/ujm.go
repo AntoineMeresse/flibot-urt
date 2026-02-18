@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"os"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
-	"github.com/sirupsen/logrus"
 )
 
 type MapInfos struct {
@@ -26,7 +26,7 @@ type MapInfos struct {
 }
 
 func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
-	logrus.Debugf("[GetMapInformation] Url: %s, mapname: %s", api.UjmUrl, mapname)
+	slog.Debug("GetMapInformation", "url", api.UjmUrl, "mapname", mapname)
 	url := fmt.Sprintf("%s/mapinfo/requestdata", api.UjmUrl)
 	postBody, _ := json.Marshal(map[string]interface{}{
 		"mapname": mapname,
@@ -40,7 +40,7 @@ func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res MapInfos
 			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("GetMapInformation (%s): %v", url, res)
+				slog.Debug("GetMapInformation result", "url", url, "result", res)
 				return res, nil
 			} else {
 				return MapInfos{}, err
@@ -65,7 +65,7 @@ type RunPlayerInfos struct {
 }
 
 func (api *Api) GetToprunsInformation(mapname string) (ToprunsInfos, error) {
-	logrus.Debugf("[GetToprunsInformation] Url: %s, mapname: %s", api.UjmUrl, mapname)
+	slog.Debug("GetToprunsInformation", "url", api.UjmUrl, "mapname", mapname)
 	url := fmt.Sprintf("%s/runs/requestdata", api.UjmUrl)
 	postBody, _ := json.Marshal(map[string]interface{}{
 		"mapname": mapname,
@@ -79,7 +79,7 @@ func (api *Api) GetToprunsInformation(mapname string) (ToprunsInfos, error) {
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res ToprunsInfos
 			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Debugf("[GetToprunsInformation] (%s): %v", url, res)
+				slog.Debug("GetToprunsInformation result", "url", url, "result", res)
 				return res, nil
 			} else {
 				return ToprunsInfos{}, err
@@ -101,7 +101,7 @@ type LatestRunElement struct {
 
 func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 	url := fmt.Sprintf("%s/runs/latestruns", api.UjmUrl)
-	logrus.Debugf("[GetLatestRuns] Url: %s", url)
+	slog.Debug("GetLatestRuns", "url", url)
 
 	getBody, _ := json.Marshal(map[string]interface{}{
 		"apikey": api.Apikey,
@@ -114,7 +114,7 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res []LatestRunElement
 			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetLatestRuns] (%s): %v", url, res)
+				slog.Debug("GetLatestRuns result", "url", url, "result", res)
 				return res, nil
 			} else {
 				return []LatestRunElement{}, err
@@ -135,7 +135,7 @@ type LatestMapElement struct {
 
 func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
 	url := fmt.Sprintf("%s/mapinfo/latestmaps", api.UjmUrl)
-	logrus.Debugf("[GetLatestMaps] Url: %s", url)
+	slog.Debug("GetLatestMaps", "url", url)
 
 	getBody, _ := json.Marshal(map[string]interface{}{
 		"apikey": api.Apikey,
@@ -147,9 +147,8 @@ func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
 		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res []LatestMapElement
-			// logrus.Debug(string(body))
 			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetLatestMaps] (%s): %v", url, res)
+				slog.Debug("GetLatestMaps result", "url", url, "result", res)
 				return res, nil
 			} else {
 				return []LatestMapElement{}, err
@@ -174,7 +173,7 @@ type PersonalBestElement struct {
 }
 
 func (api *Api) GetPersonalBestInformation(mapname string, guid string) (PersonalBestInfos, error) {
-	logrus.Debugf("[GetPersonalBestInformation] Url: %s, mapname: %s", api.UjmUrl, mapname)
+	slog.Debug("GetPersonalBestInformation", "url", api.UjmUrl, "mapname", mapname)
 	url := fmt.Sprintf("%s/runs/getpb", api.UjmUrl)
 	postBody, _ := json.Marshal(map[string]interface{}{
 		"mapname":    mapname,
@@ -189,7 +188,7 @@ func (api *Api) GetPersonalBestInformation(mapname string, guid string) (Persona
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res PersonalBestInfos
 			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetPersonalBestInformation] (%s): %v", url, res)
+				slog.Debug("GetPersonalBestInformation result", "url", url, "result", res)
 				return res, nil
 			} else {
 				return PersonalBestInfos{}, err
@@ -222,7 +221,7 @@ type SendDemoResponse struct {
 }
 
 func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendDemoResponse, error) {
-	logrus.Debugf("[PostRunDemo]")
+	slog.Debug("PostRunDemo")
 
 	d := &DemoBody{
 		Playerguid:  p.Guid,
@@ -240,7 +239,7 @@ func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendD
 	demoResponse, err := api.postRunWithDemo(d, p.GetDemoName(), demoDirectory)
 
 	if err != nil {
-		logrus.Errorf("[PostRunDemo]: Could not upload with demo file. Error: %s", err.Error())
+		slog.Error("PostRunDemo: could not upload with demo file, retrying without", "err", err)
 		demoResponse, err = api.PostRunWithoutDemo(d)
 	}
 
@@ -298,7 +297,7 @@ func (api *Api) PostRunWithoutDemo(demoBody *DemoBody) (SendDemoResponse, error)
 
 	j, err := json.Marshal(*demoBody)
 	if err != nil {
-		logrus.Errorf("[PostRunWithoutDemo] Json marshal error: %v", err)
+		slog.Error("PostRunWithoutDemo: json marshal error", "err", err)
 		return SendDemoResponse{}, fmt.Errorf("[PostRunWithoutDemo] Json marshal error: %w", err)
 	}
 
@@ -308,14 +307,14 @@ func (api *Api) PostRunWithoutDemo(demoBody *DemoBody) (SendDemoResponse, error)
 }
 
 func handlePostDemoResponse(err error, resp *http.Response, url string, functionName string) (SendDemoResponse, error) {
-	logrus.Debugf("[%s] Url: %s", functionName, url)
+	slog.Debug("handlePostDemoResponse", "function", functionName, "url", url)
 
 	if err == nil {
 		defer resp.Body.Close()
-		logrus.Debugf("[%s] Response: %d", functionName, resp.StatusCode)
+		slog.Debug("handlePostDemoResponse status", "function", functionName, "status", resp.StatusCode)
 		if resp.StatusCode == 200 {
 			if body, err := io.ReadAll(resp.Body); err == nil {
-				logrus.Debugf("[%s] Demo body: %s", functionName, string(body))
+				slog.Debug("handlePostDemoResponse body", "function", functionName, "body", string(body))
 				var res SendDemoResponse
 				if err := json.Unmarshal(body, &res); err == nil {
 					res.Process = true

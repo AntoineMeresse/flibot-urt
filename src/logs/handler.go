@@ -1,23 +1,23 @@
 package logs
 
 import (
+	"log/slog"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	"github.com/AntoineMeresse/flibot-urt/src/actions"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/sirupsen/logrus"
 )
 
 func HandleLogsWorker(myLogChannel <-chan string, id int, c *appcontext.AppContext) {
-	logrus.Tracef("Init worker: %d", id)
-	for log := range myLogChannel {
-		logrus.Tracef("Worker read: %s", log)
-		logSplit := utils.CleanEmptyElements(strings.Split(strings.TrimSpace(log), " "))
-		logrus.Tracef("Log: %s", logSplit)
+	slog.Debug("Init worker", "id", id)
+	for line := range myLogChannel {
+		slog.Debug("Worker read", "line", line)
+		logSplit := utils.CleanEmptyElements(strings.Split(strings.TrimSpace(line), " "))
+		slog.Debug("Log:", "parts", logSplit)
 		if len(logSplit) >= 3 {
-			logrus.Tracef("Log Ok: %v", logSplit)
+			slog.Debug("Log Ok:", "parts", logSplit)
 			actions.HandleAction(id, logSplit[1], logSplit[2:], c)
 		}
 	}

@@ -2,13 +2,13 @@ package appcontext
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"slices"
 	"strings"
 	"sync"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type ServerSettings struct {
@@ -25,7 +25,7 @@ func (c *AppContext) SetMapName(mapName string) {
 }
 
 func (c *AppContext) SetNextMap(nextMapName string) {
-	log.Debugf("[SetNextMap] Changing nextmap from %s to %s", c.GetNextMap(), nextMapName)
+	slog.Debug("[SetNextMap] Changing nextmap", "from", c.GetNextMap(), "to", nextMapName)
 	c.RconCommand("g_nextmap %s", nextMapName)
 	c.Settings.mu.Lock()
 	defer c.Settings.mu.Unlock()
@@ -34,7 +34,7 @@ func (c *AppContext) SetNextMap(nextMapName string) {
 
 func closeFile(file *os.File) {
 	if err := file.Close(); err != nil {
-		log.Errorf("SetMapList: failed to close directory: %v", err)
+		slog.Error("SetMapList: failed to close directory", "err", err)
 	}
 }
 
@@ -57,12 +57,12 @@ func (c *AppContext) SetMapList() {
 	c.Settings.mu.Lock()
 	c.Settings.Maplist = res
 	c.Settings.mu.Unlock()
-	log.Debug(res)
+	slog.Debug("Maplist", "maps", res)
 }
 
 func (c *AppContext) initMapName() {
 	c.Settings.Mapname = c.Rcon.RconCommandExtractValue("mapname")
-	log.Debugf("Current map is: %s\n", c.Settings.Mapname)
+	slog.Debug("Current map is", "mapname", c.Settings.Mapname)
 }
 
 func (c *AppContext) initNextMapName() {
@@ -75,20 +75,19 @@ func (c *AppContext) initNextMapName() {
 		}
 		c.Settings.Nextmap = nextmap
 	}
-	log.Debugf("Nextmap is: %s\n", c.Settings.Nextmap)
+	slog.Debug("Nextmap is", "nextmap", c.Settings.Nextmap)
 }
 
 func (c *AppContext) initSettings() {
-	log.Debug("Initializing settings... [Start]")
+	slog.Debug("Initializing settings... [Start]")
 	c.SetMapList()
 	c.initMapName()
 	c.initNextMapName()
-	log.Debug("Initializing settings... [End]")
+	slog.Debug("Initializing settings... [End]")
 }
 
 func (c *AppContext) IsMapAlreadyDownloaded(mapname string) bool {
 	res := slices.Contains(c.GetMapList(), mapname)
-	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
 	return res
 }
 
@@ -98,11 +97,11 @@ func (c *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap *strin
 	for _, m := range c.GetMapList() {
 		if strings.Contains(strings.ToLower(m), strings.ToLower(searchCriteria)) {
 			res = append(res, m)
-			log.Debugf("Map found with criteria (%s): %s", searchCriteria, m)
+			slog.Debug("Map found with criteria", "criteria", searchCriteria, "map", m)
 		}
 	}
 
-	log.Debugf("List of possible maps: %v", res)
+	slog.Debug("Maps matching criteria", "maps", res)
 
 	if len(res) == 1 {
 		return &res[0], nil

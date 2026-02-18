@@ -2,14 +2,14 @@ package appcontext
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/quake3_rcon"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/db"
@@ -39,17 +39,17 @@ func (c *AppContext) Init() {
 	c.initApi()
 	c.initDb()
 
-	log.Debugf("-------> Flibot started (/connect %s:%s)\n", c.Rcon.ServerIp, c.Rcon.ServerPort)
+	slog.Debug("-------> Flibot started", "ip", c.Rcon.ServerIp, "port", c.Rcon.ServerPort)
 	c.RconText(true, "", "^6 Flibot initialized ^5:)")
 }
 
 func (c *AppContext) initPlayers() {
-	log.Debug("Initializing players...")
+	slog.Debug("Initializing players...")
 	c.Players = models.Players{Mutex: sync.RWMutex{}, PlayerMap: make(map[string]*models.Player)}
 }
 
 func (c *AppContext) initRuns() {
-	log.Debug("Initializing runs...")
+	slog.Debug("Initializing runs...")
 	c.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
 }
 
@@ -78,11 +78,12 @@ func (c *AppContext) initRcon() {
 func (c *AppContext) initDb() {
 	// database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
 	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
-	log.Debug("Initializing Db...")
+	slog.Debug("Initializing Db...")
 	database, dbErr := postgres_impl.InitPostGresqlDb(context.TODO(), c.UrtConfig.DbUri)
 
 	if dbErr != nil {
-		log.Fatalf("Error trying to instantiate db. Err: %v", dbErr)
+		slog.Error("Error trying to instantiate db", "err", dbErr)
+		os.Exit(1)
 	}
 
 	c.DB = database
@@ -91,7 +92,7 @@ func (c *AppContext) initDb() {
 func (c *AppContext) MapSync() {
 	mapSyncErr := c.Api.MapSync()
 	if mapSyncErr != nil {
-		log.Errorf("Error while trying to sync map: %s", mapSyncErr.Error())
+		slog.Error("Error while trying to sync map", "err", mapSyncErr)
 		c.RconCommand("reloadMaps")
 		c.SetMapList()
 		c.RconText(true, "", "^7Local map sync")

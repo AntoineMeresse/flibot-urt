@@ -1,6 +1,7 @@
 package vote
 
 import (
+	"log/slog"
 	"strings"
 	"sync"
 	"time"
@@ -9,7 +10,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -26,10 +26,10 @@ type VoteSystem struct {
 
 func InitVoteSystem(voteChannel <-chan models.Vote, c *appcontext.AppContext) {
 	voteSystem := VoteSystem{CanVote: true, Cancel: false, VoteYes: make(map[string]int), VoteNo: make(map[string]int)}
-	logrus.Debugf("VoteSystem initiated: %v", &voteSystem)
+	slog.Debug("VoteSystem initiated", "system", &voteSystem)
 
 	for vote := range voteChannel {
-		logrus.Debugf("New vote incoming: %v", vote)
+		slog.Debug("New vote incoming", "vote", vote)
 		go voteLogic(c, &voteSystem, vote)
 	}
 }
@@ -45,7 +45,7 @@ func (voteSystem *VoteSystem) reset() {
 
 func voteLogic(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote) {
 	if vote.Params == nil {
-		logrus.Errorf("Vote params can't be null %v", vote)
+		slog.Error("Vote params can't be null", "vote", vote)
 		return
 	}
 

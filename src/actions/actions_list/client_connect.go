@@ -1,11 +1,12 @@
 package actionslist
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-	log "github.com/sirupsen/logrus"
 )
 
 func ClientConnect(actionParams []string, _ *appcontext.AppContext) {
-	log.Debugf("Client Connect: %v", actionParams)
+	slog.Debug("Client Connect", "params", actionParams)
 	//c.Players.AddPlayer(actionParams[0], &models.Player{})
 }

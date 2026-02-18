@@ -21,9 +21,7 @@ func (p PenData) GetName() string {
 	if p.Name.String == "" {
 		return "Unknown"
 	}
-	//x := models.Player{}
-	//logrus.Debugf("%v", x)
-	return p.Name.String
+return p.Name.String
 }
 
 func (p PenData) GetDate() string {

@@ -1,13 +1,14 @@
 package actionslist
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
-	log "github.com/sirupsen/logrus"
 )
 
 func TimelimitHit(actionParams []string, c *appcontext.AppContext) {
-	log.Debugf("Timelimit hit: %v", actionParams)
+	slog.Debug("Timelimit hit", "params", actionParams)
 	v := models.Vote{Params: []string{"extend"}}
 	c.NewVote(v)
 }

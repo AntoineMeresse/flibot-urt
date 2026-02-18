@@ -4,16 +4,15 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"os"
-
-	"github.com/sirupsen/logrus"
 )
 
 func (api *Api) SendFileToWebhook(filePath string, message string) error {
 	path := "/demos/" + filePath
-	logrus.Debugf("Sending file to webhook: %s | File: %s (path: %s) | Message: %s", api.DiscordWebhook, filePath, path, message)
+	slog.Debug("Sending file to webhook", "webhook", api.DiscordWebhook, "file", filePath, "path", path, "message", message)
 
 	file, err := os.Open(path)
 	if err != nil {

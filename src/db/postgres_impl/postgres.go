@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -40,7 +40,7 @@ func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
 		return nil, err
 	}
 
-	logrus.Debugf("Schema: %s", schema)
+	slog.Debug("Schema loaded", "schema", schema)
 
 	return &PostGresqlDB{conn: conn, queries: queries, ctx: ctx}, nil
 }
@@ -48,7 +48,7 @@ func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
 func (db *PostGresqlDB) Close() {
 	err := db.conn.Close(db.ctx)
 	if err != nil {
-		logrus.Error("Error trying to close postgres connection", err)
+		slog.Error("Error trying to close postgres connection", "err", err)
 	}
 }
 
@@ -64,7 +64,7 @@ func (db *PostGresqlDB) SaveNewPlayer(name string, guid string, ipAddress string
 	if err != nil {
 		return 0, err
 	}
-	logrus.Debugf("Player created: %v", p)
+	slog.Debug("Player created", "player", p)
 	return int(p.ID), nil
 }
 
@@ -80,9 +80,10 @@ func (db *PostGresqlDB) PenAdd(guid string, size float64) error {
 		Size: size,
 		Date: pgtype.Date{Time: time.Now(), Valid: true},
 	})
-	logrus.Debugf("Pen created: %v", pen)
+	slog.Debug("Pen created", "pen", pen)
 	return err
 }
+
 func (db *PostGresqlDB) PenPenOfTheDay() (string, []mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
@@ -95,13 +96,14 @@ func (db *PostGresqlDB) PenPenOfTheDay() (string, []mydb.PenData, error) {
 		return utils.GetTodayDateFormated(), []mydb.PenData{}, nil
 	}
 
-	logrus.Debugf("Potd: %v", potd)
+	slog.Debug("PenOfTheDay", "potd", potd)
 	res := make([]mydb.PenData, 0, len(potd))
 	for _, v := range potd {
 		res = append(res, mydb.PenData{Name: sql.NullString{String: v.Name, Valid: true}, Size: v.Size})
 	}
 	return utils.GetTodayDateFormated(), res, nil
 }
+
 func (db *PostGresqlDB) PenPenHallOfFame() ([]mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
@@ -111,13 +113,14 @@ func (db *PostGresqlDB) PenPenHallOfFame() ([]mydb.PenData, error) {
 		return []mydb.PenData{}, nil
 	}
 
-	logrus.Debugf("Phof: %v", phof)
+	slog.Debug("PenHallOfFame", "phof", phof)
 	res := make([]mydb.PenData, 0, len(phof))
 	for _, v := range phof {
 		res = append(res, mydb.PenData{Name: sql.NullString{String: v.Name, Valid: true}, Size: v.Size, Date: v.Date.Time})
 	}
 	return res, nil
 }
+
 func (db *PostGresqlDB) PenPenHallOfShame() ([]mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
@@ -127,7 +130,7 @@ func (db *PostGresqlDB) PenPenHallOfShame() ([]mydb.PenData, error) {
 		return []mydb.PenData{}, nil
 	}
 
-	logrus.Debugf("Phos: %v", phos)
+	slog.Debug("PenHallOfShame", "phos", phos)
 	res := make([]mydb.PenData, 0, len(phos))
 	for _, v := range phos {
 		res = append(res, mydb.PenData{Name: sql.NullString{String: v.Name, Valid: true}, Size: v.Size, Date: v.Date.Time})
@@ -143,7 +146,7 @@ func (db *PostGresqlDB) PenPlayerGetDailySize(guid string) (float64, error) {
 }
 
 func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error {
-	logrus.Debugf("HandleRun: %v | %v", info, checkpoints)
+	slog.Debug("HandleRun", "info", info, "checkpoints", checkpoints)
 	runtime, err := strconv.Atoi(info.Time)
 	if err != nil {
 		return err
@@ -161,7 +164,7 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 
 	if err == nil {
 		timeDiff := int(previousTime) - runtime
-		logrus.Debugf("HandleRun: Time diff: %dms", timeDiff)
+		slog.Debug("HandleRun time diff", "diff_ms", timeDiff)
 
 		if timeDiff > 0 {
 			if err = db.queries.UpdateRunByGuidAndUTJ(c, postgres_genererated.UpdateRunByGuidAndUTJParams{
@@ -173,12 +176,12 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 			}); err != nil {
 				return err
 			}
-			logrus.Debugf("HandleRun: Successful update time: %d for guid: %s", runtime, info.Guid)
+			slog.Debug("HandleRun: updated time", "runtime", runtime, "guid", info.Guid)
 		} else {
-			logrus.Debugf("HandleRun: Not an improvement")
+			slog.Debug("HandleRun: not an improvement")
 		}
 	} else {
-		logrus.Debugf("HandleRun: No run found. Create a new entry in db")
+		slog.Debug("HandleRun: no existing run, creating new entry")
 		if err = db.queries.CreateRun(c, postgres_genererated.CreateRunParams{
 			Guid:        info.Guid,
 			Utj:         info.Utj,
@@ -191,7 +194,7 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 		}); err != nil {
 			return err
 		}
-		logrus.Debugf("HandleRun: Created new entry in db")
+		slog.Debug("HandleRun: created new entry")
 	}
 	return nil
 }
@@ -201,10 +204,10 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 	defer cancel()
 
 	if playerDb, err := db.queries.GetPLayerByGuid(c, guid); err != nil {
-		logrus.Errorf("[GetPlayerByGuid] Error: %v", err)
+		slog.Error("GetPlayerByGuid error", "err", err)
 		return models.Player{}, false
 	} else {
-		logrus.Debugf("Player found in db: %+v", playerDb)
+		slog.Debug("Player found in db", "player", playerDb)
 		return models.Player{
 			Role: int(playerDb.Role),
 			Name: playerDb.Name,

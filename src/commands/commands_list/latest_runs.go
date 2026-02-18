@@ -1,15 +1,16 @@
 package commandslist
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-	"github.com/sirupsen/logrus"
 )
 
 func LatestRuns(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetLatestRuns()
 
 	if err != nil {
-		logrus.Error(err.Error())
+		slog.Error("LatestRuns: error from API", "err", err)
 		return
 	}
 

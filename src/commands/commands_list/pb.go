@@ -1,9 +1,10 @@
 package commandslist
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 func PersonalBest(cmd *appcontext.CommandsArgs) {
@@ -22,7 +23,7 @@ func PersonalBest(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetPersonalBestInformation(mapName, player.Guid)
 
 	if err != nil {
-		log.Errorf("[PersonalBest] Error while trying to get infos from Api: %s", err.Error())
+		slog.Error("PersonalBest: error from API", "err", err)
 		cmd.RconText("Could not find pb for (%s)", mapName)
 		return
 	}

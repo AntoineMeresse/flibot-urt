@@ -2,10 +2,9 @@ package commandslist
 
 import (
 	"fmt"
+	"log/slog"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func PlayersList(cmd *appcontext.CommandsArgs) {
@@ -13,7 +12,7 @@ func PlayersList(cmd *appcontext.CommandsArgs) {
 	cmd.Context.Players.Mutex.RLock()
 	for key, value := range cmd.Context.Players.PlayerMap {
 		text := fmt.Sprintf("%s: %v", key, value)
-		log.Debug(text)
+		slog.Debug("PlayersList entry", "entry", text)
 		cmd.RconText(text)
 	}
 	cmd.Context.Players.Mutex.RUnlock()

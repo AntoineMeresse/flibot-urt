@@ -2,26 +2,27 @@ package actionslist
 
 import (
 	"encoding/json"
+	"fmt"
+	"log/slog"
 	"strconv"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
-	log "github.com/sirupsen/logrus"
 )
 
 func PlayersDump(actionParams []string, c *appcontext.AppContext) {
 	if len(actionParams) == 1 {
 		dump := actionParams[0]
-		log.Debugf("PLayersDump: %v", dump)
+		slog.Debug("PLayersDump", "dump", dump)
 
 		players, err := convertPlayersDump(dump)
 		if err != nil {
-			log.Error(err)
+			slog.Error("PlayersDump", "err", err)
 			return
 		}
 
 		for i, p := range players {
-			log.Infof("%2d) ---> %v", i, p)
+			slog.Info(fmt.Sprintf("%2d) ---> %v", i, p))
 
 			playerNumber := strconv.Itoa(p.PlayerNumber)
 			currentPlayer := c.Players.PlayerMap[playerNumber]
@@ -38,7 +39,7 @@ func PlayersDump(actionParams []string, c *appcontext.AppContext) {
 
 				currentPlayer = &player
 				c.Players.AddPlayer(playerNumber, currentPlayer)
-				log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
+				slog.Debug("Player not found. Creating it", "number", playerNumber, "player", player)
 				c.RconText(false, playerNumber, "^4Welcome back on server. This is a ^1test server^4 so some features might be ^1broken^4.")
 			}
 		}

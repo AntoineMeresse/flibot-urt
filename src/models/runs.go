@@ -2,11 +2,10 @@ package models
 
 import (
 	"fmt"
+	"log/slog"
 	"strconv"
 	"strings"
 	"sync"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type RunCompare struct {
@@ -47,7 +46,7 @@ func (p *PlayerRunInfo) GetDemoName() string {
 }
 
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
-	log.Debugf("Starting run %s", playerNumber)
+	slog.Debug("Starting run", "playerNumber", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
@@ -58,25 +57,25 @@ func (i *RunPlayerInfo) appendCheckpoint(time string) {
 	if v, err := strconv.Atoi(time); err == nil {
 		i.checkpoint = append(i.checkpoint, v)
 	} else {
-		log.Errorf("Error converting time to int %v", err)
+		slog.Error("Error converting time to int", "err", err)
 	}
 }
 
 func (runs *RunsInfo) AddCheckpoint(playerNumber string, time string) {
-	log.Debugf("AddCheckpoint %s -> %s", playerNumber, time)
+	slog.Debug("AddCheckpoint", "number", playerNumber, "time", time)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
 	info, ok := runs.PlayerRuns[playerNumber]
 	if !ok {
-		log.Warnf("AddCheckpoint: no active run for player %s", playerNumber)
+		slog.Warn("AddCheckpoint: no active run for player", "number", playerNumber)
 		return
 	}
 	info.appendCheckpoint(time)
 }
 
 func (runs *RunsInfo) RunCanceled(playerNumber string) {
-	log.Debugf("RunCanceled %s", playerNumber)
+	slog.Debug("RunCanceled", "number", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
@@ -84,13 +83,13 @@ func (runs *RunsInfo) RunCanceled(playerNumber string) {
 }
 
 func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time string) {
-	log.Debugf("RunStopped %s", playerNumber)
+	slog.Debug("RunStopped", "number", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
 	info, ok := runs.PlayerRuns[playerNumber]
 	if !ok {
-		log.Warnf("RunStopped: no active run for player %s", playerNumber)
+		slog.Warn("RunStopped: no active run for player", "number", playerNumber)
 		return
 	}
 	var checkpoints []int
@@ -102,9 +101,9 @@ func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time st
 }
 
 func (runs *RunsInfo) RunGetCheckpoint(playerNumber string, playerGuid string, time string, way string) []int {
-	log.Debugf("RunGetCheckpoint %s (guid: %s) -> %s", playerNumber, playerGuid, time)
+	slog.Debug("RunGetCheckpoint", "number", playerNumber, "guid", playerGuid, "time", time)
 	runId := fmt.Sprintf("%s-%s-%s", playerGuid, way, time)
-	log.Debugf("Runid: %s", runId)
+	slog.Debug("Runid", "runId", runId)
 	checkpoints, exist := runs.History[runId]
 
 	if !exist {

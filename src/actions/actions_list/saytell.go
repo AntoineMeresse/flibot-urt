@@ -1,10 +1,11 @@
 package actionslist
 
 import (
+	"log/slog"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-	log "github.com/sirupsen/logrus"
 )
 
 func SayTell(actionParams []string, _ *appcontext.AppContext) {
-	log.Debugf("SayTell: %v", actionParams)
+	slog.Debug("SayTell", "params", actionParams)
 }

@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-
-	log "github.com/sirupsen/logrus"
+	"log/slog"
 )
 
 type MapSearchResult struct {
@@ -21,7 +20,6 @@ func (api *Api) GetMapsWithPattern(criteria string) []string {
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res MapSearchResult
 			if err := json.Unmarshal(body, &res); err == nil {
-				// logrus.Debugf("GetMapWithPattern (%s): %v", url, res)
 				return res.Matching
 			}
 		}
@@ -30,7 +28,7 @@ func (api *Api) GetMapsWithPattern(criteria string) []string {
 }
 
 func (api *Api) MapSync() error {
-	log.Debug("MapSync called.")
+	slog.Debug("MapSync called")
 	// TODO: Implement mapsync via Bridge
 	return fmt.Errorf("mapsync method not implemented yet")
 }
@@ -51,13 +49,13 @@ func (api *Api) GetServerStatus() (ServersListStatus, error) {
 	if err == nil {
 		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
-			log.Debugf("Status: %s", string(body))
+			slog.Debug("Status", "body", string(body))
 			var res ServersListStatus
 			if err := json.Unmarshal(body, &res); err == nil {
-				log.Debugf("GetServerStatus (%s): %v", url, res)
+				slog.Debug("GetServerStatus", "url", url, "result", res)
 				return res, nil
 			} else {
-				log.Error(err.Error())
+				slog.Error("GetServerStatus unmarshal error", "err", err)
 				return ServersListStatus{}, err
 			}
 		}

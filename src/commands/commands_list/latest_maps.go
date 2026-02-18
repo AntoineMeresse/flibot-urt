@@ -1,18 +1,17 @@
 package commandslist
 
 import (
+	"log/slog"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
-
-	"github.com/sirupsen/logrus"
 )
 
 func LatestMaps(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetLatestMaps()
 
 	if err != nil {
-		logrus.Error(err.Error())
+		slog.Error("LatestMaps: error from API", "err", err)
 		return
 	}
 
