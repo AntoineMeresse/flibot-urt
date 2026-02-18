@@ -52,7 +52,7 @@ func replaceShortcutByKnownCommand(cmd *string) {
 	}
 }
 
-const fuzzyMaxDistance = 2
+const fuzzyMaxDistance = 4
 
 func findClosestCommands(name string) (matches []string) {
 	bestDist := fuzzyMaxDistance + 1
