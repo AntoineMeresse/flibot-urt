@@ -156,3 +156,25 @@ func isZero(v string) bool {
 func IsImprovement(v string) bool {
 	return !strings.Contains(v, "-") && !isZero(v)
 }
+
+func Levenshtein(a, b string) int {
+	la, lb := len(a), len(b)
+	row := make([]int, lb+1)
+	for j := range row {
+		row[j] = j
+	}
+	for i := 1; i <= la; i++ {
+		prev := i
+		for j := 1; j <= lb; j++ {
+			cost := 1
+			if a[i-1] == b[j-1] {
+				cost = 0
+			}
+			val := min(row[j]+1, min(prev+1, row[j-1]+cost))
+			row[j-1] = prev
+			prev = val
+		}
+		row[lb] = prev
+	}
+	return row[lb]
+}

@@ -19,12 +19,13 @@ type Command struct {
 }
 
 type commandInfo struct {
-	command  Command
-	isValid  bool
-	isGlobal bool
-	name     string
-	message  string
-	params   []string
+	command     Command
+	isValid     bool
+	isGlobal    bool
+	name        string
+	message     string
+	params      []string
+	suggestions []string
 }
 
 func (info *commandInfo) sendCommandToBridge() error {
@@ -51,6 +52,27 @@ func replaceShortcutByKnownCommand(cmd *string) {
 	}
 }
 
+const fuzzyMaxDistance = 2
+
+func findClosestCommands(name string) (matches []string) {
+	bestDist := fuzzyMaxDistance + 1
+
+	for cmdName := range Commands {
+		d := utils.Levenshtein(name, cmdName)
+		if d < bestDist {
+			bestDist = d
+			matches = []string{cmdName}
+		} else if d == bestDist {
+			matches = append(matches, cmdName)
+		}
+	}
+
+	if bestDist > fuzzyMaxDistance {
+		return nil
+	}
+	return matches
+}
+
 func extractCmdInfos(actionParams []string) (command commandInfo) {
 	text := actionParams[2]
 	message := strings.Join(actionParams[2:], " ")
@@ -62,10 +84,17 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 			name = strings.ToLower(text[1:])
 		}
 		replaceShortcutByKnownCommand(&name)
+		isGlobal := isCommandGlobal(text)
+		params := utils.CleanEmptyElements(actionParams[3:])
 		if command, ok := Commands[name]; ok {
-			isGlobal := isCommandGlobal(text)
-			params := utils.CleanEmptyElements(actionParams[3:])
 			return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: name, params: params, message: message}
+		}
+		if matches := findClosestCommands(name); len(matches) > 0 {
+			if len(matches) == 1 {
+				command := Commands[matches[0]]
+				return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: matches[0], params: params, message: message, suggestions: matches}
+			}
+			return commandInfo{command: Command{sendToBridge: true}, message: message, suggestions: matches}
 		}
 	}
 	return commandInfo{command: Command{sendToBridge: true}, message: message}
@@ -73,7 +102,6 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 
 func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppContext) (canAccess bool, required int, got int) {
 	log.Debugf("-------------------------------------------------------------")
-
 
 	player, err := c.Players.GetPlayer(playerNumber)
 	var canUseCmd = false
@@ -108,9 +136,15 @@ func overrideParamsForCommands(commandName string, role int, cmdArgs *appcontext
 func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 	playerNumber := actionParams[0]
 	commandInfos := extractCmdInfos(actionParams)
+	if !commandInfos.isValid && len(commandInfos.suggestions) > 1 {
+		c.RconText(false, playerNumber, "^3I'm not a magician, could you choose between ^5%s^3 ? :D", "!"+strings.Join(commandInfos.suggestions, "^3 and ^5!"))
+	}
 	if commandInfos.isValid {
 		canAccess, level, role := checkPlayerRights(playerNumber, commandInfos.command, c)
 		if canAccess {
+			if len(commandInfos.suggestions) == 1 {
+				c.RconText(false, playerNumber, "^3From what you typed, I guess you meant ^5!%s^3 ;)", commandInfos.suggestions[0])
+			}
 			displayCommandInfos(actionParams[2], playerNumber, commandInfos.params, commandInfos.isGlobal)
 			args := appcontext.CommandsArgs{
 				Context:  c,
