@@ -45,6 +45,7 @@ type DataPersister interface {
 	GetPlayerByGuid(guid string) (models.Player, bool)
 	SaveNewPlayer(name string, guid string, ipAddress string) (int, error)
 	UpdatePlayer() error
+	SetPlayerRole(guid string, role int) error
 
 	PenAdd(guid string, size float64) error
 	PenPlayerGetDailySize(guid string) (float64, error)

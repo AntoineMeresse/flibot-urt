@@ -3,6 +3,7 @@ package appcontext
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -102,4 +103,43 @@ func (c *AppContext) MapSync() {
 
 func (c *AppContext) NewVote(v models.Vote) {
 	c.VoteChannel <- v
+}
+
+func (c *AppContext) registerPlayer(playerNumber string, player models.Player) *models.Player {
+	c.Players.AddPlayer(playerNumber, &player)
+	log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
+
+	if player.Role == 0 {
+		c.RconText(false, playerNumber, "You can register using: ^5!register")
+	} else {
+		c.RconText(false, playerNumber,
+			"Welcome back on server ^5%s^3 [%s]. ^3This is a ^1TEST SERVER^3 so some features might be ^1BROKEN^3.",
+			player.Name, player.Id,
+		)
+	}
+	return &player
+}
+
+func (c *AppContext) InitPlayer(playerNumber string, guid string, name string, ip string) *models.Player {
+	player, found := c.DB.GetPlayerByGuid(guid)
+	if !found {
+		id, err := c.DB.SaveNewPlayer(name, guid, ip)
+		if err != nil {
+			log.Errorf("[InitPlayer] Error saving new player: %v", err)
+		}
+		player = models.Player{Guid: guid, Name: name, Ip: ip, Id: strconv.Itoa(id)}
+	}
+	return c.registerPlayer(playerNumber, player)
+}
+
+func (c *AppContext) InitPlayerFromDump(playerNumber string, dump models.DumpPlayer) *models.Player {
+	player, found := c.DB.GetPlayerByGuid(dump.GUID)
+	if !found {
+		id, err := c.DB.SaveNewPlayer(dump.Name, dump.GUID, "")
+		if err != nil {
+			log.Errorf("[InitPlayerFromDump] Error saving new player: %v", err)
+		}
+		player = models.Player{Guid: dump.GUID, Name: dump.Name, Id: strconv.Itoa(id)}
+	}
+	return c.registerPlayer(playerNumber, player)
 }

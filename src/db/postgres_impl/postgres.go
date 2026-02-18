@@ -72,6 +72,15 @@ func (db *PostGresqlDB) UpdatePlayer() error {
 	return fmt.Errorf("To implement")
 }
 
+func (db *PostGresqlDB) SetPlayerRole(guid string, role int) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.SetPlayerRole(c, postgres_genererated.SetPlayerRoleParams{
+		Guid: guid,
+		Role: int32(role),
+	})
+}
+
 func (db *PostGresqlDB) PenAdd(guid string, size float64) error {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
@@ -209,7 +218,7 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 			Role: int(playerDb.Role),
 			Name: playerDb.Name,
 			Guid: guid,
-			Id:   string(playerDb.ID),
+			Id:   strconv.Itoa(int(playerDb.ID)),
 			// Aliases: playerDb.Aliases,
 		}, true
 	}

@@ -111,6 +111,20 @@ func (q *Queries) ListPlayers(ctx context.Context) ([]Player, error) {
 	return items, nil
 }
 
+const setPlayerRole = `-- name: SetPlayerRole :exec
+UPDATE player SET role = $2 WHERE guid = $1
+`
+
+type SetPlayerRoleParams struct {
+	Guid string
+	Role int32
+}
+
+func (q *Queries) SetPlayerRole(ctx context.Context, arg SetPlayerRoleParams) error {
+	_, err := q.db.Exec(ctx, setPlayerRole, arg.Guid, arg.Role)
+	return err
+}
+
 const updatePlayer = `-- name: UpdatePlayer :one
 UPDATE player
 SET role = $2,

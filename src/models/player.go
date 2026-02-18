@@ -20,6 +20,12 @@ type Player struct {
 	Role    int
 }
 
+type DumpPlayer struct {
+	PlayerNumber int    `json:"playernumber"`
+	Name         string `json:"name"`
+	GUID         string `json:"guid"`
+}
+
 type Players struct {
 	Mutex     sync.RWMutex
 	PlayerMap map[string]*Player

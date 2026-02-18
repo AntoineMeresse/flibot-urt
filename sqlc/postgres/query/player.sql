@@ -24,3 +24,6 @@ ORDER BY id;
 -- name: DeletePlayer :exec
 DELETE FROM player
 WHERE guid = $1;
+
+-- name: SetPlayerRole :exec
+UPDATE player SET role = $2 WHERE guid = $1;

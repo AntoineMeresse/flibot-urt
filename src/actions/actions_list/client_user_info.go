@@ -19,14 +19,10 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 
 		if guid, ok := info["cl_guid"]; ok {
 			currentPlayer := c.Players.PlayerMap[playerNumber]
-
 			if currentPlayer == nil {
-				player, _ := c.DB.GetPlayerByGuid(guid)
-				currentPlayer = &player
-
-				c.Players.AddPlayer(playerNumber, currentPlayer)
-				log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
-				c.RconText(false, playerNumber, "^4Welcome back on server. This is a ^1test server^4 so some features might be ^1broken^4.")
+				name := utils.DecolorString(info["name"])
+				ip := strings.Split(info["ip"], ":")[0]
+				currentPlayer = c.InitPlayer(playerNumber, guid, name, ip)
 			}
 
 			// Only player update
@@ -36,7 +32,6 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 			}
 		} else {
 			log.Warn("Could not find guid in client user info")
-			// c.Players.UpdatePlayer(playerNumber, info, c.DB.GetPlayerByGuid("not_found"))
 		}
 	}
 }
