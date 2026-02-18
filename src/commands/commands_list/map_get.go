@@ -2,6 +2,8 @@ package commandslist
 
 import (
 	"fmt"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
@@ -14,14 +16,32 @@ import (
 func MapGet(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		cmd.RconText("Please specify one or more maps.")
-	} else {
-		for _, m := range utils.CleanDuplicateElements(cmd.Params) {
-			go downloadMap(m, cmd)
-		}
+		return
+	}
+
+	maps := utils.CleanDuplicateElements(cmd.Params)
+	var wg sync.WaitGroup
+	var downloaded atomic.Bool
+
+	for _, m := range maps {
+		wg.Add(1)
+		go downloadMapWorker(m, cmd, &wg, &downloaded)
+	}
+
+	wg.Wait()
+	if downloaded.Load() {
+		cmd.Context.MapSync()
 	}
 }
 
-func downloadMap(mapSearch string, cmd *appcontext.CommandsArgs) {
+func downloadMapWorker(mapSearch string, cmd *appcontext.CommandsArgs, wg *sync.WaitGroup, downloaded *atomic.Bool) {
+	defer wg.Done()
+	if downloadMap(mapSearch, cmd) {
+		downloaded.Store(true)
+	}
+}
+
+func downloadMap(mapSearch string, cmd *appcontext.CommandsArgs) bool {
 	// context.SetMapList()
 	unique, mapname := uniqueMapExist(mapSearch, cmd)
 	if unique {
@@ -33,14 +53,14 @@ func downloadMap(mapSearch string, cmd *appcontext.CommandsArgs) {
 			if bytes, err := api.DownloadFile(newFile, url); err == nil {
 				elapsed := time.Since(start)
 				cmd.RconText(msg.DOWNLOAD_OK, mapname, utils.BytesNumberConverter(bytes), elapsed.Round(time.Millisecond))
-				cmd.Context.MapSync()
-			} else {
-				cmd.RconText(msg.DOWNLOAD_KO, mapname)
+				return true
 			}
+			cmd.RconText(msg.DOWNLOAD_KO, mapname)
 		} else {
 			cmd.RconText(msg.DOWNLOAD_ALREADY_ON_SERV, mapname)
 		}
 	}
+	return false
 }
 
 func uniqueMapExist(search string, cmd *appcontext.CommandsArgs) (bool, string) {
