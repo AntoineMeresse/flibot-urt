@@ -24,10 +24,9 @@ func (api *Api) GetMapsWithPattern(criteria string) []string {
 				// logrus.Debugf("GetMapWithPattern (%s): %v", url, res)
 				return res.Matching
 			}
-			return []string{""}
 		}
 	}
-	return []string{""}
+	return []string{}
 }
 
 func (api *Api) MapSync() error {

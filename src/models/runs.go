@@ -84,7 +84,7 @@ func (runs *RunsInfo) RunCanceled(playerNumber string) {
 }
 
 func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time string) {
-	log.Debugf("RunCanceled %s", playerNumber)
+	log.Debugf("RunStopped %s", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 

@@ -46,7 +46,10 @@ func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
 }
 
 func (db *PostGresqlDB) Close() {
-	db.conn.Close(db.ctx)
+	err := db.conn.Close(db.ctx)
+	if err != nil {
+		logrus.Error("Error trying to close postgres connection", err)
+	}
 }
 
 func (db *PostGresqlDB) SaveNewPlayer(name string, guid string, ipAddress string) (int, error) {
@@ -58,8 +61,11 @@ func (db *PostGresqlDB) SaveNewPlayer(name string, guid string, ipAddress string
 		IpAddress:  ipAddress,
 		TimeJoined: pgtype.Timestamp{Time: time.Now(), Valid: true},
 	})
+	if err != nil {
+		return 0, err
+	}
 	logrus.Debugf("Player created: %v", p)
-	return int(p.ID), err
+	return int(p.ID), nil
 }
 
 func (db *PostGresqlDB) UpdatePlayer() error {
