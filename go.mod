@@ -7,7 +7,6 @@ toolchain go1.24.2
 require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/maruel/natural v1.3.0
-	github.com/mattn/go-sqlite3 v1.14.34
 	github.com/nxadm/tail v1.4.11
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/viper v1.21.0

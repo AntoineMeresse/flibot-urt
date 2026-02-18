@@ -11,6 +11,7 @@ var Actions = map[string]ActionFunc{
 	"ClientBegin:":           actionslist.ClientBegin,
 	"say:":                   actionslist.Say,
 	"ClientConnect:":         actionslist.ClientConnect,
+	"ClientDisconnect:":      actionslist.ClientDisconnect,
 	"ClientUserinfo:":        actionslist.ClientUserinfo,
 	"ClientSpawn:":           actionslist.ClientSpawn,
 	"Timelimit:":             actionslist.TimelimitHit,
