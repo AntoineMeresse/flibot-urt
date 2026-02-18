@@ -36,6 +36,7 @@ func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
 	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(postBody))
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res MapInfos
 			if err := json.Unmarshal(body, &res); err == nil {
@@ -74,6 +75,7 @@ func (api *Api) GetToprunsInformation(mapname string) (ToprunsInfos, error) {
 	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(postBody))
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res ToprunsInfos
 			if err := json.Unmarshal(body, &res); err == nil {
@@ -108,6 +110,7 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res []LatestRunElement
 			if err := json.Unmarshal(body, &res); err == nil {
@@ -141,6 +144,7 @@ func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res []LatestMapElement
 			// logrus.Debug(string(body))
@@ -181,6 +185,7 @@ func (api *Api) GetPersonalBestInformation(mapname string, guid string) (Persona
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(postBody))
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res PersonalBestInfos
 			if err := json.Unmarshal(body, &res); err == nil {
@@ -294,6 +299,7 @@ func (api *Api) PostRunWithoutDemo(demoBody *DemoBody) (SendDemoResponse, error)
 	j, err := json.Marshal(*demoBody)
 	if err != nil {
 		logrus.Errorf("[PostRunWithoutDemo] Json marshal error: %v", err)
+		return SendDemoResponse{}, fmt.Errorf("[PostRunWithoutDemo] Json marshal error: %w", err)
 	}
 
 	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(j))
@@ -305,6 +311,7 @@ func handlePostDemoResponse(err error, resp *http.Response, url string, function
 	logrus.Debugf("[%s] Url: %s", functionName, url)
 
 	if err == nil {
+		defer resp.Body.Close()
 		logrus.Debugf("[%s] Response: %d", functionName, resp.StatusCode)
 		if resp.StatusCode == 200 {
 			if body, err := io.ReadAll(resp.Body); err == nil {

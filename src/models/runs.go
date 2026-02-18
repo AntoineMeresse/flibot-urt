@@ -2,10 +2,11 @@ package models
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"sync"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type RunCompare struct {
@@ -66,7 +67,12 @@ func (runs *RunsInfo) AddCheckpoint(playerNumber string, time string) {
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
-	runs.PlayerRuns[playerNumber].appendCheckpoint(time)
+	info, ok := runs.PlayerRuns[playerNumber]
+	if !ok {
+		log.Warnf("AddCheckpoint: no active run for player %s", playerNumber)
+		return
+	}
+	info.appendCheckpoint(time)
 }
 
 func (runs *RunsInfo) RunCanceled(playerNumber string) {
@@ -82,8 +88,12 @@ func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time st
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
+	info, ok := runs.PlayerRuns[playerNumber]
+	if !ok {
+		log.Warnf("RunStopped: no active run for player %s", playerNumber)
+		return
+	}
 	var checkpoints []int
-	info := runs.PlayerRuns[playerNumber]
 	checkpoints = append(checkpoints, info.checkpoint...)
 	runId := fmt.Sprintf("%s-%s-%s", playerGuid, info.way, time)
 	runs.History[runId] = checkpoints

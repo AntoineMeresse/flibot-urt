@@ -24,7 +24,9 @@ func ClientJumpRunStarted(actionParams []string, c *appcontext.AppContext) {
 
 func ClientJumpRunCanceled(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("ClientJumpRunCanceled: %v", actionParams)
-	c.Runs.RunCanceled(actionParams[0])
+	if len(actionParams) > 0 {
+		c.Runs.RunCanceled(actionParams[0])
+	}
 }
 
 func ClientJumpRunStopped(actionParams []string, c *appcontext.AppContext) {

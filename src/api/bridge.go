@@ -17,6 +17,7 @@ func (api *Api) GetMapsWithPattern(criteria string) []string {
 	resp, err := api.Client.Get(url)
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			var res MapSearchResult
 			if err := json.Unmarshal(body, &res); err == nil {
@@ -49,6 +50,7 @@ func (api *Api) GetServerStatus() (ServersListStatus, error) {
 	resp, err := api.Client.Get(url)
 
 	if err == nil {
+		defer resp.Body.Close()
 		if body, err := io.ReadAll(resp.Body); err == nil {
 			log.Debugf("Status: %s", string(body))
 			var res ServersListStatus
