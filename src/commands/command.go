@@ -52,10 +52,20 @@ func replaceShortcutByKnownCommand(cmd *string) {
 	}
 }
 
-const fuzzyMaxDistance = 4
+func fuzzyMaxDistance(name string) int {
+	switch {
+	case len(name) <= 4:
+		return 1
+	case len(name) <= 7:
+		return 2
+	default:
+		return 3
+	}
+}
 
 func findClosestCommands(name string) (matches []string) {
-	bestDist := fuzzyMaxDistance + 1
+	maxDist := fuzzyMaxDistance(name)
+	bestDist := maxDist + 1
 
 	for cmdName := range Commands {
 		d := utils.Levenshtein(name, cmdName)
@@ -67,7 +77,7 @@ func findClosestCommands(name string) (matches []string) {
 		}
 	}
 
-	if bestDist > fuzzyMaxDistance {
+	if bestDist > maxDist {
 		return nil
 	}
 	return matches
