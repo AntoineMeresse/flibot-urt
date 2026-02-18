@@ -47,7 +47,7 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 			runinfos = runinfos[:1]
 		}
 		for i, run := range runinfos {
-			log.Debugf("Interation n°%d displayRunsInformation", i)
+			log.Debugf("Iteration n°%d displayRunsInformation", i)
 			cmd.RconText("^7|-------->%2d) %s%s^7 | %s | %s", i+1, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
 		}
 		if waysNumber != len(infos.RunsInfos) {

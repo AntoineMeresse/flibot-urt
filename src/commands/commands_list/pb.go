@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func PersonnalBest(cmd *appcontext.CommandsArgs) {
+func PersonalBest(cmd *appcontext.CommandsArgs) {
 	mapName := cmd.Context.GetCurrentMap()
 	if len(cmd.Params) == 1 {
 		mapName = cmd.Params[0]
@@ -22,7 +22,7 @@ func PersonnalBest(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetPersonalBestInformation(mapName, player.Guid)
 
 	if err != nil {
-		log.Errorf("[PersonnalBest] Error while trying to get infos from Api: %s", err.Error())
+		log.Errorf("[PersonalBest] Error while trying to get infos from Api: %s", err.Error())
 		cmd.RconText("Could not find pb for (%s)", mapName)
 		return
 	}

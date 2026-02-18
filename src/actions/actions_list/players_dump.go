@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func PLayersDump(actionParams []string, c *appcontext.AppContext) {
+func PlayersDump(actionParams []string, c *appcontext.AppContext) {
 	if len(actionParams) == 1 {
 		dump := actionParams[0]
 		log.Debugf("PLayersDump: %v", dump)

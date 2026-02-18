@@ -75,7 +75,7 @@ func (c *AppContext) initNextMapName() {
 		}
 		c.Settings.Nextmap = nextmap
 	}
-	log.Debugf("Nexmap is: %s\n", c.Settings.Nextmap)
+	log.Debugf("Nextmap is: %s\n", c.Settings.Nextmap)
 }
 
 func (c *AppContext) initSettings() {

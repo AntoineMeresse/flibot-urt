@@ -29,7 +29,7 @@ var Commands = map[string]Command{
 	"potd":       {commandslist.PenOfTheDay, 0, "", true},
 	"phof":       {commandslist.PenHallOfFame, 0, "", true},
 	"phos":       {commandslist.PenHallOfShame, 0, "", true},
-	"pb":         {commandslist.PersonnalBest, 0, "", true},
+	"pb":         {commandslist.PersonalBest, 0, "", true},
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit", true},
 	"register":   {commandslist.Register, 0, "!register", true},
