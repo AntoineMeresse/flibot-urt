@@ -24,6 +24,14 @@ CREATE TABLE IF NOT EXISTS runs (
 );
 
 
+--  Map options
+CREATE TABLE IF NOT EXISTS map_options (
+    id SERIAL PRIMARY KEY,
+    mapname TEXT NOT NULL UNIQUE,
+    options TEXT NOT NULL
+);
+
+
 --  Goto
 CREATE TABLE IF NOT EXISTS goto (
     id SERIAL PRIMARY KEY,

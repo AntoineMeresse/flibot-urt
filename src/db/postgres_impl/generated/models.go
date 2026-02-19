@@ -19,6 +19,12 @@ type Goto struct {
 	AngleH   float64
 }
 
+type MapOption struct {
+	ID      int32
+	Mapname string
+	Options string
+}
+
 type Pen struct {
 	ID   int32
 	Guid string

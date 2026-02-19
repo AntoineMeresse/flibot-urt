@@ -40,15 +40,18 @@ var Commands = map[string]Command{
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]", true},
 
 	// Level: 80
-	"setgoto":     {commandslist.SetGoto, 0, "", true},
-	"removegoto":  {commandslist.RemoveGoto, 80, "", true},
-	"mapget":      {commandslist.MapGet, 80, "", true},
-	"mapremove":   {commandslist.MapRemove, 80, "", true},
-	"timelimit":   {commandslist.Timelimit, 80, "!timelimit [1-999]", true},
-	"extend":      {commandslist.Extend, 80, "!extend or !extend [1-999]", true},
-	"veto":        {commandslist.VoteVeto, 80, "!veto", true},
-	"overbounces": {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
-	"putgroup":    {commandslist.SetRights, 80, "!putgroup [player] [0-100]", true},
+	"setgoto":          {commandslist.SetGoto, 60, "", true},
+	"removegoto":       {commandslist.RemoveGoto, 80, "", true},
+	"mapget":           {commandslist.MapGet, 80, "", true},
+	"mapremove":        {commandslist.MapRemove, 80, "", true},
+	"timelimit":        {commandslist.Timelimit, 80, "!timelimit [1-999]", true},
+	"extend":           {commandslist.Extend, 80, "!extend or !extend [1-999]", true},
+	"veto":             {commandslist.VoteVeto, 80, "!veto", true},
+	"overbounces":      {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
+	"putgroup":         {commandslist.SetRights, 80, "!putgroup [player] [0-100]", true},
+	"setMapOptions":    {commandslist.SetMapOptions, 80, "!setmapoption [options...]", true},
+	"mapOptions":       {commandslist.MapOptions, 80, "!mapoptions", true},
+	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removemapoptions", true},
 
 	// Dev Only
 	"players":     {commandslist.PlayersList, 90, "!players", false},
@@ -88,4 +91,7 @@ var Alias = map[string]string{
 	"site":          "website",
 	"rights":        "putgroup",
 	"sync":          "syncPlayers",
+	"mo":            "mapOptions",
+	"smo":           "setMapOptions",
+	"rmmo":          "removeMapOptions",
 }

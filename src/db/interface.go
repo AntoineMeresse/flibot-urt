@@ -55,6 +55,10 @@ type DataPersister interface {
 
 	HandleRun(info models.PlayerRunInfo, checkpoints []int) error
 
+	SetMapOptions(mapname, options string) error
+	GetMapOptions(mapname string) (string, bool)
+	DeleteMapOptions(mapname string) (bool, error)
+
 	SaveGoto(mapname, jumpname string, posX, posY, posZ, angleV, angleH float64) error
 	GetGoto(mapname, jumpname string) (GotoData, bool)
 	GetGotoNames(mapname string) ([]string, error)

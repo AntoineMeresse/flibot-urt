@@ -205,6 +205,32 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 	return nil
 }
 
+func (db *PostGresqlDB) SetMapOptions(mapname, options string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.UpsertMapOptions(c, postgres_genererated.UpsertMapOptionsParams{
+		Mapname: mapname,
+		Options: options,
+	})
+}
+
+func (db *PostGresqlDB) GetMapOptions(mapname string) (string, bool) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	options, err := db.queries.GetMapOptions(c, mapname)
+	if err != nil {
+		return "", false
+	}
+	return options, true
+}
+
+func (db *PostGresqlDB) DeleteMapOptions(mapname string) (bool, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.DeleteMapOptions(c, mapname)
+	return rows > 0, err
+}
+
 func (db *PostGresqlDB) SaveGoto(mapname, jumpname string, posX, posY, posZ, angleV, angleH float64) error {
 	if mapname == "" || jumpname == "" {
 		return fmt.Errorf("SaveGoto: mapname and jumpname must not be empty (mapname=%q, jumpname=%q)", mapname, jumpname)
