@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -57,9 +58,9 @@ func fuzzyMaxDistance(name string) int {
 	case len(name) <= 4:
 		return 1
 	case len(name) <= 7:
-		return 2
-	default:
 		return 3
+	default:
+		return 5
 	}
 }
 
@@ -67,14 +68,21 @@ func findClosestCommands(name string) (matches []string) {
 	maxDist := fuzzyMaxDistance(name)
 	bestDist := maxDist + 1
 
-	for cmdName := range Commands {
-		d := utils.Levenshtein(name, cmdName)
+	consider := func(candidate, resolved string) {
+		d := utils.Levenshtein(name, candidate)
 		if d < bestDist {
 			bestDist = d
-			matches = []string{cmdName}
-		} else if d == bestDist {
-			matches = append(matches, cmdName)
+			matches = []string{resolved}
+		} else if d == bestDist && !slices.Contains(matches, resolved) {
+			matches = append(matches, resolved)
 		}
+	}
+
+	for cmdName := range Commands {
+		consider(cmdName, cmdName)
+	}
+	for alias, cmdName := range Alias {
+		consider(alias, cmdName)
 	}
 
 	if bestDist > maxDist {
@@ -130,7 +138,6 @@ func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppCo
 
 	return canUseCmd, command.Level, role
 }
-
 
 func overrideParamsForCommands(commandName string, role int, cmdArgs *appcontext.CommandsArgs) {
 	if commandName != "help" {
