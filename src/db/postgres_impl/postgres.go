@@ -114,7 +114,10 @@ func (db *PostGresqlDB) PenPenOfTheDay() (string, []mydb.PenData, error) {
 func (db *PostGresqlDB) PenPenHallOfFame() ([]mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	phof, err := db.queries.GetPensOrderBySizeDesc(c, 20)
+	phof, err := db.queries.GetPensOrderBySizeDesc(c, postgres_genererated.GetPensOrderBySizeDescParams{
+		Column1: pgtype.Date{Time: time.Now(), Valid: true},
+		Limit:   20,
+	})
 
 	if err != nil {
 		return []mydb.PenData{}, nil
@@ -127,10 +130,14 @@ func (db *PostGresqlDB) PenPenHallOfFame() ([]mydb.PenData, error) {
 	}
 	return res, nil
 }
+
 func (db *PostGresqlDB) PenPenHallOfShame() ([]mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	phos, err := db.queries.GetPensOrderBySizeAsc(c, 20)
+	phos, err := db.queries.GetPensOrderBySizeAsc(c, postgres_genererated.GetPensOrderBySizeAscParams{
+		Column1: pgtype.Date{Time: time.Now(), Valid: true},
+		Limit:   20,
+	})
 
 	if err != nil {
 		return []mydb.PenData{}, nil
@@ -148,7 +155,10 @@ func (db *PostGresqlDB) PenPlayerGetDailySize(guid string) (float64, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
 
-	return db.queries.GetPlayerPenByDate(c, pgtype.Date{Time: time.Now(), Valid: true})
+	return db.queries.GetPlayerPenByDate(c, postgres_genererated.GetPlayerPenByDateParams{
+		Guid: guid,
+		Date: pgtype.Date{Time: time.Now(), Valid: true},
+	})
 }
 
 func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error {

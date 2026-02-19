@@ -2,6 +2,7 @@ package commandslist
 
 import (
 	"strings"
+	"time"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
@@ -56,7 +57,7 @@ func PenHallOfFame(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	cmd.RconText("^7=========== ^2Pen Hall Of Fame ^7===========")
+	cmd.RconText("^7=========== ^2Pen Hall Of Fame (^5%d^2) ^7===========", time.Now().Year())
 	for _, data := range datas {
 		cmd.RconText("B===D %s - %.3f - %s", data.GetName(), data.Size, data.GetDate())
 	}
@@ -70,7 +71,7 @@ func PenHallOfShame(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	cmd.RconText("^7=========== ^1Pen Hall Of Shame ^7===========")
+	cmd.RconText("^7=========== ^1Pen Hall Of Shame (^5%d^2) ^7===========", time.Now().Year())
 	for _, data := range datas {
 		cmd.RconText("B===D %s - %.3f - %s", data.GetName(), data.Size, data.GetDate())
 	}
