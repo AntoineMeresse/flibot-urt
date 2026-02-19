@@ -46,6 +46,13 @@ func (p *PlayerRunInfo) GetDemoName() string {
 	return s[len(s)-1]
 }
 
+func (runs *RunsInfo) IsRunning(playerNumber string) bool {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	_, ok := runs.PlayerRuns[playerNumber]
+	return ok
+}
+
 func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
 	log.Debugf("Starting run %s", playerNumber)
 	runs.RunMutex.Lock()
