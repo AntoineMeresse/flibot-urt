@@ -25,7 +25,6 @@ type UrtConfig struct {
 	ServerConfig  ServerConfig
 	BasePath      string
 	DownloadPath  string
-	GotosPath     string
 	DemoPath      string
 	MapRepository string
 	LogFile       string
@@ -68,7 +67,6 @@ func (u *UrtConfig) LoadConfig() {
 	if u.BasePath != "" {
 		path := strings.TrimSuffix(u.BasePath, "/")
 		u.DownloadPath = fmt.Sprintf("%s/%s", path, "q3ut4/download")
-		u.GotosPath = fmt.Sprintf("%s/%s", path, "q3ut4/gotos")
 		u.DemoPath = fmt.Sprintf("%s/%s", path, "q3ut4/serverdemos")
 	}
 	u.MapRepository = viper.GetString("urtRepo")

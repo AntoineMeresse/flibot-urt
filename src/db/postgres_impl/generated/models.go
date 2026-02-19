@@ -8,6 +8,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Goto struct {
+	ID       int32
+	Mapname  string
+	Jumpname string
+	PosX     float64
+	PosY     float64
+	PosZ     float64
+	AngleV   float64
+	AngleH   float64
+}
+
 type Pen struct {
 	ID   int32
 	Guid string

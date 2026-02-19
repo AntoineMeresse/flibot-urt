@@ -8,6 +8,7 @@ import (
 type ActionFunc func([]string, *appcontext.AppContext)
 
 var Actions = map[string]ActionFunc{
+	"InitGame:":              actionslist.InitGame,
 	"ClientBegin:":           actionslist.ClientBegin,
 	"say:":                   actionslist.Say,
 	"ClientConnect:":         actionslist.ClientConnect,

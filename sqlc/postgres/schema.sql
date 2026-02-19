@@ -24,6 +24,20 @@ CREATE TABLE IF NOT EXISTS runs (
 );
 
 
+--  Goto
+CREATE TABLE IF NOT EXISTS goto (
+    id SERIAL PRIMARY KEY,
+    mapname TEXT NOT NULL,
+    jumpname TEXT NOT NULL,
+    pos_x DOUBLE PRECISION NOT NULL,
+    pos_y DOUBLE PRECISION NOT NULL,
+    pos_z DOUBLE PRECISION NOT NULL,
+    angle_v DOUBLE PRECISION NOT NULL,
+    angle_h DOUBLE PRECISION NOT NULL,
+    UNIQUE (mapname, jumpname)
+);
+
+
 --  Pen
 CREATE TABLE IF NOT EXISTS pen (
     id SERIAL PRIMARY KEY,

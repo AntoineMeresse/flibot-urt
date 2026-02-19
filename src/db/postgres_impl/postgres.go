@@ -205,6 +205,58 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 	return nil
 }
 
+func (db *PostGresqlDB) SaveGoto(mapname, jumpname string, posX, posY, posZ, angleV, angleH float64) error {
+	if mapname == "" || jumpname == "" {
+		return fmt.Errorf("SaveGoto: mapname and jumpname must not be empty (mapname=%q, jumpname=%q)", mapname, jumpname)
+	}
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.UpsertGoto(c, postgres_genererated.UpsertGotoParams{
+		Mapname:  mapname,
+		Jumpname: jumpname,
+		PosX:     posX,
+		PosY:     posY,
+		PosZ:     posZ,
+		AngleV:   angleV,
+		AngleH:   angleH,
+	})
+}
+
+func (db *PostGresqlDB) GetGoto(mapname, jumpname string) (mydb.GotoData, bool) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	row, err := db.queries.GetGotoByMapAndJump(c, postgres_genererated.GetGotoByMapAndJumpParams{
+		Mapname:  mapname,
+		Jumpname: jumpname,
+	})
+	if err != nil {
+		return mydb.GotoData{}, false
+	}
+	return mydb.GotoData{
+		PosX:   row.PosX,
+		PosY:   row.PosY,
+		PosZ:   row.PosZ,
+		AngleV: row.AngleV,
+		AngleH: row.AngleH,
+	}, true
+}
+
+func (db *PostGresqlDB) GetGotoNames(mapname string) ([]string, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.GetGotoNamesByMap(c, mapname)
+}
+
+func (db *PostGresqlDB) DeleteGoto(mapname, jumpname string) (bool, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.DeleteGoto(c, postgres_genererated.DeleteGotoParams{
+		Mapname:  mapname,
+		Jumpname: jumpname,
+	})
+	return rows > 0, err
+}
+
 func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
