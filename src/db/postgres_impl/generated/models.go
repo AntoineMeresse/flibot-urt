@@ -26,10 +26,11 @@ type MapOption struct {
 }
 
 type Pen struct {
-	ID   int32
-	Guid string
-	Date pgtype.Date
-	Size float64
+	ID       int32
+	Guid     string
+	Date     pgtype.Date
+	Size     float64
+	Attempts int32
 }
 
 type Player struct {

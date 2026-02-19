@@ -84,13 +84,33 @@ func (db *PostGresqlDB) SetPlayerRole(guid string, role int) error {
 func (db *PostGresqlDB) PenAdd(guid string, size float64) error {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	pen, err := db.queries.CreatePen(c, postgres_genererated.CreatePenParams{
+	pen, err := db.queries.UpsertPen(c, postgres_genererated.UpsertPenParams{
 		Guid: guid,
 		Size: size,
 		Date: pgtype.Date{Time: time.Now(), Valid: true},
 	})
-	logrus.Debugf("Pen created: %v", pen)
+	logrus.Debugf("Pen upserted: %v", pen)
 	return err
+}
+
+func (db *PostGresqlDB) PenDeductAttempt(guid string) (bool, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.DecrementPenAttempts(c, postgres_genererated.DecrementPenAttemptsParams{
+		Guid: guid,
+		Date: pgtype.Date{Time: time.Now(), Valid: true},
+	})
+	return rows > 0, err
+}
+
+func (db *PostGresqlDB) PenGetYearlyAttempts(guid string) (int, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	count, err := db.queries.GetYearlyAttempts(c, postgres_genererated.GetYearlyAttemptsParams{
+		Guid:    guid,
+		Column2: pgtype.Date{Time: time.Now(), Valid: true},
+	})
+	return int(count), err
 }
 func (db *PostGresqlDB) PenPenOfTheDay() (string, []mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)

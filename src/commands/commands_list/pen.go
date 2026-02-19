@@ -1,12 +1,10 @@
 package commandslist
 
 import (
-	"strings"
 	"time"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/sirupsen/logrus"
 )
 
 func Pen(cmd *appcontext.CommandsArgs) {
@@ -16,22 +14,45 @@ func Pen(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	size := utils.RandomFloat(0., 50., 5)
-	err = cmd.Context.DB.PenAdd(player.Guid, size)
+	forceReroll := len(cmd.Params) > 0 && cmd.Params[0] == "-f"
 
-	pen := "B===D"
-
+	dayOfYear := time.Now().YearDay()
+	yearlyUsed, err := cmd.Context.DB.PenGetYearlyAttempts(player.Guid)
 	if err != nil {
-		logrus.Debugf("Error: %v | Type: %T", err, err)
-		if strings.Contains(err.Error(), "duplicate key") {
-			size, err := cmd.Context.DB.PenPlayerGetDailySize(player.Guid)
-			if err != nil {
-				return
-			}
-			cmd.RconText("You already use !pen today. Size: %.3f", size)
+		cmd.RconText(err.Error())
+		return
+	}
+	remaining := dayOfYear - yearlyUsed
+
+	if !forceReroll {
+		currentSize, todayErr := cmd.Context.DB.PenPlayerGetDailySize(player.Guid)
+		if todayErr == nil {
+			// Already rolled today, just show current size
+			cmd.RconGlobalText("^5B===D^7 %s pen(!s) size : ^5%.3f^7 cm", player.Name, currentSize)
+			penGambleHint(cmd, remaining)
+			return
 		}
-	} else {
-		cmd.RconGlobalText("^5%s^7 %s pen(!s) size : ^5%.3f^7 cm", pen, player.Name, size)
+	}
+
+	if remaining <= 0 {
+		cmd.RconText("^7No attempts left! Your luck has run dry for today. Come back tomorrow! ^5:)")
+		return
+	}
+
+	size := utils.RandomFloat(0., 50., 5)
+	if err = cmd.Context.DB.PenAdd(player.Guid, size); err != nil {
+		cmd.RconText(err.Error())
+		return
+	}
+
+	remaining--
+	cmd.RconGlobalText("^5B===D^7 %s pen(!s) size : ^5%.3f^7 cm", player.Name, size)
+	penGambleHint(cmd, remaining)
+}
+
+func penGambleHint(cmd *appcontext.CommandsArgs, remaining int) {
+	if remaining > 0 {
+		cmd.RconText("^7Not satisfied? You've got ^5%d^7 attempt(s) left to gamble --> ^6!pen -f", remaining)
 	}
 }
 

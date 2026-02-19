@@ -53,6 +53,9 @@ var Commands = map[string]Command{
 	"mapOptions":       {commandslist.MapOptions, 80, "!mapOptions", true},
 	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
 
+	// Level: 100
+	"pencoin": {commandslist.PenCoin, 100, "!pencoin [player]", true},
+
 	// Dev Only
 	"players":     {commandslist.PlayersList, 90, "!players", false},
 	"player":      {commandslist.PlayersGet, 90, "!player", false},
@@ -85,6 +88,7 @@ var Alias = map[string]string{
 	"g_overbounces": "overbounces",
 	"ob":            "overbounces",
 	"ff":            "quit",
+	"pcoin":         "pencoin",
 	"h":             "help",
 	"rh":            "runsHistory",
 	"site":          "website",

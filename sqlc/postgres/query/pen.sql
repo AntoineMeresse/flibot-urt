@@ -1,11 +1,23 @@
--- name: CreatePen :one
-INSERT INTO pen (guid, date, size)
-VALUES ($1, $2, $3)
-RETURNING *;
+-- name: UpsertPen :one
+INSERT INTO pen (guid, date, size, attempts)
+VALUES ($1, $2, $3, 1)
+ON CONFLICT (guid, date) DO UPDATE SET
+    size = EXCLUDED.size,
+    attempts = pen.attempts + 1
+RETURNING id, guid, date, size, attempts;
+
+-- name: GetYearlyAttempts :one
+SELECT COALESCE(SUM(attempts), 0)::integer
+FROM pen
+WHERE guid = $1 AND EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM $2::date);
 
 -- name: GetPlayerPenByDate :one
 SELECT size
 FROM pen
+WHERE guid = $1 AND date = $2;
+
+-- name: DecrementPenAttempts :execrows
+UPDATE pen SET attempts = GREATEST(attempts - 1, 0)
 WHERE guid = $1 AND date = $2;
 
 -- name: GetAllPenByDate :many

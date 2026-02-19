@@ -48,7 +48,9 @@ type DataPersister interface {
 	SetPlayerRole(guid string, role int) error
 
 	PenAdd(guid string, size float64) error
+	PenGetYearlyAttempts(guid string) (int, error)
 	PenPlayerGetDailySize(guid string) (float64, error)
+	PenDeductAttempt(guid string) (bool, error)
 	PenPenOfTheDay() (string, []PenData, error)
 	PenPenHallOfFame() ([]PenData, error)
 	PenPenHallOfShame() ([]PenData, error)
