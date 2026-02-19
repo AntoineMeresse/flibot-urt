@@ -16,6 +16,12 @@ func InitGame(actionParams []string, c *appcontext.AppContext) {
 			mapname := parts[i+1]
 			c.SetMapName(mapname)
 			log.Debugf("InitGame: mapname set to %s", mapname)
+
+			for _, opt := range c.UrtConfig.ResetOptions {
+				c.RconCommand(opt)
+			}
+			log.Debugf("InitGame: reset options applied: %v", c.UrtConfig.ResetOptions)
+
 			if raw, ok := c.DB.GetMapOptions(mapname); ok {
 				var options []string
 				if err := json.Unmarshal([]byte(raw), &options); err != nil {

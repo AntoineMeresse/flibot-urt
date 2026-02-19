@@ -31,12 +31,23 @@ type UrtConfig struct {
 	WorkerNumber  int
 	ApiConfig     ApiConfig
 	DbUri         string
+	ResetOptions  []string
 }
 
 func (u *UrtConfig) LoadConfig() {
 	// Defaults
 	viper.SetDefault("serverport", "27960")
 	viper.SetDefault("botWorkerNumber", 1)
+	viper.SetDefault("resetOptions", []string{
+		"sv_fps 125",
+		"g_maxGameClients 0",
+		"g_oldtriggers 0",
+		"g_gear QS",
+		"g_allownoclip 1",
+		"g_flagreturntime 0",
+		"g_nodamage 1",
+		"g_novest 1",
+	})
 
 	// Config file
 	viper.SetConfigName("config")
@@ -62,6 +73,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("urtPath", "urtPath")
 	viper.BindEnv("botWorkerNumber", "botWorkerNumber")
 	viper.BindEnv("discordWebhook", "discordWebhook")
+	viper.BindEnv("resetOptions", "resetOptions")
 
 	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
@@ -81,6 +93,14 @@ func (u *UrtConfig) LoadConfig() {
 
 	u.LogFile = viper.GetString("logFilePath")
 	u.DbUri = viper.GetString("dbUri")
+
+	raw := viper.GetStringSlice("resetOptions")
+	u.ResetOptions = make([]string, 0, len(raw))
+	for _, opt := range raw {
+		if trimmed := strings.TrimSpace(opt); trimmed != "" {
+			u.ResetOptions = append(u.ResetOptions, trimmed)
+		}
+	}
 
 	log.Info("Db uri: ", u.DbUri)
 	log.Info("Direct env: ", os.Getenv("dbUri"))
