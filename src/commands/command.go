@@ -131,16 +131,22 @@ func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppCo
 	return canUseCmd, command.Level, role
 }
 
+
 func overrideParamsForCommands(commandName string, role int, cmdArgs *appcontext.CommandsArgs) {
-	if commandName == "help" {
-		var cmdList []string
-		for key, value := range Commands {
-			if value.Level <= role {
-				cmdList = append(cmdList, key)
-			}
-		}
-		cmdArgs.Params = utils.CleanEmptyElements(cmdList)
+	if commandName != "help" {
+		return
 	}
+	if len(cmdArgs.Params) > 0 {
+		name := strings.ToLower(cmdArgs.Params[0])
+		replaceShortcutByKnownCommand(&name)
+		if cmd, ok := Commands[name]; ok && cmd.Usage != "" {
+			cmdArgs.Params = []string{cmd.Usage}
+		} else {
+			cmdArgs.Params = []string{fmt.Sprintf("No usage available for ^5!%s^3.", name)}
+		}
+		return
+	}
+	cmdArgs.Params = buildHelpLines(role)
 }
 
 func HandleCommand(actionParams []string, c *appcontext.AppContext) {

@@ -49,16 +49,15 @@ var Commands = map[string]Command{
 	"veto":             {commandslist.VoteVeto, 80, "!veto", true},
 	"overbounces":      {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
 	"putgroup":         {commandslist.SetRights, 80, "!putgroup [player] [0-100]", true},
-	"setMapOptions":    {commandslist.SetMapOptions, 80, "!setmapoption [options...]", true},
-	"mapOptions":       {commandslist.MapOptions, 80, "!mapoptions", true},
-	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removemapoptions", true},
+	"setMapOptions":    {commandslist.SetMapOptions, 80, "!setMapOptions [opt1, opt2, ...]", true},
+	"mapOptions":       {commandslist.MapOptions, 80, "!mapOptions", true},
+	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
 
 	// Dev Only
 	"players":     {commandslist.PlayersList, 90, "!players", false},
 	"player":      {commandslist.PlayersGet, 90, "!player", false},
 	"runs":        {commandslist.RunsDescribe, 90, "!runs", false},
 	"runsHistory": {commandslist.RunsHistory, 90, "!runsHistory", false},
-	"syncPlayers": {commandslist.SyncPlayers, 90, "!syncPlayers", false},
 }
 
 var Alias = map[string]string{
@@ -90,7 +89,6 @@ var Alias = map[string]string{
 	"rh":            "runsHistory",
 	"site":          "website",
 	"rights":        "putgroup",
-	"sync":          "syncPlayers",
 	"mo":            "mapOptions",
 	"smo":           "setMapOptions",
 	"rmmo":          "removeMapOptions",
