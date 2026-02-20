@@ -52,7 +52,14 @@ CREATE TABLE IF NOT EXISTS pen (
     guid TEXT NOT NULL REFERENCES player(guid),
     date DATE NOT NULL,
     size DOUBLE PRECISION NOT NULL,
-    attempts INTEGER NOT NULL DEFAULT 1,
     UNIQUE (guid, date)
 );
-ALTER TABLE pen ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 1;
+
+--  Pen Counter
+CREATE TABLE IF NOT EXISTS pen_counter (
+    id SERIAL PRIMARY KEY,
+    guid TEXT NOT NULL REFERENCES player(guid),
+    year INTEGER NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (guid, year)
+);

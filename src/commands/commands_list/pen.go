@@ -1,11 +1,56 @@
 package commandslist
 
 import (
+	"strings"
 	"time"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
+
+func penAsciiArt(size float64) string {
+	return "8" + strings.Repeat("=", int(size/5)+1) + "D"
+}
+
+func penSizeCategory(size float64) string {
+	switch {
+	case size < 5:
+		return "^7Don't try to improve your ^5micro^7 pen"
+	case size < 10:
+		return "^7Don't try to improve your ^5little^7 pen"
+	case size < 18:
+		return "^7Don't try to improve your ^5average^7 pen"
+	case size < 24:
+		return "^7Don't try to improve your ^5big^7 pen"
+	default:
+		return "^7Don't try to improve your ^5MONSTER^7 pen"
+	}
+}
+
+func penRankDisplay(rank int, hos bool) (string, string) {
+	switch rank {
+	case 1:
+		if hos {
+			return "^3", "8=D"
+		}
+		return "^3", "8====D"
+	case 2:
+		if hos {
+			return "^2", "8==D"
+		}
+		return "^2", "8===D"
+	case 3:
+		if hos {
+			return "^8", "8===D"
+		}
+		return "^8", "8==D"
+	default:
+		if hos {
+			return "^7", "8====D"
+		}
+		return "^7", "8=D"
+	}
+}
 
 func Pen(cmd *appcontext.CommandsArgs) {
 	player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
@@ -17,18 +62,17 @@ func Pen(cmd *appcontext.CommandsArgs) {
 	forceReroll := len(cmd.Params) > 0 && cmd.Params[0] == "-f"
 
 	dayOfYear := time.Now().YearDay()
-	yearlyUsed, err := cmd.Context.DB.PenGetYearlyAttempts(player.Guid)
+	attempts, err := cmd.Context.DB.PenGetAttempts(player.Guid)
 	if err != nil {
 		cmd.RconText(err.Error())
 		return
 	}
-	remaining := dayOfYear - yearlyUsed
+	remaining := dayOfYear - attempts
 
 	if !forceReroll {
 		currentSize, todayErr := cmd.Context.DB.PenPlayerGetDailySize(player.Guid)
 		if todayErr == nil {
-			// Already rolled today, just show current size
-			cmd.RconGlobalText("^5B===D^7 %s pen(!s) size : ^5%.3f^7 cm", player.Name, currentSize)
+			cmd.RconGlobalText("%s, try again tomorrow !", penSizeCategory(currentSize))
 			penGambleHint(cmd, remaining)
 			return
 		}
@@ -45,8 +89,13 @@ func Pen(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
+	if err = cmd.Context.DB.PenIncrementAttempts(player.Guid); err != nil {
+		cmd.RconText(err.Error())
+		return
+	}
+
 	remaining--
-	cmd.RconGlobalText("^5B===D^7 %s pen(!s) size : ^5%.3f^7 cm", player.Name, size)
+	cmd.RconGlobalText("^5%s^7 %s pen(!s) size : ^5%.3f^7 cm", penAsciiArt(size), player.Name, size)
 	penGambleHint(cmd, remaining)
 }
 
@@ -58,42 +107,54 @@ func penGambleHint(cmd *appcontext.CommandsArgs, remaining int) {
 
 func PenOfTheDay(cmd *appcontext.CommandsArgs) {
 	date, datas, err := cmd.Context.DB.PenPenOfTheDay()
-
 	if err != nil {
 		cmd.RconText(err.Error())
 		return
 	}
 
 	cmd.RconText("^7=========== ^6Pen of the day ^7(^5%s^7) ===========", date)
-	for _, data := range datas {
-		cmd.RconText("B===D %s - %.3f ", data.GetName(), data.Size)
+	if len(datas) == 0 {
+		cmd.RconText("^7Use ^5!pen^7, there is no pen values yet ^1:(")
+		return
+	}
+	for i, data := range datas {
+		color, pen := penRankDisplay(i+1, false)
+		cmd.RconText("%s%s ^7%s : ^5%.3f^7 cm.", color, pen, data.GetName(), data.Size)
 	}
 }
 
 func PenHallOfFame(cmd *appcontext.CommandsArgs) {
 	datas, err := cmd.Context.DB.PenPenHallOfFame()
-
 	if err != nil {
 		cmd.RconText(err.Error())
 		return
 	}
 
 	cmd.RconText("^7=========== ^2Pen Hall Of Fame (^5%d^2) ^7===========", time.Now().Year())
-	for _, data := range datas {
-		cmd.RconText("B===D %s - %.3f - %s", data.GetName(), data.Size, data.GetDate())
+	if len(datas) == 0 {
+		cmd.RconText("^7Use ^5!pen^7, there is no pen values yet ^1:(")
+		return
+	}
+	for i, data := range datas {
+		color, pen := penRankDisplay(i+1, false)
+		cmd.RconText("%s%s ^7%s : ^5%.3f^7 cm. (%s)", color, pen, data.GetName(), data.Size, data.GetDate())
 	}
 }
 
 func PenHallOfShame(cmd *appcontext.CommandsArgs) {
 	datas, err := cmd.Context.DB.PenPenHallOfShame()
-
 	if err != nil {
 		cmd.RconText(err.Error())
 		return
 	}
 
 	cmd.RconText("^7=========== ^1Pen Hall Of Shame (^5%d^2) ^7===========", time.Now().Year())
-	for _, data := range datas {
-		cmd.RconText("B===D %s - %.3f - %s", data.GetName(), data.Size, data.GetDate())
+	if len(datas) == 0 {
+		cmd.RconText("^7Use ^5!pen^7, there is no pen values yet ^1:(")
+		return
+	}
+	for i, data := range datas {
+		color, pen := penRankDisplay(i+1, true)
+		cmd.RconText("%s%s ^7%s : ^5%.3f^7 cm. (%s)", color, pen, data.GetName(), data.Size, data.GetDate())
 	}
 }

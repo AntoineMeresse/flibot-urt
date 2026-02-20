@@ -77,8 +77,6 @@ func (c *AppContext) initRcon() {
 }
 
 func (c *AppContext) initDb() {
-	// database, dbErr := sqlite_impl.InitSqliteDbDevOnly("test.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL")
-	// db, dbErr := sqlite_impl.InitSqliteDb("test.db")
 	log.Debug("Initializing Db...")
 	database, dbErr := postgres_impl.InitPostGresqlDb(context.TODO(), c.UrtConfig.DbUri)
 

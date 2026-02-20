@@ -8,14 +8,3 @@ sql:
         package: "postgres_genererated"
         out: "../src/db/postgres_impl/generated"
         sql_package: "pgx/v5"
-
-## Sqlite
-# version: "2"
-# sql:
-#   - engine: "sqlite"
-#     queries: "/sqlc/config/sqlite/query"
-#     schema: "/sqlc/config/sqlite/schema.sql"
-#     gen:
-#       go:
-#         package: "sqlitedb"
-#         out: "db-sqlite"

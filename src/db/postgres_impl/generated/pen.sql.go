@@ -11,172 +11,30 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const decrementPenAttempts = `-- name: DecrementPenAttempts :execrows
-UPDATE pen SET attempts = GREATEST(attempts - 1, 0)
-WHERE guid = $1 AND date = $2
+const upsertPen = `-- name: UpsertPen :one
+INSERT INTO pen (guid, date, size)
+VALUES ($1, $2, $3)
+ON CONFLICT (guid, date) DO UPDATE SET
+    size = EXCLUDED.size
+RETURNING id, guid, date, size
 `
 
-type DecrementPenAttemptsParams struct {
+type UpsertPenParams struct {
 	Guid string
 	Date pgtype.Date
+	Size float64
 }
 
-func (q *Queries) DecrementPenAttempts(ctx context.Context, arg DecrementPenAttemptsParams) (int64, error) {
-	result, err := q.db.Exec(ctx, decrementPenAttempts, arg.Guid, arg.Date)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected(), nil
-}
-
-const getAllPenByDate = `-- name: GetAllPenByDate :many
-SELECT pen.id, pen.guid, pen.date, pen.size, pen.attempts, player.name
-FROM pen
-JOIN player ON pen.guid = player.guid
-WHERE date = $1
-ORDER BY size DESC
-LIMIT $2
-`
-
-type GetAllPenByDateParams struct {
-	Date  pgtype.Date
-	Limit int32
-}
-
-type GetAllPenByDateRow struct {
-	ID       int32
-	Guid     string
-	Date     pgtype.Date
-	Size     float64
-	Attempts int32
-	Name     string
-}
-
-func (q *Queries) GetAllPenByDate(ctx context.Context, arg GetAllPenByDateParams) ([]GetAllPenByDateRow, error) {
-	rows, err := q.db.Query(ctx, getAllPenByDate, arg.Date, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetAllPenByDateRow
-	for rows.Next() {
-		var i GetAllPenByDateRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Guid,
-			&i.Date,
-			&i.Size,
-			&i.Attempts,
-			&i.Name,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getPensOrderBySizeAsc = `-- name: GetPensOrderBySizeAsc :many
-SELECT pen.id, pen.guid, pen.date, pen.size, pen.attempts, player.name
-FROM pen
-JOIN player ON pen.guid = player.guid
-WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM $1::date)
-ORDER BY size ASC
-LIMIT $2
-`
-
-type GetPensOrderBySizeAscParams struct {
-	Column1 pgtype.Date
-	Limit   int32
-}
-
-type GetPensOrderBySizeAscRow struct {
-	ID       int32
-	Guid     string
-	Date     pgtype.Date
-	Size     float64
-	Attempts int32
-	Name     string
-}
-
-func (q *Queries) GetPensOrderBySizeAsc(ctx context.Context, arg GetPensOrderBySizeAscParams) ([]GetPensOrderBySizeAscRow, error) {
-	rows, err := q.db.Query(ctx, getPensOrderBySizeAsc, arg.Column1, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetPensOrderBySizeAscRow
-	for rows.Next() {
-		var i GetPensOrderBySizeAscRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Guid,
-			&i.Date,
-			&i.Size,
-			&i.Attempts,
-			&i.Name,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getPensOrderBySizeDesc = `-- name: GetPensOrderBySizeDesc :many
-SELECT pen.id, pen.guid, pen.date, pen.size, pen.attempts, player.name
-FROM pen
-JOIN player ON pen.guid = player.guid
-WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM $1::date)
-ORDER BY size DESC
-LIMIT $2
-`
-
-type GetPensOrderBySizeDescParams struct {
-	Column1 pgtype.Date
-	Limit   int32
-}
-
-type GetPensOrderBySizeDescRow struct {
-	ID       int32
-	Guid     string
-	Date     pgtype.Date
-	Size     float64
-	Attempts int32
-	Name     string
-}
-
-func (q *Queries) GetPensOrderBySizeDesc(ctx context.Context, arg GetPensOrderBySizeDescParams) ([]GetPensOrderBySizeDescRow, error) {
-	rows, err := q.db.Query(ctx, getPensOrderBySizeDesc, arg.Column1, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetPensOrderBySizeDescRow
-	for rows.Next() {
-		var i GetPensOrderBySizeDescRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Guid,
-			&i.Date,
-			&i.Size,
-			&i.Attempts,
-			&i.Name,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) UpsertPen(ctx context.Context, arg UpsertPenParams) (Pen, error) {
+	row := q.db.QueryRow(ctx, upsertPen, arg.Guid, arg.Date, arg.Size)
+	var i Pen
+	err := row.Scan(
+		&i.ID,
+		&i.Guid,
+		&i.Date,
+		&i.Size,
+	)
+	return i, err
 }
 
 const getPlayerPenByDate = `-- name: GetPlayerPenByDate :one
@@ -197,48 +55,198 @@ func (q *Queries) GetPlayerPenByDate(ctx context.Context, arg GetPlayerPenByDate
 	return size, err
 }
 
-const getYearlyAttempts = `-- name: GetYearlyAttempts :one
-SELECT COALESCE(SUM(attempts), 0)::integer
+const getAllPenByDate = `-- name: GetAllPenByDate :many
+SELECT pen.id, pen.guid, pen.date, pen.size, player.name
 FROM pen
-WHERE guid = $1 AND EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM $2::date)
+JOIN player ON pen.guid = player.guid
+WHERE date = $1
+ORDER BY size DESC
+LIMIT $2
 `
 
-type GetYearlyAttemptsParams struct {
-	Guid    string
-	Column2 pgtype.Date
+type GetAllPenByDateParams struct {
+	Date  pgtype.Date
+	Limit int32
 }
 
-func (q *Queries) GetYearlyAttempts(ctx context.Context, arg GetYearlyAttemptsParams) (int32, error) {
-	row := q.db.QueryRow(ctx, getYearlyAttempts, arg.Guid, arg.Column2)
-	var column_1 int32
-	err := row.Scan(&column_1)
-	return column_1, err
-}
-
-const upsertPen = `-- name: UpsertPen :one
-INSERT INTO pen (guid, date, size, attempts)
-VALUES ($1, $2, $3, 1)
-ON CONFLICT (guid, date) DO UPDATE SET
-    size = EXCLUDED.size,
-    attempts = pen.attempts + 1
-RETURNING id, guid, date, size, attempts
-`
-
-type UpsertPenParams struct {
+type GetAllPenByDateRow struct {
+	ID   int32
 	Guid string
 	Date pgtype.Date
 	Size float64
+	Name string
 }
 
-func (q *Queries) UpsertPen(ctx context.Context, arg UpsertPenParams) (Pen, error) {
-	row := q.db.QueryRow(ctx, upsertPen, arg.Guid, arg.Date, arg.Size)
-	var i Pen
-	err := row.Scan(
-		&i.ID,
-		&i.Guid,
-		&i.Date,
-		&i.Size,
-		&i.Attempts,
-	)
-	return i, err
+func (q *Queries) GetAllPenByDate(ctx context.Context, arg GetAllPenByDateParams) ([]GetAllPenByDateRow, error) {
+	rows, err := q.db.Query(ctx, getAllPenByDate, arg.Date, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllPenByDateRow
+	for rows.Next() {
+		var i GetAllPenByDateRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Guid,
+			&i.Date,
+			&i.Size,
+			&i.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPensOrderBySizeAsc = `-- name: GetPensOrderBySizeAsc :many
+SELECT pen.id, pen.guid, pen.date, pen.size, player.name
+FROM pen
+JOIN player ON pen.guid = player.guid
+WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM $1::date)
+ORDER BY size ASC
+LIMIT $2
+`
+
+type GetPensOrderBySizeAscParams struct {
+	Column1 pgtype.Date
+	Limit   int32
+}
+
+type GetPensOrderBySizeAscRow struct {
+	ID   int32
+	Guid string
+	Date pgtype.Date
+	Size float64
+	Name string
+}
+
+func (q *Queries) GetPensOrderBySizeAsc(ctx context.Context, arg GetPensOrderBySizeAscParams) ([]GetPensOrderBySizeAscRow, error) {
+	rows, err := q.db.Query(ctx, getPensOrderBySizeAsc, arg.Column1, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPensOrderBySizeAscRow
+	for rows.Next() {
+		var i GetPensOrderBySizeAscRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Guid,
+			&i.Date,
+			&i.Size,
+			&i.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPensOrderBySizeDesc = `-- name: GetPensOrderBySizeDesc :many
+SELECT pen.id, pen.guid, pen.date, pen.size, player.name
+FROM pen
+JOIN player ON pen.guid = player.guid
+WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM $1::date)
+ORDER BY size DESC
+LIMIT $2
+`
+
+type GetPensOrderBySizeDescParams struct {
+	Column1 pgtype.Date
+	Limit   int32
+}
+
+type GetPensOrderBySizeDescRow struct {
+	ID   int32
+	Guid string
+	Date pgtype.Date
+	Size float64
+	Name string
+}
+
+func (q *Queries) GetPensOrderBySizeDesc(ctx context.Context, arg GetPensOrderBySizeDescParams) ([]GetPensOrderBySizeDescRow, error) {
+	rows, err := q.db.Query(ctx, getPensOrderBySizeDesc, arg.Column1, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPensOrderBySizeDescRow
+	for rows.Next() {
+		var i GetPensOrderBySizeDescRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Guid,
+			&i.Date,
+			&i.Size,
+			&i.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPenCounter = `-- name: GetPenCounter :one
+SELECT attempts
+FROM pen_counter
+WHERE guid = $1 AND year = $2
+`
+
+type GetPenCounterParams struct {
+	Guid string
+	Year int32
+}
+
+func (q *Queries) GetPenCounter(ctx context.Context, arg GetPenCounterParams) (int32, error) {
+	row := q.db.QueryRow(ctx, getPenCounter, arg.Guid, arg.Year)
+	var attempts int32
+	err := row.Scan(&attempts)
+	return attempts, err
+}
+
+const incrementPenCounter = `-- name: IncrementPenCounter :exec
+INSERT INTO pen_counter (guid, year, attempts)
+VALUES ($1, $2, 1)
+ON CONFLICT (guid, year) DO UPDATE SET
+    attempts = pen_counter.attempts + 1
+`
+
+type IncrementPenCounterParams struct {
+	Guid string
+	Year int32
+}
+
+func (q *Queries) IncrementPenCounter(ctx context.Context, arg IncrementPenCounterParams) error {
+	_, err := q.db.Exec(ctx, incrementPenCounter, arg.Guid, arg.Year)
+	return err
+}
+
+const decrementPenCounter = `-- name: DecrementPenCounter :exec
+INSERT INTO pen_counter (guid, year, attempts)
+VALUES ($1, $2, -1)
+ON CONFLICT (guid, year) DO UPDATE SET
+    attempts = pen_counter.attempts - 1
+`
+
+type DecrementPenCounterParams struct {
+	Guid string
+	Year int32
+}
+
+func (q *Queries) DecrementPenCounter(ctx context.Context, arg DecrementPenCounterParams) error {
+	_, err := q.db.Exec(ctx, decrementPenCounter, arg.Guid, arg.Year)
+	return err
 }

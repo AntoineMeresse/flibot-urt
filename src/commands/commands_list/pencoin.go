@@ -16,14 +16,8 @@ func PenCoin(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	deducted, err := cmd.Context.DB.PenDeductAttempt(player.Guid)
-	if err != nil {
+	if err = cmd.Context.DB.PenDecrementAttempts(player.Guid); err != nil {
 		cmd.RconText(err.Error())
-		return
-	}
-
-	if !deducted {
-		cmd.RconText("^5%s^7 hasn't rolled their pen today, nothing to give.", player.Name)
 		return
 	}
 

@@ -93,24 +93,35 @@ func (db *PostGresqlDB) PenAdd(guid string, size float64) error {
 	return err
 }
 
-func (db *PostGresqlDB) PenDeductAttempt(guid string) (bool, error) {
+func (db *PostGresqlDB) PenGetAttempts(guid string) (int, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	rows, err := db.queries.DecrementPenAttempts(c, postgres_genererated.DecrementPenAttemptsParams{
+	count, err := db.queries.GetPenCounter(c, postgres_genererated.GetPenCounterParams{
 		Guid: guid,
-		Date: pgtype.Date{Time: time.Now(), Valid: true},
+		Year: int32(time.Now().Year()),
 	})
-	return rows > 0, err
+	if err != nil {
+		return 0, nil
+	}
+	return int(count), nil
 }
 
-func (db *PostGresqlDB) PenGetYearlyAttempts(guid string) (int, error) {
+func (db *PostGresqlDB) PenIncrementAttempts(guid string) error {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	count, err := db.queries.GetYearlyAttempts(c, postgres_genererated.GetYearlyAttemptsParams{
-		Guid:    guid,
-		Column2: pgtype.Date{Time: time.Now(), Valid: true},
+	return db.queries.IncrementPenCounter(c, postgres_genererated.IncrementPenCounterParams{
+		Guid: guid,
+		Year: int32(time.Now().Year()),
 	})
-	return int(count), err
+}
+
+func (db *PostGresqlDB) PenDecrementAttempts(guid string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.DecrementPenCounter(c, postgres_genererated.DecrementPenCounterParams{
+		Guid: guid,
+		Year: int32(time.Now().Year()),
+	})
 }
 func (db *PostGresqlDB) PenPenOfTheDay() (string, []mydb.PenData, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
