@@ -128,6 +128,20 @@ func RandomFloat(min float64, max float64, precision int) float64 {
 	return truncate(rand.Float64()*max+min, precision)
 }
 
+func FormatRunTime(ms string) string {
+	millis, err := strconv.Atoi(ms)
+	if err != nil {
+		return ms
+	}
+	minutes := millis / 60000
+	seconds := (millis % 60000) / 1000
+	milliseconds := millis % 1000
+	if minutes > 0 {
+		return fmt.Sprintf("%d:%02d.%03d", minutes, seconds, milliseconds)
+	}
+	return fmt.Sprintf("%d.%03d", seconds, milliseconds)
+}
+
 func FormatTimeToDate(t time.Time) string {
 	return fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
 }

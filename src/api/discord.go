@@ -11,8 +11,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (api *Api) SendFileToWebhook(filePath string, message string) error {
-	path := "/demos/" + filePath
+func (api *Api) SendFileToWebhook(demoDir string, filePath string, message string) error {
+	path := demoDir + "/" + filePath
 	logrus.Debugf("Sending file to webhook: %s | File: %s (path: %s) | Message: %s", api.DiscordWebhook, filePath, path, message)
 
 	file, err := os.Open(path)

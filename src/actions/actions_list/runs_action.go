@@ -3,13 +3,13 @@ package actionslist
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -51,7 +51,7 @@ func ClientJumpRunCheckpoint(actionParams []string, c *appcontext.AppContext) {
 
 func RunLog(actionParams []string, c *appcontext.AppContext) {
 	runJson := strings.Join(actionParams, "")
-	runJson = strings.Replace(runJson, "'", "\"", -1)
+	runJson = strings.ReplaceAll(runJson, "'", "\"")
 	log.Debugf("RunLog: %v", runJson)
 
 	var runInfo models.PlayerRunInfo
@@ -78,49 +78,84 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 					log.Errorf("RunLog: Error posting run: %v", err)
 				}
 			}
-			processRunData(c, demoResponse, player.Number)
+			discordMsg, isImprovement := processRunData(c, demoResponse, player.Number)
 			go func() {
-				msg := fmt.Sprintf("[Flibot] %s finished %s of %s in %s.", runInfo.Playername, runInfo.Way,
-					runInfo.Mapname, runInfo.Time)
-				if err := c.Api.SendFileToWebhook(runInfo.GetDemoName(), msg); err != nil {
-					log.Errorf("Webhook send failed: %v", err)
-				}
+				sendToDiscordWebhook(c, runInfo, discordMsg)
+				deleteDemoIfNotImprovement(c, runInfo, isImprovement)
 			}()
 		}
 	}
 }
 
-func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string) {
-	logrus.Debugf("SendDemoResponse: %+v", r)
-	// discordMsg := "discord: "
-	ingameMsg := ""
-	global := false
+func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string) (string, bool) {
+	log.Debugf("SendDemoResponse: %+v", r)
+	gameMsg := ""
+	discordMsg := ""
+	isImprovement := false
 
 	if r.Improvement != "" {
+		discordMsg += fmt.Sprintf("PB difference: %s", r.Improvement)
 		if utils.IsImprovement(r.Improvement) {
-			ingameMsg += fmt.Sprintf("^5PB ^7difference: ^2%s^7", r.Improvement)
-			global = true
+			isImprovement = true
+			gameMsg += fmt.Sprintf("^5PB ^7difference: ^2%s^7", r.Improvement)
 		} else {
-			ingameMsg += fmt.Sprintf("^5PB ^7difference: ^1%s^7", r.Improvement)
+			gameMsg += fmt.Sprintf("^5PB ^7difference: ^1%s^7", r.Improvement)
 		}
 	}
 
 	if r.Wrdifference != "" {
-		if ingameMsg != "" {
-			ingameMsg += " | "
+		if gameMsg != "" {
+			gameMsg += " | "
+			discordMsg += " | "
 		}
-
 		if utils.IsImprovement(r.Wrdifference) {
-			global = true
-			ingameMsg += fmt.Sprintf("^5WR ^7difference: ^2%s^7", r.Wrdifference)
+			isImprovement = true
+			gameMsg += fmt.Sprintf("^5WR ^7difference: ^2%s^7", r.Wrdifference)
+			discordMsg += fmt.Sprintf("WR difference: %s. New WR, gg!", r.Wrdifference)
 		} else {
-			ingameMsg += fmt.Sprintf("^5WR ^7difference: ^1%s^7", r.Wrdifference)
+			gameMsg += fmt.Sprintf("^5WR ^7difference: ^1%s^7", r.Wrdifference)
+			discordMsg += fmt.Sprintf("WR difference: %s", r.Wrdifference)
 		}
 	}
 
 	if r.Rank != nil {
-		ingameMsg += fmt.Sprintf("  ^7(^3%s^7)", *r.Rank)
+		discordMsg += fmt.Sprintf(" (Rank: %s)", *r.Rank)
+		gameMsg += fmt.Sprintf(" ^7(^3%s^7)", *r.Rank)
 	}
 
-	c.RconText(global, playerNumber, ingameMsg)
+	if isImprovement {
+		c.RconText(true, "", gameMsg)
+	} else {
+		c.RconText(false, playerNumber, "[PM] "+gameMsg)
+	}
+
+	return discordMsg, isImprovement
+}
+
+func sendToDiscordWebhook(c *appcontext.AppContext, runInfo models.PlayerRunInfo, discordMsg string) {
+	if c.Api.DiscordWebhook == "" {
+		return
+	}
+	msg := fmt.Sprintf("[Flibot] %s finished way %s of %s in %ss.", runInfo.Playername, runInfo.Way,
+		runInfo.Mapname, utils.FormatRunTime(runInfo.Time))
+	if discordMsg != "" {
+		msg += fmt.Sprintf(" :stopwatch: `%s` :stopwatch:", discordMsg)
+	}
+	if err := c.Api.SendFileToWebhook(c.UrtConfig.DemoPath, runInfo.GetDemoName(), msg); err != nil {
+		log.Errorf("Webhook send failed: %v", err)
+	} else {
+		log.Debugf("Demo uploaded to Discord webhook: %s", runInfo.GetDemoName())
+	}
+}
+
+func deleteDemoIfNotImprovement(c *appcontext.AppContext, runInfo models.PlayerRunInfo, isImprovement bool) {
+	if isImprovement {
+		return
+	}
+	demoFile := c.UrtConfig.DemoPath + "/" + runInfo.GetDemoName()
+	if err := os.Remove(demoFile); err != nil {
+		log.Errorf("Failed to delete demo file: %v", err)
+	} else {
+		log.Debugf("Deleted non-improvement demo: %s", demoFile)
+	}
 }
