@@ -1,8 +1,12 @@
 package commandslist
 
 import (
+	"sort"
+	"time"
+
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
+	"github.com/maruel/natural"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -39,21 +43,43 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 		return
 	}
 
-	waysNumber := 1
-	log.Debug("Start displayRunsInformation")
-	for way, runinfos := range infos.RunsInfos {
-		cmd.RconText("^7|-> Runs for ^5way %s^7 :", way)
-		if !displayAll {
-			runinfos = runinfos[:1]
-		}
-		for i, run := range runinfos {
-			log.Debugf("Iteration n°%d displayRunsInformation", i)
-			cmd.RconText("^7|-------->%2d) %s%s^7 | %s | %s", i+1, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
-		}
-		if waysNumber != len(infos.RunsInfos) {
-			cmd.RconText("^7|")
-		}
-		waysNumber += 1
+	ways := make([]string, 0, len(infos.RunsInfos))
+	for way := range infos.RunsInfos {
+		ways = append(ways, way)
 	}
-	log.Debug("End displayRunsInformation")
+	sort.Sort(natural.StringSlice(ways))
+
+	total := 0
+	for _, runs := range infos.RunsInfos {
+		if !displayAll {
+			total += 1
+		} else {
+			total += len(runs)
+		}
+	}
+	needBreak := total > 50
+
+	waysNumber := 1
+	go func() {
+		log.Debug("Start displayRunsInformation")
+		for _, way := range ways {
+			runinfos := infos.RunsInfos[way]
+			cmd.RconText("^7|-> Runs for ^5way %s^7 :", way)
+			if !displayAll {
+				runinfos = runinfos[:1]
+			}
+			for i, run := range runinfos {
+				log.Debugf("Iteration n°%d displayRunsInformation", i)
+				cmd.RconText("^7|-------->%2d) %s%s^7 | %s | %s", i+1, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
+			}
+			if waysNumber != len(ways) {
+				cmd.RconText("^7|")
+				if needBreak {
+					time.Sleep(100 * time.Millisecond)
+				}
+			}
+			waysNumber += 1
+		}
+		log.Debug("End displayRunsInformation")
+	}()
 }
