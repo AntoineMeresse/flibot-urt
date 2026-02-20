@@ -26,6 +26,7 @@ var Commands = map[string]Command{
 	"serverruns": {commandslist.ServerRuns, 0, "!serverruns [map]", true},
 	"ahead":      {commandslist.Ahead, 0, "!ahead [map]", true},
 	"missing":    {commandslist.Missing, 0, "!missing [maxlvl]", true},
+	"similar":    {commandslist.Similar, 0, "!similar [map]", true},
 	"top":        {commandslist.TopInformation, 0, "", true},
 	"latestruns": {commandslist.LatestRuns, 0, "", true},
 	"latestmaps": {commandslist.LatestMaps, 0, "", true},

@@ -71,6 +71,35 @@ type RunPlayerInfos struct {
 	RunTime    string `json:"time"`
 }
 
+func (api *Api) GetSimilarMaps(mapname string) ([]string, error) {
+	logrus.Debugf("[GetSimilarMaps] Url: %s, mapname: %s", api.UjmUrl, mapname)
+	url := fmt.Sprintf("%s/api/getsimilar", api.UjmUrl)
+	postBody, _ := json.Marshal(map[string]interface{}{
+		"mapname": mapname,
+		"apikey":  api.Apikey,
+	})
+
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(postBody))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf("[GetSimilarMaps] Body: %s", string(body))
+	var res []string
+	if err := json.Unmarshal(body, &res); err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf("[GetSimilarMaps] (%s): %v", url, res)
+	return res, nil
+}
+
 func (api *Api) GetMissingMaps(maxlvl string, guid string) ([]string, error) {
 	logrus.Debugf("[GetMissingMaps] Url: %s, maxlvl: %s", api.UjmUrl, maxlvl)
 	url := fmt.Sprintf("%s/api/getmissings", api.UjmUrl)

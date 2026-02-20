@@ -104,6 +104,18 @@ func ToShorterChunkArray(strList []string) []string {
 	return ToShorterChunkArraySep(strList, " ", false)
 }
 
+func AlternateColors(list []string) []string {
+	colored := make([]string, len(list))
+	for i, name := range list {
+		if i%2 == 0 {
+			colored[i] = "^8(" + name + ")"
+		} else {
+			colored[i] = "^5(" + name + ")"
+		}
+	}
+	return colored
+}
+
 func ToShorterChunkString(str string) []string {
 	return ToShorterChunkArray(strings.Split(str, " "))
 }

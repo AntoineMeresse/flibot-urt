@@ -29,7 +29,7 @@ func Missing(cmd *appcontext.CommandsArgs) {
 		m = "map"
 	}
 	cmd.RconText("^5%d^7 random %s under lvl %s where you don't have a run:", len(maps), m, maxlvl)
-	for _, line := range utils.ToShorterChunkArray(maps) {
+	for _, line := range utils.ToShorterChunkArray(utils.AlternateColors(maps)) {
 		cmd.RconText("  ^6|--->^7 %s", line)
 	}
 }
