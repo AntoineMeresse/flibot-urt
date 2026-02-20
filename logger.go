@@ -11,7 +11,13 @@ import (
 )
 
 func configureLogger() {
-	log.SetLevel(log.DebugLevel)
+	level := log.InfoLevel
+	if v := os.Getenv("logLevel"); v != "" {
+		if parsed, err := log.ParseLevel(v); err == nil {
+			level = parsed
+		}
+	}
+	log.SetLevel(level)
 	log.SetReportCaller(true)
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
