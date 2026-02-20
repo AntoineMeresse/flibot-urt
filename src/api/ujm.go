@@ -48,6 +48,7 @@ func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
 		return MapInfos{}, err
 	}
 
+	logrus.Debugf("[GetMapInformation] Body: %s", string(body))
 	var res MapInfos
 	if err := json.Unmarshal(body, &res); err != nil {
 		return MapInfos{}, err
@@ -70,6 +71,36 @@ type RunPlayerInfos struct {
 	RunTime    string `json:"time"`
 }
 
+func (api *Api) GetMissingMaps(maxlvl string, guid string) ([]string, error) {
+	logrus.Debugf("[GetMissingMaps] Url: %s, maxlvl: %s", api.UjmUrl, maxlvl)
+	url := fmt.Sprintf("%s/api/getmissings", api.UjmUrl)
+	postBody, _ := json.Marshal(map[string]interface{}{
+		"maxlvl":     maxlvl,
+		"apikey":     api.Apikey,
+		"playerguid": guid,
+	})
+
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(postBody))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf("[GetMissingMaps] Body: %s", string(body))
+	var res []string
+	if err := json.Unmarshal(body, &res); err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf("[GetMissingMaps] (%s): %v", url, res)
+	return res, nil
+}
+
 func (api *Api) GetRunsAhead(mapname string, guid string) (ToprunsInfos, error) {
 	logrus.Debugf("[GetRunsAhead] Url: %s, mapname: %s", api.UjmUrl, mapname)
 	url := fmt.Sprintf("%s/api/getahead", api.UjmUrl)
@@ -90,6 +121,7 @@ func (api *Api) GetRunsAhead(mapname string, guid string) (ToprunsInfos, error) 
 		return ToprunsInfos{}, err
 	}
 
+	logrus.Debugf("[GetRunsAhead] Body: %s", string(body))
 	var res ToprunsInfos
 	if err := json.Unmarshal(body, &res); err != nil {
 		return ToprunsInfos{}, err
@@ -119,6 +151,7 @@ func (api *Api) GetServerRunsInformation(mapname string, guids []string) (Toprun
 		return ToprunsInfos{}, err
 	}
 
+	logrus.Debugf("[GetServerRunsInformation] Body: %s", string(body))
 	var res ToprunsInfos
 	if err := json.Unmarshal(body, &res); err != nil {
 		return ToprunsInfos{}, err
@@ -147,6 +180,7 @@ func (api *Api) GetToprunsInformation(mapname string) (ToprunsInfos, error) {
 		return ToprunsInfos{}, err
 	}
 
+	logrus.Debugf("[GetToprunsInformation] Body: %s", string(body))
 	var res ToprunsInfos
 	if err := json.Unmarshal(body, &res); err != nil {
 		return ToprunsInfos{}, err
@@ -184,6 +218,7 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 		return []LatestRunElement{}, err
 	}
 
+	logrus.Debugf("[GetLatestRuns] Body: %s", string(body))
 	var res []LatestRunElement
 	if err := json.Unmarshal(body, &res); err != nil {
 		return []LatestRunElement{}, err
@@ -220,6 +255,7 @@ func (api *Api) GetBounties() ([]BountyElement, error) {
 		return []BountyElement{}, err
 	}
 
+	logrus.Debugf("[GetBounties] Body: %s", string(body))
 	var res []BountyElement
 	if err := json.Unmarshal(body, &res); err != nil {
 		return []BountyElement{}, err
@@ -255,6 +291,7 @@ func (api *Api) GetBirthdays() ([]BirthdayElement, error) {
 		return []BirthdayElement{}, err
 	}
 
+	logrus.Debugf("[GetBirthdays] Body: %s", string(body))
 	var res []BirthdayElement
 	if err := json.Unmarshal(body, &res); err != nil {
 		return []BirthdayElement{}, err
@@ -291,6 +328,7 @@ func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
 		return []LatestMapElement{}, err
 	}
 
+	logrus.Debugf("[GetLatestMaps] Body: %s", string(body))
 	var res []LatestMapElement
 	if err := json.Unmarshal(body, &res); err != nil {
 		return []LatestMapElement{}, err
@@ -333,6 +371,7 @@ func (api *Api) GetPersonalBestInformation(mapname string, guid string) (Persona
 		return PersonalBestInfos{}, err
 	}
 
+	logrus.Debugf("[GetPersonalBestInformation] Body: %s", string(body))
 	var res PersonalBestInfos
 	if err := json.Unmarshal(body, &res); err != nil {
 		return PersonalBestInfos{}, err

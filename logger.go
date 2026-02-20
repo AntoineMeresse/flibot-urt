@@ -11,7 +11,7 @@ import (
 )
 
 func configureLogger() {
-	level := log.InfoLevel
+	level := log.DebugLevel
 	if v := os.Getenv("logLevel"); v != "" {
 		if parsed, err := log.ParseLevel(v); err == nil {
 			level = parsed
