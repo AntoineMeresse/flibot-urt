@@ -27,7 +27,7 @@ func MapInformation(cmd *appcontext.CommandsArgs) {
 		mapperLabel = "Mappers"
 	}
 
-	cmd.RconText("^7Map infos for : ^5%s^7", infos.Mapname)
+	cmd.RconText("^7Map info for : ^5%s^7", infos.Mapname)
 	if len(infos.Mappers) > 0 {
 		cmd.RconText("^7 |--------> ^8%s^7 : %s", mapperLabel, strings.Join(infos.Mappers, " | "))
 	}
@@ -41,7 +41,13 @@ func MapInformation(cmd *appcontext.CommandsArgs) {
 	if len(infos.Notes) > 0 {
 		cmd.RconText("^7 |--------> ^8Notes^7 : %s", strings.Join(infos.Notes, ", "))
 	}
+	if len(infos.Functions) > 0 {
+		cmd.RconText("^7 |--------> ^8Functions^7 : %s", strings.Join(infos.Functions, " | "))
+	}
 	if len(infos.Addons) > 0 {
 		cmd.RconText("^7 |--------> ^8%d mods available", len(infos.Addons))
+	}
+	if len(infos.Videos) > 0 {
+		cmd.RconText("^7 |--------> ^8%d video(s) for this map", len(infos.Videos))
 	}
 }
