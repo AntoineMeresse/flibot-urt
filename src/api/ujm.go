@@ -35,21 +35,23 @@ func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
 	})
 
 	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(postBody))
+	if err != nil {
+		return MapInfos{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res MapInfos
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("GetMapInformation (%s): %v", url, res)
-				return res, nil
-			} else {
-				return MapInfos{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return MapInfos{}, err
 	}
 
-	return MapInfos{}, err
+	var res MapInfos
+	if err := json.Unmarshal(body, &res); err != nil {
+		return MapInfos{}, err
+	}
+
+	logrus.Tracef("GetMapInformation (%s): %v", url, res)
+	return res, nil
 }
 
 type ToprunsInfos struct {
@@ -74,21 +76,23 @@ func (api *Api) GetToprunsInformation(mapname string) (ToprunsInfos, error) {
 	})
 
 	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(postBody))
+	if err != nil {
+		return ToprunsInfos{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res ToprunsInfos
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Debugf("[GetToprunsInformation] (%s): %v", url, res)
-				return res, nil
-			} else {
-				return ToprunsInfos{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ToprunsInfos{}, err
 	}
 
-	return ToprunsInfos{}, err
+	var res ToprunsInfos
+	if err := json.Unmarshal(body, &res); err != nil {
+		return ToprunsInfos{}, err
+	}
+
+	logrus.Debugf("[GetToprunsInformation] (%s): %v", url, res)
+	return res, nil
 }
 
 type LatestRunElement struct {
@@ -109,21 +113,23 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 	})
 
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
+	if err != nil {
+		return []LatestRunElement{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res []LatestRunElement
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetLatestRuns] (%s): %v", url, res)
-				return res, nil
-			} else {
-				return []LatestRunElement{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []LatestRunElement{}, err
 	}
 
-	return []LatestRunElement{}, err
+	var res []LatestRunElement
+	if err := json.Unmarshal(body, &res); err != nil {
+		return []LatestRunElement{}, err
+	}
+
+	logrus.Tracef("[GetLatestRuns] (%s): %v", url, res)
+	return res, nil
 }
 
 type BountyElement struct {
@@ -143,21 +149,23 @@ func (api *Api) GetBounties() ([]BountyElement, error) {
 	})
 
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
+	if err != nil {
+		return []BountyElement{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res []BountyElement
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetBounties] (%s): %v", url, res)
-				return res, nil
-			} else {
-				return []BountyElement{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []BountyElement{}, err
 	}
 
-	return []BountyElement{}, err
+	var res []BountyElement
+	if err := json.Unmarshal(body, &res); err != nil {
+		return []BountyElement{}, err
+	}
+
+	logrus.Tracef("[GetBounties] (%s): %v", url, res)
+	return res, nil
 }
 
 type BirthdayElement struct {
@@ -176,21 +184,23 @@ func (api *Api) GetBirthdays() ([]BirthdayElement, error) {
 	})
 
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
+	if err != nil {
+		return []BirthdayElement{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res []BirthdayElement
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetBirthdays] (%s): %v", url, res)
-				return res, nil
-			} else {
-				return []BirthdayElement{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []BirthdayElement{}, err
 	}
 
-	return []BirthdayElement{}, err
+	var res []BirthdayElement
+	if err := json.Unmarshal(body, &res); err != nil {
+		return []BirthdayElement{}, err
+	}
+
+	logrus.Tracef("[GetBirthdays] (%s): %v", url, res)
+	return res, nil
 }
 
 type LatestMapElement struct {
@@ -210,22 +220,23 @@ func (api *Api) GetLatestMaps() ([]LatestMapElement, error) {
 	})
 
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
+	if err != nil {
+		return []LatestMapElement{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res []LatestMapElement
-			// logrus.Debug(string(body))
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetLatestMaps] (%s): %v", url, res)
-				return res, nil
-			} else {
-				return []LatestMapElement{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []LatestMapElement{}, err
 	}
 
-	return []LatestMapElement{}, err
+	var res []LatestMapElement
+	if err := json.Unmarshal(body, &res); err != nil {
+		return []LatestMapElement{}, err
+	}
+
+	logrus.Tracef("[GetLatestMaps] (%s): %v", url, res)
+	return res, nil
 }
 
 type PersonalBestInfos struct {
@@ -251,21 +262,23 @@ func (api *Api) GetPersonalBestInformation(mapname string, guid string) (Persona
 	})
 
 	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(postBody))
+	if err != nil {
+		return PersonalBestInfos{}, err
+	}
+	defer resp.Body.Close()
 
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res PersonalBestInfos
-			if err := json.Unmarshal(body, &res); err == nil {
-				logrus.Tracef("[GetPersonalBestInformation] (%s): %v", url, res)
-				return res, nil
-			} else {
-				return PersonalBestInfos{}, err
-			}
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return PersonalBestInfos{}, err
 	}
 
-	return PersonalBestInfos{}, err
+	var res PersonalBestInfos
+	if err := json.Unmarshal(body, &res); err != nil {
+		return PersonalBestInfos{}, err
+	}
+
+	logrus.Tracef("[GetPersonalBestInformation] (%s): %v", url, res)
+	return res, nil
 }
 
 type DemoBody struct {
@@ -320,6 +333,7 @@ func (api *Api) postRunWithDemo(demoBody *DemoBody, demoName string, demoDirecto
 
 	var requestBody bytes.Buffer
 	writer := multipart.NewWriter(&requestBody)
+	defer writer.Close()
 
 	// File: "json"
 	jsonBytes, err := json.Marshal(*demoBody)
@@ -357,8 +371,12 @@ func (api *Api) postRunWithDemo(demoBody *DemoBody, demoName string, demoDirecto
 	}
 
 	resp, err := api.Client.Post(url, writer.FormDataContentType(), &requestBody)
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+	defer resp.Body.Close()
 
-	return handlePostDemoResponse(err, resp, url, "PostRunWithDemo")
+	return handlePostDemoResponse(resp, url, "PostRunWithDemo")
 }
 
 func (api *Api) PostRunWithoutDemo(demoBody *DemoBody) (SendDemoResponse, error) {
@@ -371,27 +389,34 @@ func (api *Api) PostRunWithoutDemo(demoBody *DemoBody) (SendDemoResponse, error)
 	}
 
 	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(j))
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+	defer resp.Body.Close()
 
-	return handlePostDemoResponse(err, resp, url, "PostRunWithoutDemo")
+	return handlePostDemoResponse(resp, url, "PostRunWithoutDemo")
 }
 
-func handlePostDemoResponse(err error, resp *http.Response, url string, functionName string) (SendDemoResponse, error) {
+func handlePostDemoResponse(resp *http.Response, url string, functionName string) (SendDemoResponse, error) {
 	logrus.Debugf("[%s] Url: %s", functionName, url)
+	logrus.Debugf("[%s] Response: %d", functionName, resp.StatusCode)
 
-	if err == nil {
-		defer resp.Body.Close()
-		logrus.Debugf("[%s] Response: %d", functionName, resp.StatusCode)
-		if resp.StatusCode == 200 {
-			if body, err := io.ReadAll(resp.Body); err == nil {
-				logrus.Debugf("[%s] Demo body: %s", functionName, string(body))
-				var res SendDemoResponse
-				if err := json.Unmarshal(body, &res); err == nil {
-					res.Process = true
-					return res, nil
-				}
-			}
-		}
+	if resp.StatusCode != 200 {
 		return SendDemoResponse{}, fmt.Errorf("[%s]: Send demo status: %d", functionName, resp.StatusCode)
 	}
-	return SendDemoResponse{}, fmt.Errorf("[%s] Demo body error: %v", functionName, err)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	logrus.Debugf("[%s] Demo body: %s", functionName, string(body))
+
+	var res SendDemoResponse
+	if err := json.Unmarshal(body, &res); err != nil {
+		return SendDemoResponse{}, err
+	}
+
+	res.Process = true
+	return res, nil
 }

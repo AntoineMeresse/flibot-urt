@@ -15,18 +15,22 @@ type MapSearchResult struct {
 func (api *Api) GetMapsWithPattern(criteria string) []string {
 	url := fmt.Sprintf("%s/maps/download/%s", api.BridgeLocalUrl, criteria)
 	resp, err := api.Client.Get(url)
-
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			var res MapSearchResult
-			if err := json.Unmarshal(body, &res); err == nil {
-				// logrus.Debugf("GetMapWithPattern (%s): %v", url, res)
-				return res.Matching
-			}
-		}
+	if err != nil {
+		return []string{}
 	}
-	return []string{}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []string{}
+	}
+
+	var res MapSearchResult
+	if err := json.Unmarshal(body, &res); err != nil {
+		return []string{}
+	}
+
+	return res.Matching
 }
 
 func (api *Api) MapSync() error {
@@ -47,20 +51,24 @@ type ServerStatus struct {
 func (api *Api) GetServerStatus() (ServersListStatus, error) {
 	url := fmt.Sprintf("%s/status", api.BridgeLocalUrl)
 	resp, err := api.Client.Get(url)
-
-	if err == nil {
-		defer resp.Body.Close()
-		if body, err := io.ReadAll(resp.Body); err == nil {
-			log.Debugf("Status: %s", string(body))
-			var res ServersListStatus
-			if err := json.Unmarshal(body, &res); err == nil {
-				log.Debugf("GetServerStatus (%s): %v", url, res)
-				return res, nil
-			} else {
-				log.Error(err.Error())
-				return ServersListStatus{}, err
-			}
-		}
+	if err != nil {
+		return ServersListStatus{}, err
 	}
-	return ServersListStatus{}, err
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ServersListStatus{}, err
+	}
+
+	log.Debugf("Status: %s", string(body))
+
+	var res ServersListStatus
+	if err := json.Unmarshal(body, &res); err != nil {
+		log.Error(err.Error())
+		return ServersListStatus{}, err
+	}
+
+	log.Debugf("GetServerStatus (%s): %v", url, res)
+	return res, nil
 }
