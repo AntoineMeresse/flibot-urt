@@ -65,7 +65,8 @@ var Commands = map[string]Command{
 	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
 
 	// Level: 100
-	"pencoin": {commandslist.PenCoin, 100, "!pencoin [player]", true},
+	"pencoin":  {commandslist.PenCoin, 100, "!pencoin [player]", true},
+	"password": {commandslist.Password, 100, "!password [password]", true},
 	"rcon":    {commandslist.Rcon, 100, "!rcon [command]", true},
 
 	// Dev Only
