@@ -48,7 +48,7 @@ var Commands = map[string]Command{
 	"extend":           {commandslist.Extend, 80, "!extend or !extend [1-999]", true},
 	"veto":             {commandslist.VoteVeto, 80, "!veto", true},
 	"overbounces":      {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
-	"putgroup":         {commandslist.SetRights, 80, "!putgroup [player] [0-100]", true},
+	"putgroup":         {commandslist.SetRights, 60, "!putgroup [player] [0-100]", true},
 	"setMapOptions":    {commandslist.SetMapOptions, 80, "!setMapOptions [opt1, opt2, ...]", true},
 	"mapOptions":       {commandslist.MapOptions, 80, "!mapOptions", true},
 	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
