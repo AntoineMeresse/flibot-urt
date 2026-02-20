@@ -23,6 +23,7 @@ type MapInfos struct {
 	Mappers  []string `json:"mappers"`
 	Notes    []string `json:"notes"`
 	Types    []string `json:"types"`
+	Addons   []any    `json:"addons"`
 }
 
 func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
