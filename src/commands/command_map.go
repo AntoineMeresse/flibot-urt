@@ -49,6 +49,7 @@ var Commands = map[string]Command{
 
 	// Level: 80
 	"setgoto":          {commandslist.SetGoto, 60, "", true},
+	"portGotos":        {commandslist.PortGotos, 80, "!portGotos [sourcemap]", true},
 	"removegoto":       {commandslist.RemoveGoto, 80, "", true},
 	"mapget":           {commandslist.MapGet, 80, "", true},
 	"mapremove":        {commandslist.MapRemove, 80, "", true},
