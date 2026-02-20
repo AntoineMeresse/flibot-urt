@@ -59,6 +59,7 @@ var Commands = map[string]Command{
 
 	// Level: 100
 	"pencoin": {commandslist.PenCoin, 100, "!pencoin [player]", true},
+	"rcon":    {commandslist.Rcon, 100, "!rcon [command]", true},
 
 	// Dev Only
 	"players":     {commandslist.PlayersList, 90, "!players", false},
