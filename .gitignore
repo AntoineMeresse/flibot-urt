@@ -4,3 +4,5 @@ test.db*
 deploy.sh
 
 config.yml
+
+tmp

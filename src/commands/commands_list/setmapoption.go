@@ -45,5 +45,11 @@ func SetMapOptions(cmd *appcontext.CommandsArgs) {
 		logrus.Errorf("SetMapOptions error: %v", err)
 		return
 	}
+	for _, opt := range cmd.Context.UrtConfig.ResetOptions {
+		cmd.RconCommand("%s", opt)
+	}
+	for _, opt := range options {
+		cmd.RconCommand("%s", opt)
+	}
 	cmd.RconText("^5%s^3 options saved: ^7%s", mapname, strings.Join(options, ", "))
 }

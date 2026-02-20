@@ -338,6 +338,7 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 			Name: playerDb.Name,
 			Guid: guid,
 			Id:   strconv.Itoa(int(playerDb.ID)),
+			Ip:   playerDb.IpAddress,
 			// Aliases: playerDb.Aliases,
 		}, true
 	}

@@ -47,6 +47,7 @@ func (u *UrtConfig) LoadConfig() {
 		"g_flagreturntime 0",
 		"g_nodamage 1",
 		"g_novest 1",
+		"g_gravity 800",
 	})
 
 	// Config file

@@ -61,6 +61,11 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 		if player, err := c.Players.GetPlayer(runInfo.Playernumber); err == nil {
 			cps := c.Runs.RunGetCheckpoint(player.Number, player.Guid, runInfo.Time, runInfo.Way)
 			runInfo.PlayerIp = player.Ip
+			if runInfo.PlayerIp == "" {
+				if dbPlayer, found := c.DB.GetPlayerByGuid(player.Guid); found {
+					runInfo.PlayerIp = dbPlayer.Ip
+				}
+			}
 
 			if err := c.DB.HandleRun(runInfo, cps); err != nil {
 				log.Errorf("RunLog: Error handling run: %v", err)
@@ -68,7 +73,7 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 
 			var demoResponse api.SendDemoResponse
 			if runInfo.Utj == "0" {
-				demoResponse, err = c.Api.PostRunDemo(runInfo, c.UrtConfig.DemoPath)
+				demoResponse, err = c.Api.PostRunDemo(runInfo, cps, c.UrtConfig.DemoPath)
 				if err != nil {
 					log.Errorf("RunLog: Error posting run: %v", err)
 				}

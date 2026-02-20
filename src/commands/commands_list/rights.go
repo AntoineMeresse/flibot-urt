@@ -25,5 +25,9 @@ func SetRights(cmd *appcontext.CommandsArgs) {
 			return
 		}
 		cmd.Context.Players.UpdatePlayerRights(player.Number, level)
+		if err := cmd.Context.DB.SetPlayerRole(player.Guid, level); err != nil {
+			logrus.Errorf("SetRights: failed to persist role for %s: %v", player.Guid, err)
+		}
+		cmd.RconText("^7%s^7 rights updated to ^5%d", player.Name, level)
 	}
 }

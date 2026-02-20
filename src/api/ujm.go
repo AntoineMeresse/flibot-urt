@@ -28,13 +28,13 @@ type MapInfos struct {
 
 func (api *Api) GetMapInformation(mapname string) (MapInfos, error) {
 	logrus.Debugf("[GetMapInformation] Url: %s, mapname: %s", api.UjmUrl, mapname)
-	url := fmt.Sprintf("%s/mapinfo/requestdata", api.UjmUrl)
+	url := fmt.Sprintf("%s/api/getmapinfo", api.UjmUrl)
 	postBody, _ := json.Marshal(map[string]interface{}{
 		"mapname": mapname,
 		"apikey":  api.Apikey,
 	})
 
-	resp, err := api.Client.Post(url, "application/json", bytes.NewBuffer(postBody))
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(postBody))
 	if err != nil {
 		return MapInfos{}, err
 	}
@@ -292,6 +292,7 @@ type DemoBody struct {
 	Waynumber   string `json:"waynumber"`
 	Apikey      string `json:"apikey"`
 	PlayerIp    string `json:"playerip"`
+	Checkpoints []int  `json:"checkpoints"`
 }
 
 type SendDemoResponse struct {
@@ -302,9 +303,7 @@ type SendDemoResponse struct {
 	Process      bool
 }
 
-func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendDemoResponse, error) {
-	logrus.Debugf("[PostRunDemo]")
-
+func (api *Api) PostRunDemo(p models.PlayerRunInfo, checkpoints []int, demoDirectory string) (SendDemoResponse, error) {
 	d := &DemoBody{
 		Playerguid:  p.Guid,
 		Playername:  p.Playername,
@@ -316,7 +315,10 @@ func (api *Api) PostRunDemo(p models.PlayerRunInfo, demoDirectory string) (SendD
 		Waynumber:   p.Way,
 		Apikey:      api.Apikey,
 		PlayerIp:    p.PlayerIp,
+		Checkpoints: checkpoints,
 	}
+
+	logrus.Debugf("[PostRunDemo] with: %+v", d)
 
 	demoResponse, err := api.postRunWithDemo(d, p.GetDemoName(), demoDirectory)
 

@@ -8,6 +8,7 @@ var Commands = map[string]Command{
 	"spec":       {commandslist.Spec, 0, "", true},
 	"currentmap": {commandslist.CurrentMap, 0, "", true},
 	"setnextmap": {commandslist.SetNextMap, 0, "", true},
+	"roll":       {commandslist.Roll, 0, "", true},
 	"nextmap":    {commandslist.NextMap, 0, "", true},
 	"stamina":    {commandslist.Stamina, 0, "", true},
 	"ready":      {commandslist.Ready, 0, "!ready", true},
@@ -50,8 +51,9 @@ var Commands = map[string]Command{
 	"extend":           {commandslist.Extend, 80, "!extend or !extend [1-999]", true},
 	"veto":             {commandslist.VoteVeto, 80, "!veto", true},
 	"overbounces":      {commandslist.Overbounces, 80, "!overbounces [0 or 1]", true},
-	"putgroup":         {commandslist.SetRights, 60, "!putgroup [player] [0-100]", true},
+	"putgroup":         {commandslist.SetRights, 0, "!putgroup [player] [0-100]", true},
 	"setMapOptions":    {commandslist.SetMapOptions, 80, "!setMapOptions [opt1, opt2, ...]", true},
+	"resetOptions":     {commandslist.ResetOptions, 80, "!resetOptions", true},
 	"mapOptions":       {commandslist.MapOptions, 80, "!mapOptions", true},
 	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
 
