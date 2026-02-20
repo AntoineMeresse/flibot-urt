@@ -23,6 +23,7 @@ type MapInfos struct {
 	Mappers  []string `json:"mappers"`
 	Notes    []string `json:"notes"`
 	Types    []string `json:"types"`
+	Tags      []string `json:"tags"`
 	Addons    []any    `json:"addons"`
 	Functions []string `json:"functions"`
 	Videos    []any    `json:"videos"`
