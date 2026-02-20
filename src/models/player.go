@@ -97,18 +97,14 @@ func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 	defer players.Mutex.RUnlock()
 
 	var matchingPlayers []Player
-	var alreadyAdded bool
 
+	searchByNumber := utils.IsDigitOnly(searchCriteria)
 	for playerNumber, player := range players.PlayerMap {
-		alreadyAdded = false
-		if utils.IsDigitOnly(searchCriteria) {
+		if searchByNumber {
 			if playerNumber == searchCriteria {
 				matchingPlayers = append(matchingPlayers, *player)
-				alreadyAdded = true
 			}
-		}
-
-		if !alreadyAdded && strings.Contains(strings.ToLower(player.Name), strings.ToLower(searchCriteria)) {
+		} else if strings.Contains(strings.ToLower(player.Name), strings.ToLower(searchCriteria)) {
 			matchingPlayers = append(matchingPlayers, *player)
 		}
 	}
