@@ -126,6 +126,73 @@ func (api *Api) GetLatestRuns() ([]LatestRunElement, error) {
 	return []LatestRunElement{}, err
 }
 
+type BountyElement struct {
+	Done       bool   `json:"done"`
+	Filename   string `json:"mapfilename"`
+	TimeToBeat string `json:"timetobeat"`
+	Until      string `json:"until"`
+	WayNumber  int    `json:"waynumber"`
+}
+
+func (api *Api) GetBounties() ([]BountyElement, error) {
+	url := fmt.Sprintf("%s/api/getbounties", api.UjmUrl)
+	logrus.Debugf("[GetBounties] Url: %s", url)
+
+	getBody, _ := json.Marshal(map[string]interface{}{
+		"apikey": api.Apikey,
+	})
+
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
+
+	if err == nil {
+		defer resp.Body.Close()
+		if body, err := io.ReadAll(resp.Body); err == nil {
+			var res []BountyElement
+			if err := json.Unmarshal(body, &res); err == nil {
+				logrus.Tracef("[GetBounties] (%s): %v", url, res)
+				return res, nil
+			} else {
+				return []BountyElement{}, err
+			}
+		}
+	}
+
+	return []BountyElement{}, err
+}
+
+type BirthdayElement struct {
+	Id       int    `json:"id"`
+	Filename string `json:"filename"`
+	Mapname  string `json:"mapname"`
+	Years    int    `json:"years"`
+}
+
+func (api *Api) GetBirthdays() ([]BirthdayElement, error) {
+	url := fmt.Sprintf("%s/api/getbirthdays", api.UjmUrl)
+	logrus.Debugf("[GetBirthdays] Url: %s", url)
+
+	getBody, _ := json.Marshal(map[string]interface{}{
+		"apikey": api.Apikey,
+	})
+
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(getBody))
+
+	if err == nil {
+		defer resp.Body.Close()
+		if body, err := io.ReadAll(resp.Body); err == nil {
+			var res []BirthdayElement
+			if err := json.Unmarshal(body, &res); err == nil {
+				logrus.Tracef("[GetBirthdays] (%s): %v", url, res)
+				return res, nil
+			} else {
+				return []BirthdayElement{}, err
+			}
+		}
+	}
+
+	return []BirthdayElement{}, err
+}
+
 type LatestMapElement struct {
 	Date     string   `json:"dateadded"`
 	Filename string   `json:"filename"`

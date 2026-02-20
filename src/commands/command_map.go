@@ -25,6 +25,8 @@ var Commands = map[string]Command{
 	"top":        {commandslist.TopInformation, 0, "", true},
 	"latestruns": {commandslist.LatestRuns, 0, "", true},
 	"latestmaps": {commandslist.LatestMaps, 0, "", true},
+	"birthday":   {commandslist.Birthday, 0, "", true},
+	"bounties":   {commandslist.Bounties, 0, "", true},
 	"pen":        {commandslist.Pen, 0, "", true},
 	"potd":       {commandslist.PenOfTheDay, 0, "", true},
 	"phof":       {commandslist.PenHallOfFame, 0, "", true},
