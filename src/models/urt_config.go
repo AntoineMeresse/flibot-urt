@@ -71,6 +71,8 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("ujmUrl", "ujmUrl")
 	viper.BindEnv("ujmApiKey", "ujmApiKey")
 	viper.BindEnv("urtPath", "urtPath")
+	viper.BindEnv("downloadPath", "downloadPath")
+	viper.BindEnv("demoPath", "demoPath")
 	viper.BindEnv("botWorkerNumber", "botWorkerNumber")
 	viper.BindEnv("discordWebhook", "discordWebhook")
 	viper.BindEnv("resetOptions", "resetOptions")
@@ -80,6 +82,13 @@ func (u *UrtConfig) LoadConfig() {
 		path := strings.TrimSuffix(u.BasePath, "/")
 		u.DownloadPath = fmt.Sprintf("%s/%s", path, "q3ut4/download")
 		u.DemoPath = fmt.Sprintf("%s/%s", path, "q3ut4/serverdemos")
+	}
+
+	if v := viper.GetString("downloadPath"); v != "" {
+		u.DownloadPath = v
+	}
+	if v := viper.GetString("demoPath"); v != "" {
+		u.DemoPath = v
 	}
 	u.MapRepository = viper.GetString("urtRepo")
 
