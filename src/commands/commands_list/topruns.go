@@ -4,6 +4,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/AntoineMeresse/flibot-urt/src/api"
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/maruel/natural"
@@ -25,18 +26,21 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 	}
 
 	infos, err := cmd.Context.Api.GetToprunsInformation(mapName)
-
 	if err != nil {
 		log.Errorf("[ToprunsInformation] Error while trying to get infos from Api: %s", err.Error())
 		cmd.RconText("Could not find topruns for (%s)", mapName)
 		return
 	}
 
-	if displayAll {
-		cmd.RconText("^7Topruns for :  ^5%s^7", infos.Mapname)
-	} else {
-		cmd.RconText("^7Toprun for :  ^5%s^7", infos.Mapname)
+	label := "Topruns"
+	if !displayAll {
+		label = "Toprun"
 	}
+	displayRunsInfos(cmd, infos, displayAll, label)
+}
+
+func displayRunsInfos(cmd *appcontext.CommandsArgs, infos api.ToprunsInfos, displayAll bool, label string) {
+	cmd.RconText("^7%s for :  ^5%s^7", label, infos.Mapname)
 
 	if len(infos.RunsInfos) == 0 {
 		cmd.RconText("^7|--------> No runs found")
@@ -61,7 +65,7 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 
 	waysNumber := 1
 	go func() {
-		log.Debug("Start displayRunsInformation")
+		log.Debug("Start displayRunsInfos")
 		for _, way := range ways {
 			runinfos := infos.RunsInfos[way]
 			cmd.RconText("^7|-> Runs for ^5way %s^7 :", way)
@@ -69,7 +73,7 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 				runinfos = runinfos[:1]
 			}
 			for i, run := range runinfos {
-				log.Debugf("Iteration n°%d displayRunsInformation", i)
+				log.Debugf("Iteration n°%d displayRunsInfos", i)
 				cmd.RconText("^7|-------->%2d) %s%s^7 | %s | %s", i+1, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
 			}
 			if waysNumber != len(ways) {
@@ -80,6 +84,6 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 			}
 			waysNumber += 1
 		}
-		log.Debug("End displayRunsInformation")
+		log.Debug("End displayRunsInfos")
 	}()
 }

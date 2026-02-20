@@ -74,6 +74,18 @@ func (players *Players) UpdatePlayerRights(playerNumber string, level int) {
 	players.Mutex.Unlock()
 }
 
+func (players *Players) GetGuids() []string {
+	players.Mutex.RLock()
+	defer players.Mutex.RUnlock()
+	guids := make([]string, 0, len(players.PlayerMap))
+	for _, player := range players.PlayerMap {
+		if player.Guid != "" {
+			guids = append(guids, player.Guid)
+		}
+	}
+	return guids
+}
+
 func (players *Players) RemovePlayer(playerNumber string) {
 	players.Mutex.Lock()
 	delete(players.PlayerMap, playerNumber)

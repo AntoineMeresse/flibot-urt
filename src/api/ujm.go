@@ -70,6 +70,35 @@ type RunPlayerInfos struct {
 	RunTime    string `json:"time"`
 }
 
+func (api *Api) GetServerRunsInformation(mapname string, guids []string) (ToprunsInfos, error) {
+	logrus.Debugf("[GetServerRunsInformation] Url: %s, mapname: %s", api.UjmUrl, mapname)
+	url := fmt.Sprintf("%s/api/getserverruns", api.UjmUrl)
+	postBody, _ := json.Marshal(map[string]interface{}{
+		"mapname": mapname,
+		"apikey":  api.Apikey,
+		"guids":   guids,
+	})
+
+	resp, err := api.UjmGetWithBody(url, bytes.NewBuffer(postBody))
+	if err != nil {
+		return ToprunsInfos{}, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ToprunsInfos{}, err
+	}
+
+	var res ToprunsInfos
+	if err := json.Unmarshal(body, &res); err != nil {
+		return ToprunsInfos{}, err
+	}
+
+	logrus.Debugf("[GetServerRunsInformation] (%s): %v", url, res)
+	return res, nil
+}
+
 func (api *Api) GetToprunsInformation(mapname string) (ToprunsInfos, error) {
 	logrus.Debugf("[GetToprunsInformation] Url: %s, mapname: %s", api.UjmUrl, mapname)
 	url := fmt.Sprintf("%s/runs/requestdata", api.UjmUrl)
