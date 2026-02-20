@@ -21,9 +21,22 @@ func Rcon(cmd *appcontext.CommandsArgs) {
 			return
 		}
 	}
-	result := cmd.RconCommand(strings.Join(cmd.Params, " "))
+	rcon := NewRconClient(cmd)
+	defer rcon.CloseConnection()
+
+	result := rcon.RconCommand(strings.Join(cmd.Params, " "))
 	_, lines := quake3_rcon.SplitReadInfos(result)
 	for _, line := range lines {
 		cmd.Context.RconText(false, cmd.PlayerId, "^7%s", line)
 	}
+}
+
+func NewRconClient(cmd *appcontext.CommandsArgs) *quake3_rcon.Rcon {
+	rcon := &quake3_rcon.Rcon{
+		ServerIp:   cmd.Context.Rcon.ServerIp,
+		ServerPort: cmd.Context.Rcon.ServerPort,
+		Password:   cmd.Context.Rcon.Password,
+	}
+	rcon.Connect()
+	return rcon
 }

@@ -13,6 +13,8 @@ func Overbounces(cmd *appcontext.CommandsArgs) {
 			return
 		}
 	}
-	v := cmd.RconCommandExtractValue("g_overbounces")
+	rcon := NewRconClient(cmd)
+	defer rcon.CloseConnection()
+	v := rcon.RconCommandExtractValue("g_overbounces")
 	cmd.RconUsageWithText("Current value is: %s", v)
 }
