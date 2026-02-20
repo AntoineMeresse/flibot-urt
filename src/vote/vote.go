@@ -91,12 +91,14 @@ func createVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vo
 
 func handleVote(voteSystem *VoteSystem, vote models.Vote) (isVote bool) {
 	if isVote, value := isOnlyVote(vote); isVote {
-		if value == "v" {
-			voteSystem.addVetoVote()
-		} else if value == "+" {
-			voteSystem.addYesVote(vote.PlayerId)
-		} else {
-			voteSystem.addNoVote(vote.PlayerId)
+		if voteSystem.isActive() {
+			if value == "v" {
+				voteSystem.addVetoVote()
+			} else if value == "+" {
+				voteSystem.addYesVote(vote.PlayerId)
+			} else {
+				voteSystem.addNoVote(vote.PlayerId)
+			}
 		}
 		return true
 	}
@@ -185,6 +187,12 @@ func (voteSystem *VoteSystem) isCanceled() bool {
 	voteSystem.mu.RLock()
 	defer voteSystem.mu.RUnlock()
 	return voteSystem.Cancel
+}
+
+func (voteSystem *VoteSystem) isActive() bool {
+	voteSystem.mu.RLock()
+	defer voteSystem.mu.RUnlock()
+	return !voteSystem.CanVote
 }
 
 func (voteSystem *VoteSystem) voteCounts() (yes, no int) {
