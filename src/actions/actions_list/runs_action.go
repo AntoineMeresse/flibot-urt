@@ -79,6 +79,9 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 				}
 			}
 			discordMsg, isImprovement := processRunData(c, demoResponse, player.Number)
+			if isImprovement {
+				c.GivePenCoin(*player)
+			}
 			go func() {
 				sendToDiscordWebhook(c, runInfo, discordMsg)
 				deleteDemoIfNotImprovement(c, runInfo, isImprovement)
@@ -93,14 +96,26 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 	discordMsg := ""
 	isImprovement := false
 
+	cleanDiff := func(v string) string {
+		stripped := strings.TrimPrefix(v, "-")
+		if utils.IsZero(stripped) {
+			return stripped
+		}
+		return v
+	}
+	diffColor := func(v string) string {
+		if strings.Contains(v, "-") && !utils.IsZero(strings.TrimPrefix(v, "-")) {
+			return "^1"
+		}
+		return "^2"
+	}
+
 	if r.Improvement != "" {
 		discordMsg += fmt.Sprintf("PB difference: %s", r.Improvement)
 		if utils.IsImprovement(r.Improvement) {
 			isImprovement = true
-			gameMsg += fmt.Sprintf("^5PB ^7difference: ^2%s^7", r.Improvement)
-		} else {
-			gameMsg += fmt.Sprintf("^5PB ^7difference: ^1%s^7", r.Improvement)
 		}
+		gameMsg += fmt.Sprintf("^5PB ^7difference: %s%s^7", diffColor(r.Improvement), cleanDiff(r.Improvement))
 	}
 
 	if r.Wrdifference != "" {
@@ -110,12 +125,11 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		}
 		if utils.IsImprovement(r.Wrdifference) {
 			isImprovement = true
-			gameMsg += fmt.Sprintf("^5WR ^7difference: ^2%s^7", r.Wrdifference)
 			discordMsg += fmt.Sprintf("WR difference: %s. New WR, gg!", r.Wrdifference)
 		} else {
-			gameMsg += fmt.Sprintf("^5WR ^7difference: ^1%s^7", r.Wrdifference)
 			discordMsg += fmt.Sprintf("WR difference: %s", r.Wrdifference)
 		}
+		gameMsg += fmt.Sprintf("^5WR ^7difference: %s%s^7", diffColor(r.Wrdifference), cleanDiff(r.Wrdifference))
 	}
 
 	if r.Rank != nil {

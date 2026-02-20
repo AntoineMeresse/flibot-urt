@@ -16,8 +16,8 @@ func PenCoin(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	if err = cmd.Context.DB.PenDecrementAttempts(player.Guid); err != nil {
-		cmd.RconText(err.Error())
+	if !cmd.Context.GivePenCoin(*player) {
+		cmd.RconText("^1Failed to give pencoin to ^5%s", player.Name)
 		return
 	}
 

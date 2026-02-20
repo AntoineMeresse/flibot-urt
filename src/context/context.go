@@ -103,6 +103,15 @@ func (c *AppContext) NewVote(v models.Vote) {
 	c.VoteChannel <- v
 }
 
+func (c *AppContext) GivePenCoin(player models.Player) bool {
+	if err := c.DB.PenDecrementAttempts(player.Guid); err != nil {
+		log.Errorf("GivePenCoin: %v", err)
+		return false
+	}
+	c.RconText(false, player.Number, "[PM] ^7You earned a ^5pencoin^7!")
+	return true
+}
+
 func (c *AppContext) registerPlayer(playerNumber string, player models.Player) *models.Player {
 	c.Players.AddPlayer(playerNumber, &player)
 	log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
