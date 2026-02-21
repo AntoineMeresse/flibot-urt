@@ -46,6 +46,7 @@ var Commands = map[string]Command{
 	"discord":    {commandslist.Discord, 0, "!discord", true},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]", true},
+	"slap": {commandslist.Slap, 20, "!slap [playerId/Name]", true},
 
 	// Level: 80
 	"setgoto":          {commandslist.SetGoto, 60, "", true},
