@@ -49,6 +49,12 @@ type Player struct {
 	Aliases    string
 }
 
+type Quote struct {
+	ID        int32
+	Text      string
+	CreatedAt pgtype.Timestamp
+}
+
 type Run struct {
 	ID          int32
 	Guid        string

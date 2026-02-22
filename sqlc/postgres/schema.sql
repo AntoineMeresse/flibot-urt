@@ -63,3 +63,10 @@ CREATE TABLE IF NOT EXISTS pen_counter (
     attempts INTEGER NOT NULL DEFAULT 0,
     UNIQUE (guid, year)
 );
+
+-- Quotes
+CREATE TABLE IF NOT EXISTS quotes (
+    id SERIAL PRIMARY KEY,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

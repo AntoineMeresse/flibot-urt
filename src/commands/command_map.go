@@ -44,11 +44,13 @@ var Commands = map[string]Command{
 	"admins":  {commandslist.Admins, 0, "!admins", true},
 	"website": {commandslist.Website, 0, "!website", true},
 	"discord": {commandslist.Discord, 0, "!discord", true},
+	"quote":   {commandslist.Quote, 0, "!quote", true},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]", true},
 
 	// Level: 80
 	"setgoto":          {commandslist.SetGoto, 60, "", true},
+	"addquote":         {commandslist.AddQuote, 80, "!addQuote [text]", true},
 	"portGotos":        {commandslist.PortGotos, 80, "!portGotos [sourcemap]", true},
 	"portMapOptions":   {commandslist.PortMapOptions, 80, "!portMapOptions [sourcemap]", true},
 	"removegoto":       {commandslist.RemoveGoto, 80, "", true},

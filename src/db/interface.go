@@ -66,6 +66,9 @@ type DataPersister interface {
 	GetGoto(mapname, jumpname string) (GotoData, bool)
 	GetGotoNames(mapname string) ([]string, error)
 	DeleteGoto(mapname, jumpname string) (bool, error)
+
+	GetRandomQuote() (string, error)
+	SaveQuote(text string) error
 }
 
 type GotoData struct {

@@ -11,48 +11,21 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const upsertPen = `-- name: UpsertPen :one
-INSERT INTO pen (guid, date, size)
-VALUES ($1, $2, $3)
-ON CONFLICT (guid, date) DO UPDATE SET
-    size = EXCLUDED.size
-RETURNING id, guid, date, size
+const decrementPenCounter = `-- name: DecrementPenCounter :exec
+INSERT INTO pen_counter (guid, year, attempts)
+VALUES ($1, $2, -1)
+ON CONFLICT (guid, year) DO UPDATE SET
+    attempts = pen_counter.attempts - 1
 `
 
-type UpsertPenParams struct {
+type DecrementPenCounterParams struct {
 	Guid string
-	Date pgtype.Date
-	Size float64
+	Year int32
 }
 
-func (q *Queries) UpsertPen(ctx context.Context, arg UpsertPenParams) (Pen, error) {
-	row := q.db.QueryRow(ctx, upsertPen, arg.Guid, arg.Date, arg.Size)
-	var i Pen
-	err := row.Scan(
-		&i.ID,
-		&i.Guid,
-		&i.Date,
-		&i.Size,
-	)
-	return i, err
-}
-
-const getPlayerPenByDate = `-- name: GetPlayerPenByDate :one
-SELECT size
-FROM pen
-WHERE guid = $1 AND date = $2
-`
-
-type GetPlayerPenByDateParams struct {
-	Guid string
-	Date pgtype.Date
-}
-
-func (q *Queries) GetPlayerPenByDate(ctx context.Context, arg GetPlayerPenByDateParams) (float64, error) {
-	row := q.db.QueryRow(ctx, getPlayerPenByDate, arg.Guid, arg.Date)
-	var size float64
-	err := row.Scan(&size)
-	return size, err
+func (q *Queries) DecrementPenCounter(ctx context.Context, arg DecrementPenCounterParams) error {
+	_, err := q.db.Exec(ctx, decrementPenCounter, arg.Guid, arg.Year)
+	return err
 }
 
 const getAllPenByDate = `-- name: GetAllPenByDate :many
@@ -101,6 +74,24 @@ func (q *Queries) GetAllPenByDate(ctx context.Context, arg GetAllPenByDateParams
 		return nil, err
 	}
 	return items, nil
+}
+
+const getPenCounter = `-- name: GetPenCounter :one
+SELECT attempts
+FROM pen_counter
+WHERE guid = $1 AND year = $2
+`
+
+type GetPenCounterParams struct {
+	Guid string
+	Year int32
+}
+
+func (q *Queries) GetPenCounter(ctx context.Context, arg GetPenCounterParams) (int32, error) {
+	row := q.db.QueryRow(ctx, getPenCounter, arg.Guid, arg.Year)
+	var attempts int32
+	err := row.Scan(&attempts)
+	return attempts, err
 }
 
 const getPensOrderBySizeAsc = `-- name: GetPensOrderBySizeAsc :many
@@ -199,22 +190,22 @@ func (q *Queries) GetPensOrderBySizeDesc(ctx context.Context, arg GetPensOrderBy
 	return items, nil
 }
 
-const getPenCounter = `-- name: GetPenCounter :one
-SELECT attempts
-FROM pen_counter
-WHERE guid = $1 AND year = $2
+const getPlayerPenByDate = `-- name: GetPlayerPenByDate :one
+SELECT size
+FROM pen
+WHERE guid = $1 AND date = $2
 `
 
-type GetPenCounterParams struct {
+type GetPlayerPenByDateParams struct {
 	Guid string
-	Year int32
+	Date pgtype.Date
 }
 
-func (q *Queries) GetPenCounter(ctx context.Context, arg GetPenCounterParams) (int32, error) {
-	row := q.db.QueryRow(ctx, getPenCounter, arg.Guid, arg.Year)
-	var attempts int32
-	err := row.Scan(&attempts)
-	return attempts, err
+func (q *Queries) GetPlayerPenByDate(ctx context.Context, arg GetPlayerPenByDateParams) (float64, error) {
+	row := q.db.QueryRow(ctx, getPlayerPenByDate, arg.Guid, arg.Date)
+	var size float64
+	err := row.Scan(&size)
+	return size, err
 }
 
 const incrementPenCounter = `-- name: IncrementPenCounter :exec
@@ -234,19 +225,28 @@ func (q *Queries) IncrementPenCounter(ctx context.Context, arg IncrementPenCount
 	return err
 }
 
-const decrementPenCounter = `-- name: DecrementPenCounter :exec
-INSERT INTO pen_counter (guid, year, attempts)
-VALUES ($1, $2, -1)
-ON CONFLICT (guid, year) DO UPDATE SET
-    attempts = pen_counter.attempts - 1
+const upsertPen = `-- name: UpsertPen :one
+INSERT INTO pen (guid, date, size)
+VALUES ($1, $2, $3)
+ON CONFLICT (guid, date) DO UPDATE SET
+    size = EXCLUDED.size
+RETURNING id, guid, date, size
 `
 
-type DecrementPenCounterParams struct {
+type UpsertPenParams struct {
 	Guid string
-	Year int32
+	Date pgtype.Date
+	Size float64
 }
 
-func (q *Queries) DecrementPenCounter(ctx context.Context, arg DecrementPenCounterParams) error {
-	_, err := q.db.Exec(ctx, decrementPenCounter, arg.Guid, arg.Year)
-	return err
+func (q *Queries) UpsertPen(ctx context.Context, arg UpsertPenParams) (Pen, error) {
+	row := q.db.QueryRow(ctx, upsertPen, arg.Guid, arg.Date, arg.Size)
+	var i Pen
+	err := row.Scan(
+		&i.ID,
+		&i.Guid,
+		&i.Date,
+		&i.Size,
+	)
+	return i, err
 }

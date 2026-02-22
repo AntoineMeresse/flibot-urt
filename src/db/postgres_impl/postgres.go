@@ -324,6 +324,23 @@ func (db *PostGresqlDB) DeleteGoto(mapname, jumpname string) (bool, error) {
 	return rows > 0, err
 }
 
+func (db *PostGresqlDB) GetRandomQuote() (string, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	quote, err := db.queries.GetRandomQuote(c)
+	if err != nil {
+		return "", err
+	}
+	return quote.Text, nil
+}
+
+func (db *PostGresqlDB) SaveQuote(text string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	_, err := db.queries.SaveQuote(c, text)
+	return err
+}
+
 func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
