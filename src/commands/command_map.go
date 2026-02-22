@@ -40,13 +40,12 @@ var Commands = map[string]Command{
 	"pb":         {commandslist.PersonalBest, 0, "", true},
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit [reason]", true},
-	"register":   {commandslist.Register, 0, "!register", true},
-	"admins":     {commandslist.Admins, 0, "!admins", true},
-	"website":    {commandslist.Website, 0, "!website", true},
-	"discord":    {commandslist.Discord, 0, "!discord", true},
+	//"register":   {commandslist.Register, 0, "!register", true},
+	"admins":  {commandslist.Admins, 0, "!admins", true},
+	"website": {commandslist.Website, 0, "!website", true},
+	"discord": {commandslist.Discord, 0, "!discord", true},
 
 	"afk": {commandslist.Afk, 20, "!afk [playerId/Name]", true},
-	"slap": {commandslist.Slap, 20, "!slap [playerId/Name]", true},
 
 	// Level: 80
 	"setgoto":          {commandslist.SetGoto, 60, "", true},
@@ -65,10 +64,14 @@ var Commands = map[string]Command{
 	"mapOptions":       {commandslist.MapOptions, 80, "!mapOptions", true},
 	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
 
+	// Level : 90
+	"nuke": {commandslist.Nuke, 90, "!nuke [playerId/Name]", true},
+	"slap": {commandslist.Slap, 90, "!slap [playerId/Name]", true},
+
 	// Level: 100
 	"pencoin":  {commandslist.PenCoin, 100, "!pencoin [player]", true},
 	"password": {commandslist.Password, 100, "!password [password]", true},
-	"rcon":    {commandslist.Rcon, 100, "!rcon [command]", true},
+	"rcon":     {commandslist.Rcon, 100, "!rcon [command]", true},
 
 	// Dev Only
 	"players":     {commandslist.PlayersList, 90, "!players", false},
