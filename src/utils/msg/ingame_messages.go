@@ -7,8 +7,10 @@ const (
 	DOWNLOAD_KO = "Downloading map ^5%s^3: ^1KO^3"
 	DOWNLOAD_ALREADY_ON_SERV = "^5%s^3 is ^1already^3 on server !"
 
-	DOWNLOAD_NO_MAP = "No map was found matching (%s)"
-	DOWNLOAD_MULTIPLE_MAP = "Multiple maps found [%d] matching (%s)"
+	DOWNLOAD_NO_MAP = "No map found that contains (^5%s^3)"
+	DOWNLOAD_MULTIPLE_MAP = "^7Maps found (^5%d^7) matching ^5%s^7:"
+	DOWNLOAD_MAP_ITEM = "^7|-> ^5%s"
+	DOWNLOAD_MAP_ITEM_ALREADY = "^7|-> ^5%s ^7(^2On server^7)"
 
 	// goto.go
 	GOTO_NO_LOCATION = "Location (^5%s^3) ^1doesn't^3 exist."
