@@ -14,15 +14,15 @@ import (
 )
 
 type MapInfos struct {
-	Id       int      `json:"id"`
-	Filename string   `json:"filename"`
-	Mapname  string   `json:"mapname"`
-	Jumps    string   `json:"jnumber"`
-	Level    int      `json:"level"`
-	Release  string   `json:"releasedate"`
-	Mappers  []string `json:"mappers"`
-	Notes    []string `json:"notes"`
-	Types    []string `json:"types"`
+	Id        int      `json:"id"`
+	Filename  string   `json:"filename"`
+	Mapname   string   `json:"mapname"`
+	Jumps     string   `json:"jnumber"`
+	Level     int      `json:"level"`
+	Release   string   `json:"releasedate"`
+	Mappers   []string `json:"mappers"`
+	Notes     []string `json:"notes"`
+	Types     []string `json:"types"`
 	Tags      []string `json:"tags"`
 	Addons    []any    `json:"addons"`
 	Functions []string `json:"functions"`
@@ -69,6 +69,7 @@ type RunPlayerInfos struct {
 	PlayerName string `json:"playername"`
 	RunDate    string `json:"rundate"`
 	RunTime    string `json:"time"`
+	Rank       int    `json:"pos"`
 }
 
 func (api *Api) GetSimilarMaps(mapname string) ([]string, error) {

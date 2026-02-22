@@ -1,6 +1,7 @@
 package commandslist
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -36,10 +37,10 @@ func displayRunsInformation(cmd *appcontext.CommandsArgs, displayAll bool) {
 	if !displayAll {
 		label = "Toprun"
 	}
-	displayRunsInfos(cmd, infos, displayAll, label)
+	displayRunsInfos(cmd, infos, displayAll, label, false)
 }
 
-func displayRunsInfos(cmd *appcontext.CommandsArgs, infos api.ToprunsInfos, displayAll bool, label string) {
+func displayRunsInfos(cmd *appcontext.CommandsArgs, infos api.ToprunsInfos, displayAll bool, label string, useApiRank bool) {
 	cmd.RconText("^7%s for :  ^5%s^7", label, infos.Mapname)
 
 	if len(infos.RunsInfos) == 0 {
@@ -74,7 +75,11 @@ func displayRunsInfos(cmd *appcontext.CommandsArgs, infos api.ToprunsInfos, disp
 			}
 			for i, run := range runinfos {
 				log.Debugf("Iteration n°%d displayRunsInfos", i)
-				cmd.RconText("^7|-------->%2d) %s%s^7 | %s | %s", i+1, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
+				rank := fmt.Sprintf("%d", i+1)
+				if useApiRank {
+					rank = fmt.Sprintf("%d", run.Rank)
+				}
+				cmd.RconText("^7|-------->%2s) %s%s^7 | %s | %s", rank, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
 			}
 			if waysNumber != len(ways) {
 				cmd.RconText("^7|")

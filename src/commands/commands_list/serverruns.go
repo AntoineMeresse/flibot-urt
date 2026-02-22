@@ -19,5 +19,5 @@ func ServerRuns(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	displayRunsInfos(cmd, infos, true, "Server runs")
+	displayRunsInfos(cmd, infos, true, "Server runs", true)
 }

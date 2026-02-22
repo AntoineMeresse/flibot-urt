@@ -23,5 +23,5 @@ func Ahead(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	displayRunsInfos(cmd, infos, true, "Runs ahead")
+	displayRunsInfos(cmd, infos, true, "Runs ahead", false)
 }

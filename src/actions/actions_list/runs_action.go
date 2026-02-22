@@ -137,11 +137,7 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		gameMsg += fmt.Sprintf(" ^7(^3%s^7)", *r.Rank)
 	}
 
-	if isImprovement {
-		c.RconText(true, "", gameMsg)
-	} else {
-		c.RconText(false, playerNumber, "[PM] "+gameMsg)
-	}
+	c.RconText(isImprovement, playerNumber, gameMsg)
 
 	return discordMsg, isImprovement
 }
