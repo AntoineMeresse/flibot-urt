@@ -24,7 +24,4 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name == 'push' }}
-          tags: ${{ secrets.REGISTRY_URL }}/flibot-urt:${{ github.ref_name }}
-
-      - name: Trigger Dokploy Redeploy
-        run: curl -X POST ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+          tags: ${{ secrets.REGISTRY_URL }}/flibot-urt:0.0.1
