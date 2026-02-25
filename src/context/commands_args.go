@@ -3,6 +3,7 @@ package appcontext
 import (
 	"fmt"
 
+	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/sirupsen/logrus"
 )
 
@@ -60,4 +61,25 @@ func (c *CommandsArgs) GetPlayerGuid() (guid string) {
 	}
 
 	return player.Guid
+}
+
+func (c *CommandsArgs) ResolveAdminTarget(search string) (*models.Player, bool) {
+	target, err := c.Context.Players.GetPlayer(search)
+	if err != nil {
+		c.RconText("%s", err.Error())
+		return nil, false
+	}
+
+	caller, err := c.Context.Players.GetPlayer(c.PlayerId)
+	if err != nil {
+		c.RconText("%s", err.Error())
+		return nil, false
+	}
+
+	if target.Role > caller.Role {
+		c.RconText("^1You cannot target a player with higher level than yours!")
+		return nil, false
+	}
+
+	return target, true
 }

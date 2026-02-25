@@ -50,6 +50,8 @@ var Commands = map[string]Command{
 
 	// Level: 80
 	"setgoto":          {commandslist.SetGoto, 60, "", true},
+	"kick":             {commandslist.Kick, 80, "!kick [playerId/Name] [reason]", true},
+	"mute":             {commandslist.Mute, 80, "!mute [playerId/Name]", true},
 	"addquote":         {commandslist.AddQuote, 80, "!addQuote [text]", true},
 	"portGotos":        {commandslist.PortGotos, 80, "!portGotos [sourcemap]", true},
 	"portMapOptions":   {commandslist.PortMapOptions, 80, "!portMapOptions [sourcemap]", true},
