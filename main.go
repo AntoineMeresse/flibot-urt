@@ -1,9 +1,8 @@
 package main
 
 import (
-	"time"
-
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/healthcheck"
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
@@ -33,9 +32,6 @@ func main() {
 	// Initialize Vote system
 	go vote.InitVoteSystem(voteChannel, c)
 
-	// Because we're only using go routines, if we don't have this block program isn't keep alived.
-	for {
-		time.Sleep(time.Second * 10)
-		// Send server infos to bridge
-	}
+	// Keep-alive loop: probes the server every 30s and writes health status to file.
+	healthcheck.Run(c)
 }

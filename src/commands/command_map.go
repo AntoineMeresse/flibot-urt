@@ -74,7 +74,8 @@ var Commands = map[string]Command{
 	"resetGotos": {commandslist.ResetGotos, 90, "!resetGotos [map] (-f)", true},
 
 	// Level: 100
-	"pencoin":  {commandslist.PenCoin, 100, "!pencoin [player]", true},
+	"healthCheck": {commandslist.HealthCheck, 100, "!healthCheck", true},
+	"pencoin":     {commandslist.PenCoin, 100, "!pencoin [player]", true},
 	"password": {commandslist.Password, 100, "!password [password]", true},
 	"rcon":     {commandslist.Rcon, 100, "!rcon [command]", true},
 
