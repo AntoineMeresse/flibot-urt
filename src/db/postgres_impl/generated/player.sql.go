@@ -78,6 +78,60 @@ func (q *Queries) GetPLayerByGuid(ctx context.Context, guid string) (Player, err
 	return i, err
 }
 
+const getPlayerById = `-- name: GetPlayerById :one
+SELECT id, guid, role, name, ip_address, time_joined, aliases FROM player
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetPlayerById(ctx context.Context, id int32) (Player, error) {
+	row := q.db.QueryRow(ctx, getPlayerById, id)
+	var i Player
+	err := row.Scan(
+		&i.ID,
+		&i.Guid,
+		&i.Role,
+		&i.Name,
+		&i.IpAddress,
+		&i.TimeJoined,
+		&i.Aliases,
+	)
+	return i, err
+}
+
+const getPlayersByIp = `-- name: GetPlayersByIp :many
+SELECT id, guid, role, name, ip_address, time_joined, aliases FROM player
+WHERE ip_address = $1
+ORDER BY name
+`
+
+func (q *Queries) GetPlayersByIp(ctx context.Context, ipAddress string) ([]Player, error) {
+	rows, err := q.db.Query(ctx, getPlayersByIp, ipAddress)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.ID,
+			&i.Guid,
+			&i.Role,
+			&i.Name,
+			&i.IpAddress,
+			&i.TimeJoined,
+			&i.Aliases,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPlayers = `-- name: ListPlayers :many
 SELECT id, guid, role, name, ip_address, time_joined, aliases FROM player
 ORDER BY id
@@ -85,6 +139,46 @@ ORDER BY id
 
 func (q *Queries) ListPlayers(ctx context.Context) ([]Player, error) {
 	rows, err := q.db.Query(ctx, listPlayers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.ID,
+			&i.Guid,
+			&i.Role,
+			&i.Name,
+			&i.IpAddress,
+			&i.TimeJoined,
+			&i.Aliases,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const lookupPlayersByNameOrAlias = `-- name: LookupPlayersByNameOrAlias :many
+SELECT id, guid, role, name, ip_address, time_joined, aliases FROM player
+WHERE name ILIKE '%' || $1 || '%' OR aliases ILIKE '%' || $1 || '%'
+ORDER BY name
+LIMIT $2
+`
+
+type LookupPlayersByNameOrAliasParams struct {
+	Column1 pgtype.Text
+	Limit   int32
+}
+
+func (q *Queries) LookupPlayersByNameOrAlias(ctx context.Context, arg LookupPlayersByNameOrAliasParams) ([]Player, error) {
+	rows, err := q.db.Query(ctx, lookupPlayersByNameOrAlias, arg.Column1, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

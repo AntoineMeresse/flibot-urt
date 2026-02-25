@@ -324,6 +324,13 @@ func (db *PostGresqlDB) DeleteGoto(mapname, jumpname string) (bool, error) {
 	return rows > 0, err
 }
 
+func (db *PostGresqlDB) DeleteAllGotos(mapname string) (int, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.DeleteAllGotosByMap(c, mapname)
+	return int(rows), err
+}
+
 func (db *PostGresqlDB) GetRandomQuote() (string, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
@@ -339,6 +346,68 @@ func (db *PostGresqlDB) SaveQuote(text string) error {
 	defer cancel()
 	_, err := db.queries.SaveQuote(c, text)
 	return err
+}
+
+func (db *PostGresqlDB) GetPlayerById(id int) (mydb.LookupResult, bool) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	r, err := db.queries.GetPlayerById(c, int32(id))
+	if err != nil {
+		return mydb.LookupResult{}, false
+	}
+	return mydb.LookupResult{
+		Id:      int(r.ID),
+		Name:    r.Name,
+		Aliases: r.Aliases,
+		Role:    int(r.Role),
+		Ip:      r.IpAddress,
+		Guid:    r.Guid,
+	}, true
+}
+
+func (db *PostGresqlDB) GetPlayersByIp(ip string) ([]mydb.LookupResult, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.GetPlayersByIp(c, ip)
+	if err != nil {
+		return nil, err
+	}
+	results := make([]mydb.LookupResult, 0, len(rows))
+	for _, r := range rows {
+		results = append(results, mydb.LookupResult{
+			Id:      int(r.ID),
+			Name:    r.Name,
+			Aliases: r.Aliases,
+			Role:    int(r.Role),
+			Ip:      r.IpAddress,
+			Guid:    r.Guid,
+		})
+	}
+	return results, nil
+}
+
+func (db *PostGresqlDB) LookupPlayers(search string) ([]mydb.LookupResult, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.LookupPlayersByNameOrAlias(c, postgres_genererated.LookupPlayersByNameOrAliasParams{
+		Column1: pgtype.Text{String: search, Valid: true},
+		Limit:   10,
+	})
+	if err != nil {
+		return nil, err
+	}
+	results := make([]mydb.LookupResult, 0, len(rows))
+	for _, r := range rows {
+		results = append(results, mydb.LookupResult{
+			Id:      int(r.ID),
+			Name:    r.Name,
+			Aliases: r.Aliases,
+			Role:    int(r.Role),
+			Ip:      r.IpAddress,
+			Guid:    r.Guid,
+		})
+	}
+	return results, nil
 }
 
 func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {

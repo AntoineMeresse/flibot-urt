@@ -27,3 +27,18 @@ WHERE guid = $1;
 
 -- name: SetPlayerRole :exec
 UPDATE player SET role = $2 WHERE guid = $1;
+
+-- name: GetPlayerById :one
+SELECT * FROM player
+WHERE id = $1 LIMIT 1;
+
+-- name: GetPlayersByIp :many
+SELECT * FROM player
+WHERE ip_address = $1
+ORDER BY name;
+
+-- name: LookupPlayersByNameOrAlias :many
+SELECT * FROM player
+WHERE name ILIKE '%' || $1 || '%' OR aliases ILIKE '%' || $1 || '%'
+ORDER BY name
+LIMIT $2;

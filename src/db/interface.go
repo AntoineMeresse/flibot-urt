@@ -66,9 +66,23 @@ type DataPersister interface {
 	GetGoto(mapname, jumpname string) (GotoData, bool)
 	GetGotoNames(mapname string) ([]string, error)
 	DeleteGoto(mapname, jumpname string) (bool, error)
+	DeleteAllGotos(mapname string) (int, error)
 
 	GetRandomQuote() (string, error)
 	SaveQuote(text string) error
+
+	LookupPlayers(search string) ([]LookupResult, error)
+	GetPlayerById(id int) (LookupResult, bool)
+	GetPlayersByIp(ip string) ([]LookupResult, error)
+}
+
+type LookupResult struct {
+	Id      int
+	Name    string
+	Aliases string
+	Role    int
+	Ip      string
+	Guid    string
 }
 
 type GotoData struct {

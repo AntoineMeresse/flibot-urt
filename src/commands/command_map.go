@@ -67,8 +67,11 @@ var Commands = map[string]Command{
 	"removeMapOptions": {commandslist.RemoveMapOptions, 80, "!removeMapOptions", true},
 
 	// Level : 90
-	"nuke": {commandslist.Nuke, 90, "!nuke [playerId/Name]", true},
-	"slap": {commandslist.Slap, 90, "!slap [playerId/Name]", true},
+	"nuke":   {commandslist.Nuke, 90, "!nuke [playerId/Name]", true},
+	"slap":   {commandslist.Slap, 90, "!slap [playerId/Name]", true},
+	"lookup":     {commandslist.Lookup, 90, "!lookup [name/alias]", true},
+	"playerid":   {commandslist.PlayerId, 99, "!playerid [id]", true},
+	"resetGotos": {commandslist.ResetGotos, 90, "!resetGotos [map] (-f)", true},
 
 	// Level: 100
 	"pencoin":  {commandslist.PenCoin, 100, "!pencoin [player]", true},

@@ -9,6 +9,18 @@ import (
 	"context"
 )
 
+const deleteAllGotosByMap = `-- name: DeleteAllGotosByMap :execrows
+DELETE FROM goto WHERE mapname = $1
+`
+
+func (q *Queries) DeleteAllGotosByMap(ctx context.Context, mapname string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAllGotosByMap, mapname)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const deleteGoto = `-- name: DeleteGoto :execrows
 DELETE FROM goto WHERE mapname = $1 AND jumpname = $2
 `

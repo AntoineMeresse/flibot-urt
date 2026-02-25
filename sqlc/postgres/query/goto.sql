@@ -9,6 +9,9 @@ SELECT jumpname FROM goto WHERE mapname = $1 ORDER BY jumpname;
 -- name: DeleteGoto :execrows
 DELETE FROM goto WHERE mapname = $1 AND jumpname = $2;
 
+-- name: DeleteAllGotosByMap :execrows
+DELETE FROM goto WHERE mapname = $1;
+
 -- name: UpsertGoto :exec
 INSERT INTO goto (mapname, jumpname, pos_x, pos_y, pos_z, angle_v, angle_h)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
