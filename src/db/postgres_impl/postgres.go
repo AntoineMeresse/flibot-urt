@@ -12,8 +12,8 @@ import (
 	postgres_genererated "github.com/AntoineMeresse/flibot-urt/src/db/postgres_impl/generated"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,19 +23,19 @@ const (
 
 type PostGresqlDB struct {
 	ctx     context.Context
-	conn    *pgx.Conn
+	pool    *pgxpool.Pool
 	queries *postgres_genererated.Queries
 }
 
 func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
-	conn, err := pgx.Connect(ctx, uri)
+	pool, err := pgxpool.New(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
 
-	queries := postgres_genererated.New(conn)
+	queries := postgres_genererated.New(pool)
 	schema := mydb.ReadSchema("./sqlc/postgres/schema.sql")
-	_, err = conn.Exec(ctx, schema)
+	_, err = pool.Exec(ctx, schema)
 
 	if err != nil {
 		return nil, err
@@ -43,14 +43,11 @@ func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
 
 	logrus.Debugf("Schema: %s", schema)
 
-	return &PostGresqlDB{conn: conn, queries: queries, ctx: ctx}, nil
+	return &PostGresqlDB{pool: pool, queries: queries, ctx: ctx}, nil
 }
 
 func (db *PostGresqlDB) Close() {
-	err := db.conn.Close(db.ctx)
-	if err != nil {
-		logrus.Error("Error trying to close postgres connection", err)
-	}
+	db.pool.Close()
 }
 
 func (db *PostGresqlDB) SaveNewPlayer(name string, guid string, ipAddress string) (int, error) {
