@@ -113,6 +113,7 @@ func (c *AppContext) GivePenCoin(player models.Player) bool {
 }
 
 func (c *AppContext) notifyIgnoredOnline(playerNumber string, guid string) {
+	time.Sleep(1 * time.Second)
 	ignoredGuids, err := c.DB.GetIgnoredGuids(guid)
 	if err != nil || len(ignoredGuids) == 0 {
 		return

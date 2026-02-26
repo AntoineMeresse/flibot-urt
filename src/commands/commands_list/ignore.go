@@ -35,6 +35,7 @@ func Ignore(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
+	cmd.RconCommand("spoof %s ignore %s", cmd.PlayerId, target.Number)
 	cmd.RconText("^5%s^7 added to your ignore list.", target.Name)
 }
 
