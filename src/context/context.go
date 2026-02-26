@@ -51,7 +51,7 @@ func (c *AppContext) initPlayers() {
 
 func (c *AppContext) initRuns() {
 	log.Debug("Initializing runs...")
-	c.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int)}
+	c.Runs = models.RunsInfo{RunMutex: sync.RWMutex{}, PlayerRuns: make(map[string]*models.RunPlayerInfo), History: make(map[string][]int), CpEnabled: make(map[string]bool)}
 }
 
 func (c *AppContext) initApi() {

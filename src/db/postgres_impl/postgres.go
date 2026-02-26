@@ -3,6 +3,7 @@ package postgres_impl
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -192,6 +193,27 @@ func (db *PostGresqlDB) PenPlayerGetDailySize(guid string) (float64, error) {
 	})
 }
 
+func mustMarshalCheckpoints(checkpoints []int) string {
+	b, _ := json.Marshal(checkpoints)
+	return string(b)
+}
+
+func (db *PostGresqlDB) GetBestCheckpoints(guid, mapname, way string) ([]int, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	checkpointsStr, err := db.queries.GetBestCheckpointsByGuidMapWay(c, postgres_genererated.GetBestCheckpointsByGuidMapWayParams{
+		Guid:    guid,
+		Mapname: mapname,
+		Way:     way,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var checkpoints []int
+	err = json.Unmarshal([]byte(checkpointsStr), &checkpoints)
+	return checkpoints, err
+}
+
 func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error {
 	logrus.Debugf("HandleRun: %v | %v", info, checkpoints)
 	runtime, err := strconv.Atoi(info.Time)
@@ -216,9 +238,11 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 		if timeDiff > 0 {
 			if err = db.queries.UpdateRunByGuidAndUTJ(c, postgres_genererated.UpdateRunByGuidAndUTJParams{
 				Runtime:     int32(runtime),
-				Checkpoints: fmt.Sprintf("%v", checkpoints),
+				Checkpoints: mustMarshalCheckpoints(checkpoints),
 				RunDate:     pgtype.Timestamp{Time: time.Now(), Valid: true},
 				Guid:        info.Guid,
+				Mapname:     info.Mapname,
+				Way:         info.Way,
 				Utj:         info.Utj,
 			}); err != nil {
 				return err
@@ -235,7 +259,7 @@ func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) 
 			Mapname:     info.Mapname,
 			Way:         info.Way,
 			Runtime:     int32(runtime),
-			Checkpoints: fmt.Sprintf("%v", checkpoints),
+			Checkpoints: mustMarshalCheckpoints(checkpoints),
 			RunDate:     pgtype.Timestamp{Time: time.Now(), Valid: true},
 			Demopath:    info.Demopath,
 		}); err != nil {

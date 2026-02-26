@@ -15,15 +15,17 @@ type RunCompare struct {
 }
 
 type RunPlayerInfo struct {
-	way        string
-	checkpoint []int
-	runCompare RunCompare
+	way             string
+	checkpoint      []int
+	bestCheckpoints []int
+	runCompare      RunCompare
 }
 
 type RunsInfo struct {
 	RunMutex   sync.RWMutex
 	PlayerRuns map[string]*RunPlayerInfo
 	History    map[string][]int
+	CpEnabled  map[string]bool
 }
 
 type PlayerRunInfo struct {
@@ -53,12 +55,74 @@ func (runs *RunsInfo) IsRunning(playerNumber string) bool {
 	return ok
 }
 
-func (runs *RunsInfo) RunStart(playerNumber string, wayName string) {
+func (runs *RunsInfo) RunStart(playerNumber string, wayName string, bestCheckpoints []int) {
 	log.Debugf("Starting run %s", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
-	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}}
+	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}, bestCheckpoints: bestCheckpoints}
+}
+
+func (runs *RunsInfo) ToggleCp(playerNumber string) bool {
+	runs.RunMutex.Lock()
+	defer runs.RunMutex.Unlock()
+	runs.CpEnabled[playerNumber] = !runs.CpEnabled[playerNumber]
+	return runs.CpEnabled[playerNumber]
+}
+
+func (runs *RunsInfo) IsCpEnabled(playerNumber string) bool {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	return runs.CpEnabled[playerNumber]
+}
+
+func (runs *RunsInfo) GetCpMsg(playerNumber string, playerName string) string {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+
+	info, ok := runs.PlayerRuns[playerNumber]
+	if !ok || len(info.bestCheckpoints) == 0 || len(info.checkpoint) == 0 {
+		return ""
+	}
+
+	l := len(info.checkpoint)
+	lBest := len(info.bestCheckpoints)
+	if l > lBest {
+		return ""
+	}
+
+	cpIdx := l - 1
+	currentTime := info.checkpoint[cpIdx]
+	bestTime := info.bestCheckpoints[cpIdx]
+	diff := bestTime - currentTime // positive = player is ahead of best
+
+	var color string
+	absDiff := diff
+	if diff == 0 {
+		color = "^7"
+	} else if diff < 0 {
+		color = "^1-"
+		absDiff = -diff
+	} else {
+		color = "^2+"
+	}
+
+	lastPart := ""
+	if l == lBest {
+		lastPart = fmt.Sprintf(" ^7than ^5%s^7.", FormatMs(bestTime))
+	}
+
+	return fmt.Sprintf("^7[^8%s^7] CP %d: %s%s%s", playerName, cpIdx+1, color, FormatMs(absDiff), lastPart)
+}
+
+func FormatMs(ms int) string {
+	minutes := ms / 60000
+	seconds := (ms % 60000) / 1000
+	millis := ms % 1000
+	if minutes > 0 {
+		return fmt.Sprintf("%d:%02d.%03d", minutes, seconds, millis)
+	}
+	return fmt.Sprintf("%d.%03d", seconds, millis)
 }
 
 func (i *RunPlayerInfo) appendCheckpoint(time string) {

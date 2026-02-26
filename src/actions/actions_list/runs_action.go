@@ -19,7 +19,16 @@ func ClientJumpRunStarted(actionParams []string, c *appcontext.AppContext) {
 		log.Error("ClientJumpRunStarted: Invalid parameters")
 		return
 	}
-	c.Runs.RunStart(actionParams[0], actionParams[3])
+	playerNumber := actionParams[0]
+	wayName := actionParams[3]
+
+	var bestCheckpoints []int
+	if player, err := c.Players.GetPlayer(playerNumber); err == nil {
+		if cps, err := c.DB.GetBestCheckpoints(player.Guid, c.GetCurrentMap(), wayName); err == nil {
+			bestCheckpoints = cps
+		}
+	}
+	c.Runs.RunStart(playerNumber, wayName, bestCheckpoints)
 }
 
 func ClientJumpRunCanceled(actionParams []string, c *appcontext.AppContext) {
@@ -46,7 +55,16 @@ func ClientJumpRunCheckpoint(actionParams []string, c *appcontext.AppContext) {
 		log.Error("ClientJumpRunCheckpoint: Invalid parameters")
 		return
 	}
-	c.Runs.AddCheckpoint(actionParams[0], actionParams[6])
+	playerNumber := actionParams[0]
+	c.Runs.AddCheckpoint(playerNumber, actionParams[6])
+
+	if c.Runs.IsCpEnabled(playerNumber) {
+		if player, err := c.Players.GetPlayer(playerNumber); err == nil {
+			if msg := c.Runs.GetCpMsg(playerNumber, player.Name); msg != "" {
+				c.RconText(false, playerNumber, "%s", msg)
+			}
+		}
+	}
 }
 
 func RunLog(actionParams []string, c *appcontext.AppContext) {

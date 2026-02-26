@@ -13,4 +13,11 @@ UPDATE runs
 SET runtime = $1,
     checkpoints = $2,
     run_date = $3
-WHERE guid = $4 AND utj = $5;
+WHERE guid = $4 AND mapname = $5 AND way = $6 AND utj = $7;
+
+-- name: GetBestCheckpointsByGuidMapWay :one
+SELECT checkpoints
+FROM runs
+WHERE guid = $1 AND mapname = $2 AND way = $3
+ORDER BY runtime ASC
+LIMIT 1;

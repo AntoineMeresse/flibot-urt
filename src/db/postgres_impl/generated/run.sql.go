@@ -72,7 +72,7 @@ UPDATE runs
 SET runtime = $1,
     checkpoints = $2,
     run_date = $3
-WHERE guid = $4 AND utj = $5
+WHERE guid = $4 AND mapname = $5 AND way = $6 AND utj = $7
 `
 
 type UpdateRunByGuidAndUTJParams struct {
@@ -80,6 +80,8 @@ type UpdateRunByGuidAndUTJParams struct {
 	Checkpoints string
 	RunDate     pgtype.Timestamp
 	Guid        string
+	Mapname     string
+	Way         string
 	Utj         string
 }
 
@@ -89,7 +91,29 @@ func (q *Queries) UpdateRunByGuidAndUTJ(ctx context.Context, arg UpdateRunByGuid
 		arg.Checkpoints,
 		arg.RunDate,
 		arg.Guid,
+		arg.Mapname,
+		arg.Way,
 		arg.Utj,
 	)
 	return err
+}
+
+const getBestCheckpointsByGuidMapWay = `-- name: GetBestCheckpointsByGuidMapWay :one
+SELECT checkpoints
+FROM runs
+WHERE guid = $1 AND mapname = $2 AND way = $3
+ORDER BY runtime ASC
+LIMIT 1`
+
+type GetBestCheckpointsByGuidMapWayParams struct {
+	Guid    string
+	Mapname string
+	Way     string
+}
+
+func (q *Queries) GetBestCheckpointsByGuidMapWay(ctx context.Context, arg GetBestCheckpointsByGuidMapWayParams) (string, error) {
+	row := q.db.QueryRow(ctx, getBestCheckpointsByGuidMapWay, arg.Guid, arg.Mapname, arg.Way)
+	var checkpoints string
+	err := row.Scan(&checkpoints)
+	return checkpoints, err
 }
