@@ -210,11 +210,10 @@ func mustMarshalCheckpoints(checkpoints []int) string {
 	return string(b)
 }
 
-func (db *PostGresqlDB) GetBestCheckpoints(guid, mapname, way string) ([]int, error) {
+func (db *PostGresqlDB) GetBestCheckpoints(mapname, way string) ([]int, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	checkpointsStr, err := db.queries.GetBestCheckpointsByGuidMapWay(c, postgres_genererated.GetBestCheckpointsByGuidMapWayParams{
-		Guid:    guid,
+	checkpointsStr, err := db.queries.GetBestCheckpointsByMapWay(c, postgres_genererated.GetBestCheckpointsByMapWayParams{
 		Mapname: mapname,
 		Way:     way,
 	})

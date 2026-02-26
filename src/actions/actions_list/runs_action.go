@@ -23,10 +23,8 @@ func ClientJumpRunStarted(actionParams []string, c *appcontext.AppContext) {
 	wayName := actionParams[3]
 
 	var bestCheckpoints []int
-	if player, err := c.Players.GetPlayer(playerNumber); err == nil {
-		if cps, err := c.DB.GetBestCheckpoints(player.Guid, c.GetCurrentMap(), wayName); err == nil {
-			bestCheckpoints = cps
-		}
+	if cps, err := c.DB.GetBestCheckpoints(c.GetCurrentMap(), wayName); err == nil {
+		bestCheckpoints = cps
 	}
 	c.Runs.RunStart(playerNumber, wayName, bestCheckpoints)
 }

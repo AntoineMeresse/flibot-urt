@@ -58,7 +58,7 @@ type DataPersister interface {
 	PenPenHallOfShame() ([]PenData, error)
 
 	HandleRun(info models.PlayerRunInfo, checkpoints []int) error
-	GetBestCheckpoints(guid, mapname, way string) ([]int, error)
+	GetBestCheckpoints(mapname, way string) ([]int, error)
 
 	SetMapOptions(mapname, options string) error
 	GetMapOptions(mapname string) (string, bool)

@@ -98,21 +98,20 @@ func (q *Queries) UpdateRunByGuidAndUTJ(ctx context.Context, arg UpdateRunByGuid
 	return err
 }
 
-const getBestCheckpointsByGuidMapWay = `-- name: GetBestCheckpointsByGuidMapWay :one
+const getBestCheckpointsByMapWay = `-- name: GetBestCheckpointsByMapWay :one
 SELECT checkpoints
 FROM runs
-WHERE guid = $1 AND mapname = $2 AND way = $3
+WHERE mapname = $1 AND way = $2
 ORDER BY runtime ASC
 LIMIT 1`
 
-type GetBestCheckpointsByGuidMapWayParams struct {
-	Guid    string
+type GetBestCheckpointsByMapWayParams struct {
 	Mapname string
 	Way     string
 }
 
-func (q *Queries) GetBestCheckpointsByGuidMapWay(ctx context.Context, arg GetBestCheckpointsByGuidMapWayParams) (string, error) {
-	row := q.db.QueryRow(ctx, getBestCheckpointsByGuidMapWay, arg.Guid, arg.Mapname, arg.Way)
+func (q *Queries) GetBestCheckpointsByMapWay(ctx context.Context, arg GetBestCheckpointsByMapWayParams) (string, error) {
+	row := q.db.QueryRow(ctx, getBestCheckpointsByMapWay, arg.Mapname, arg.Way)
 	var checkpoints string
 	err := row.Scan(&checkpoints)
 	return checkpoints, err
