@@ -16,8 +16,9 @@ SET runtime = $1,
 WHERE guid = $4 AND mapname = $5 AND way = $6 AND utj = $7;
 
 -- name: GetBestCheckpointsByMapWay :one
-SELECT checkpoints
-FROM runs
-WHERE mapname = $1 AND way = $2
-ORDER BY runtime ASC
+SELECT r.checkpoints, p.name
+FROM runs r
+JOIN player p ON p.guid = r.guid
+WHERE r.mapname = $1 AND r.way = $2
+ORDER BY r.runtime ASC
 LIMIT 1;

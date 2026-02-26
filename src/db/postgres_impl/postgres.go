@@ -210,19 +210,19 @@ func mustMarshalCheckpoints(checkpoints []int) string {
 	return string(b)
 }
 
-func (db *PostGresqlDB) GetBestCheckpoints(mapname, way string) ([]int, error) {
+func (db *PostGresqlDB) GetBestCheckpoints(mapname, way string) ([]int, string, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	checkpointsStr, err := db.queries.GetBestCheckpointsByMapWay(c, postgres_genererated.GetBestCheckpointsByMapWayParams{
+	row, err := db.queries.GetBestCheckpointsByMapWay(c, postgres_genererated.GetBestCheckpointsByMapWayParams{
 		Mapname: mapname,
 		Way:     way,
 	})
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	var checkpoints []int
-	err = json.Unmarshal([]byte(checkpointsStr), &checkpoints)
-	return checkpoints, err
+	err = json.Unmarshal([]byte(row.Checkpoints), &checkpoints)
+	return checkpoints, row.Name, err
 }
 
 func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error {

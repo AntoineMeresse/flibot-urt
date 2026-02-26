@@ -18,6 +18,7 @@ type RunPlayerInfo struct {
 	way             string
 	checkpoint      []int
 	bestCheckpoints []int
+	bestPlayerName  string
 	runCompare      RunCompare
 }
 
@@ -55,12 +56,12 @@ func (runs *RunsInfo) IsRunning(playerNumber string) bool {
 	return ok
 }
 
-func (runs *RunsInfo) RunStart(playerNumber string, wayName string, bestCheckpoints []int) {
+func (runs *RunsInfo) RunStart(playerNumber string, wayName string, bestCheckpoints []int, bestPlayerName string) {
 	log.Debugf("Starting run %s", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
-	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}, bestCheckpoints: bestCheckpoints}
+	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}, bestCheckpoints: bestCheckpoints, bestPlayerName: bestPlayerName}
 }
 
 func (runs *RunsInfo) ToggleCp(playerNumber string) bool {
@@ -112,7 +113,7 @@ func (runs *RunsInfo) GetCpMsg(playerNumber string, playerName string) string {
 		lastPart = fmt.Sprintf(" ^7than ^5%s^7.", FormatMs(bestTime))
 	}
 
-	return fmt.Sprintf("^7[^8%s^7] CP %d: %s%s%s", playerName, cpIdx+1, color, FormatMs(absDiff), lastPart)
+	return fmt.Sprintf("^7[^8%s^7] CP %d: %s%s%s", info.bestPlayerName, cpIdx+1, color, FormatMs(absDiff), lastPart)
 }
 
 func FormatMs(ms int) string {
