@@ -72,6 +72,15 @@ CREATE TABLE IF NOT EXISTS ignore_list (
     UNIQUE(guid, ignored_guid)
 );
 
+-- Bans
+CREATE TABLE IF NOT EXISTS bans (
+    id SERIAL PRIMARY KEY,
+    guid TEXT NOT NULL,
+    ip TEXT NOT NULL,
+    reason TEXT NOT NULL DEFAULT '',
+    banned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Quotes
 CREATE TABLE IF NOT EXISTS quotes (
     id SERIAL PRIMARY KEY,

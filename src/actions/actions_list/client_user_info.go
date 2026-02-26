@@ -18,6 +18,14 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 		info := splitInfos(infoString)
 
 		if guid, ok := info["cl_guid"]; ok {
+			if reason, banned, _ := c.DB.GetBan(guid); banned {
+				msg := "You are banned from this server."
+				if reason != "" {
+					msg = "You are banned from this server. Reason: " + reason
+				}
+				c.RconCommand("kick %s \"%s\"", playerNumber, msg)
+				return
+			}
 			currentPlayer := c.Players.PlayerMap[playerNumber]
 			if currentPlayer == nil {
 				name := utils.DecolorString(info["name"])

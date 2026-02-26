@@ -75,6 +75,9 @@ type DataPersister interface {
 	GetIgnoredGuids(guid string) ([]string, error)
 	GetIgnoredPlayers(guid string) ([]IgnoredPlayer, error)
 
+	AddBan(guid, ip, reason string) error
+	GetBan(guid string) (reason string, banned bool, err error)
+
 	GetRandomQuote() (string, error)
 	SaveQuote(text string) error
 

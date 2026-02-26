@@ -502,3 +502,20 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 		}, true
 	}
 }
+
+func (db *PostGresqlDB) AddBan(guid, ip, reason string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.AddBan(c, guid, ip, reason)
+}
+
+func (db *PostGresqlDB) GetBan(guid string) (string, bool, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	reason, err := db.queries.GetBan(c, guid)
+	if err != nil {
+		// pgx returns an error when no row is found
+		return "", false, nil
+	}
+	return reason, true, nil
+}
