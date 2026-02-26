@@ -56,17 +56,32 @@ func (db *PostGresqlDB) Close() {
 func (db *PostGresqlDB) SaveNewPlayer(name string, guid string, ipAddress string) (int, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
+	initialAliases, _ := json.Marshal([]string{name})
 	p, err := db.queries.CreatePlayer(c, postgres_genererated.CreatePlayerParams{
 		Name:       name,
 		Guid:       guid,
 		IpAddress:  ipAddress,
 		TimeJoined: pgtype.Timestamp{Time: time.Now(), Valid: true},
+		Aliases:    string(initialAliases),
 	})
 	if err != nil {
 		return 0, err
 	}
 	logrus.Debugf("Player created: %v", p)
 	return int(p.ID), nil
+}
+
+func (db *PostGresqlDB) UpdatePlayerOnJoin(guid, name, ip string, aliases []string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	aliasesJSON, _ := json.Marshal(aliases)
+	return db.queries.UpdatePlayerOnJoin(c, postgres_genererated.UpdatePlayerOnJoinParams{
+		Guid:       guid,
+		Name:       name,
+		IpAddress:  ip,
+		TimeJoined: pgtype.Timestamp{Time: time.Now(), Valid: true},
+		Aliases:    string(aliasesJSON),
+	})
 }
 
 func (db *PostGresqlDB) UpdatePlayer() error {
@@ -443,13 +458,15 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 		return models.Player{}, false
 	} else {
 		logrus.Debugf("Player found in db: %+v", playerDb)
+		var aliases []string
+		json.Unmarshal([]byte(playerDb.Aliases), &aliases) //nolint: errcheck
 		return models.Player{
-			Role: int(playerDb.Role),
-			Name: playerDb.Name,
-			Guid: guid,
-			Id:   strconv.Itoa(int(playerDb.ID)),
-			Ip:   playerDb.IpAddress,
-			// Aliases: playerDb.Aliases,
+			Role:    int(playerDb.Role),
+			Name:    playerDb.Name,
+			Guid:    guid,
+			Id:      strconv.Itoa(int(playerDb.ID)),
+			Ip:      playerDb.IpAddress,
+			Aliases: aliases,
 		}, true
 	}
 }

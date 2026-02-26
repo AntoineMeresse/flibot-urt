@@ -28,7 +28,8 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 			// Only player update
 			wasUpdated := c.Players.UpdatePlayer(currentPlayer, info)
 			if wasUpdated {
-				log.Infof("Need to update db with new player info: %v", *currentPlayer)
+				log.Infof("Updating db with new player info: %v", *currentPlayer)
+				c.UpdatePlayerAliases(currentPlayer)
 			}
 		} else {
 			log.Warn("Could not find guid in client user info")

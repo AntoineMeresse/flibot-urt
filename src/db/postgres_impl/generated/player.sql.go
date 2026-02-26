@@ -205,6 +205,34 @@ func (q *Queries) LookupPlayersByNameOrAlias(ctx context.Context, arg LookupPlay
 	return items, nil
 }
 
+const updatePlayerOnJoin = `-- name: UpdatePlayerOnJoin :exec
+UPDATE player
+SET name = $2,
+    ip_address = $3,
+    time_joined = $4,
+    aliases = $5
+WHERE guid = $1
+`
+
+type UpdatePlayerOnJoinParams struct {
+	Guid       string
+	Name       string
+	IpAddress  string
+	TimeJoined pgtype.Timestamp
+	Aliases    string
+}
+
+func (q *Queries) UpdatePlayerOnJoin(ctx context.Context, arg UpdatePlayerOnJoinParams) error {
+	_, err := q.db.Exec(ctx, updatePlayerOnJoin,
+		arg.Guid,
+		arg.Name,
+		arg.IpAddress,
+		arg.TimeJoined,
+		arg.Aliases,
+	)
+	return err
+}
+
 const setPlayerRole = `-- name: SetPlayerRole :exec
 UPDATE player SET role = $2 WHERE guid = $1
 `

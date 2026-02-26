@@ -127,6 +127,30 @@ func (c *AppContext) registerPlayer(playerNumber string, player models.Player) *
 	return &player
 }
 
+func (c *AppContext) UpdatePlayerAliases(player *models.Player) {
+	player.Aliases = updateAliases(player.Aliases, player.Name)
+	if err := c.DB.UpdatePlayerOnJoin(player.Guid, player.Name, player.Ip, player.Aliases); err != nil {
+		log.Errorf("[UpdatePlayerAliases] Error updating player: %v", err)
+	}
+}
+
+func updateAliases(current []string, name string) []string {
+	// Remove existing occurrence to avoid duplicates
+	filtered := current[:0]
+	for _, a := range current {
+		if a != name {
+			filtered = append(filtered, a)
+		}
+	}
+	// Prepend current name
+	updated := append([]string{name}, filtered...)
+	// Cap at 30
+	if len(updated) > 30 {
+		updated = updated[:30]
+	}
+	return updated
+}
+
 func (c *AppContext) InitPlayer(playerNumber string, guid string, name string, ip string) *models.Player {
 	player, found := c.DB.GetPlayerByGuid(guid)
 	if !found {
@@ -134,7 +158,14 @@ func (c *AppContext) InitPlayer(playerNumber string, guid string, name string, i
 		if err != nil {
 			log.Errorf("[InitPlayer] Error saving new player: %v", err)
 		}
-		player = models.Player{Guid: guid, Name: name, Ip: ip, Id: strconv.Itoa(id)}
+		player = models.Player{Guid: guid, Name: name, Ip: ip, Id: strconv.Itoa(id), Aliases: []string{name}}
+	} else {
+		player.Aliases = updateAliases(player.Aliases, name)
+		player.Name = name
+		player.Ip = ip
+		if err := c.DB.UpdatePlayerOnJoin(guid, name, ip, player.Aliases); err != nil {
+			log.Errorf("[InitPlayer] Error updating player on join: %v", err)
+		}
 	}
 	return c.registerPlayer(playerNumber, player)
 }

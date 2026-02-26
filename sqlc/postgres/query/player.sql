@@ -25,6 +25,14 @@ ORDER BY id;
 DELETE FROM player
 WHERE guid = $1;
 
+-- name: UpdatePlayerOnJoin :exec
+UPDATE player
+SET name = $2,
+    ip_address = $3,
+    time_joined = $4,
+    aliases = $5
+WHERE guid = $1;
+
 -- name: SetPlayerRole :exec
 UPDATE player SET role = $2 WHERE guid = $1;
 
