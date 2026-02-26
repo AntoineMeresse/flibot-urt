@@ -70,12 +70,23 @@ type DataPersister interface {
 	DeleteGoto(mapname, jumpname string) (bool, error)
 	DeleteAllGotos(mapname string) (int, error)
 
+	AddIgnore(guid, ignoredGuid string) error
+	RemoveIgnore(guid, ignoredGuid string) error
+	GetIgnoredGuids(guid string) ([]string, error)
+	GetIgnoredPlayers(guid string) ([]IgnoredPlayer, error)
+
 	GetRandomQuote() (string, error)
 	SaveQuote(text string) error
 
 	LookupPlayers(search string) ([]LookupResult, error)
 	GetPlayerById(id int) (LookupResult, bool)
 	GetPlayersByIp(ip string) ([]LookupResult, error)
+}
+
+type IgnoredPlayer struct {
+	Id   int
+	Name string
+	Guid string
 }
 
 type LookupResult struct {

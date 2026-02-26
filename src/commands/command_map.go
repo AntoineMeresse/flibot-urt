@@ -39,6 +39,8 @@ var Commands = map[string]Command{
 	"phos":       {commandslist.PenHallOfShame, 0, "", true},
 	"pb":         {commandslist.PersonalBest, 0, "", true},
 	"aliases":    {commandslist.Aliases, 20, "!aliases [player]", true},
+	"ignore":     {commandslist.Ignore, 0, "!ignore [player]", true},
+	"unignore":   {commandslist.Unignore, 0, "!unignore [id]", true},
 	"cp":         {commandslist.Cp, 0, "!cp", true},
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit [reason]", true},

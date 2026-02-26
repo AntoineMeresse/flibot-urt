@@ -64,6 +64,14 @@ CREATE TABLE IF NOT EXISTS pen_counter (
     UNIQUE (guid, year)
 );
 
+-- Ignore list
+CREATE TABLE IF NOT EXISTS ignore_list (
+    id SERIAL PRIMARY KEY,
+    guid TEXT NOT NULL REFERENCES player(guid),
+    ignored_guid TEXT NOT NULL REFERENCES player(guid),
+    UNIQUE(guid, ignored_guid)
+);
+
 -- Quotes
 CREATE TABLE IF NOT EXISTS quotes (
     id SERIAL PRIMARY KEY,

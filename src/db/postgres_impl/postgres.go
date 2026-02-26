@@ -370,6 +370,38 @@ func (db *PostGresqlDB) DeleteAllGotos(mapname string) (int, error) {
 	return int(rows), err
 }
 
+func (db *PostGresqlDB) AddIgnore(guid, ignoredGuid string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.AddIgnore(c, guid, ignoredGuid)
+}
+
+func (db *PostGresqlDB) GetIgnoredGuids(guid string) ([]string, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.GetIgnoredGuids(c, guid)
+}
+
+func (db *PostGresqlDB) RemoveIgnore(guid, ignoredGuid string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.RemoveIgnore(c, guid, ignoredGuid)
+}
+
+func (db *PostGresqlDB) GetIgnoredPlayers(guid string) ([]mydb.IgnoredPlayer, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.GetIgnoredPlayers(c, guid)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]mydb.IgnoredPlayer, 0, len(rows))
+	for _, r := range rows {
+		result = append(result, mydb.IgnoredPlayer{Id: int(r.ID), Name: r.Name, Guid: r.IgnoredGuid})
+	}
+	return result, nil
+}
+
 func (db *PostGresqlDB) GetRandomQuote() (string, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

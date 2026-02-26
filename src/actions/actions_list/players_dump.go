@@ -3,6 +3,7 @@ package actionslist
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
@@ -10,8 +11,9 @@ import (
 )
 
 func PlayersDump(actionParams []string, c *appcontext.AppContext) {
-	if len(actionParams) == 1 {
-		dump := actionParams[0]
+	log.Tracef("PLayersDump action | (%d)", len(actionParams))
+	if len(actionParams) >= 1 {
+		dump := strings.Join(actionParams, " ")
 		log.Debugf("PLayersDump: %v", dump)
 
 		players, err := convertPlayersDump(dump)

@@ -112,6 +112,33 @@ func (c *AppContext) GivePenCoin(player models.Player) bool {
 	return true
 }
 
+func (c *AppContext) notifyIgnoredOnline(playerNumber string, guid string) {
+	ignoredGuids, err := c.DB.GetIgnoredGuids(guid)
+	if err != nil || len(ignoredGuids) == 0 {
+		return
+	}
+	ignoredSet := make(map[string]struct{}, len(ignoredGuids))
+	for _, g := range ignoredGuids {
+		ignoredSet[g] = struct{}{}
+	}
+	var toSpoof []string
+	c.Players.Mutex.RLock()
+	for num, p := range c.Players.PlayerMap {
+		if num != playerNumber {
+			if _, ignored := ignoredSet[p.Guid]; ignored {
+				toSpoof = append(toSpoof, num)
+			}
+		}
+	}
+	c.Players.Mutex.RUnlock()
+	for _, num := range toSpoof {
+		c.RconCommand("spoof %s ignore %s", playerNumber, num)
+	}
+	if len(toSpoof) > 0 {
+		c.RconText(false, playerNumber, "^7%d ignored player(s) on this server. ^8(verify with ^3/ignorelist^8 in console)", len(toSpoof))
+	}
+}
+
 func (c *AppContext) registerPlayer(playerNumber string, player models.Player) *models.Player {
 	c.Players.AddPlayer(playerNumber, &player)
 	log.Debugf("Player %s not found. Creating it (%v)", playerNumber, player)
@@ -124,6 +151,7 @@ func (c *AppContext) registerPlayer(playerNumber string, player models.Player) *
 			player.Name, player.Id,
 		)
 	}
+	go c.notifyIgnoredOnline(playerNumber, player.Guid)
 	return &player
 }
 
