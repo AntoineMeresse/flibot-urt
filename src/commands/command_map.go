@@ -42,6 +42,7 @@ var Commands = map[string]Command{
 	"ignore":     {commandslist.Ignore, 0, "!ignore [player]", true},
 	"unignore":   {commandslist.Unignore, 0, "!unignore [id]", true},
 	"cp":         {commandslist.Cp, 0, "!cp", true},
+	"time":       {commandslist.Time, 0, "!time", true},
 	"tp":         {commandslist.Tp, 0, "!tp [player]", true},
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit [reason]", true},
