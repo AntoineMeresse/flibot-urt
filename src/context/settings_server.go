@@ -66,14 +66,16 @@ func (c *AppContext) initMapName() {
 }
 
 func (c *AppContext) initNextMapName() {
-	if len(c.Settings.Maplist) < 2 {
+	var allMapsExcludingCurrent []string
+	for _, m := range c.Settings.Maplist {
+		if m != c.Settings.Mapname {
+			allMapsExcludingCurrent = append(allMapsExcludingCurrent, m)
+		}
+	}
+	if len(allMapsExcludingCurrent) == 0 {
 		c.Settings.Nextmap = c.Settings.Mapname
 	} else {
-		nextmap := utils.RandomValueFromSlice(c.Settings.Maplist)
-		for nextmap != "" && nextmap == c.Settings.Mapname {
-			nextmap = utils.RandomValueFromSlice(c.Settings.Maplist)
-		}
-		c.Settings.Nextmap = nextmap
+		c.Settings.Nextmap = utils.RandomValueFromSlice(allMapsExcludingCurrent)
 	}
 	log.Debugf("Nextmap is: %s\n", c.Settings.Nextmap)
 }

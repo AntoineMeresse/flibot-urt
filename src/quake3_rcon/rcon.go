@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const BufferSize = 8192
@@ -40,56 +42,98 @@ func (r *Rcon) Connect() {
 	r.Connection = conn
 }
 
-func (r *Rcon) Send(cmd string) {
+func (r *Rcon) Send(cmd string) error {
 	command := fmt.Sprintf("rcon %s %s", r.Password, cmd)
-	commandBytes := []byte(command)
-
-	fullCommandBytes := append(PacketPrefix, commandBytes...)
-	_, sendErr := r.Connection.Write(fullCommandBytes)
-
-	if sendErr != nil {
-		fmt.Printf("Error while sending command (%s): %v", command, sendErr)
+	fullCommandBytes := append(PacketPrefix, []byte(command)...)
+	_, err := r.Connection.Write(fullCommandBytes)
+	if err != nil {
+		return fmt.Errorf("send failed: %w", err)
 	}
+	return nil
 }
 
-func (r *Rcon) Read() (response string) {
+func (r *Rcon) Read() (string, error) {
 	buffer := make([]byte, BufferSize)
 
 	bytesRead, err := r.Connection.Read(buffer)
 	if err != nil {
 		var netErr net.Error
 		if errors.As(err, &netErr) && netErr.Timeout() {
-			fmt.Println("No response from server (Timeout)")
-			return "" // Return empty instead of exiting
+			return "", fmt.Errorf("read timeout: %w", err)
 		}
-
-		fmt.Printf("Actual Network Error: %v\n", err)
-		return ""
+		return "", fmt.Errorf("read failed: %w", err)
 	}
 
 	if bytesRead >= 4 {
-		infos := string(buffer[4:bytesRead])
-		return infos
+		return string(buffer[4:bytesRead]), nil
 	}
 
-	return ""
+	return "", nil
 }
 
-func (r *Rcon) RconCommand(command string) (res string) {
+func (r *Rcon) reconnect() {
+	log.Warn("Rcon: connection lost, reconnecting...")
+	if r.Connection != nil {
+		r.Connection.Close()
+		r.Connection = nil
+	}
+	serverAddress := fmt.Sprintf("%s:%s", r.ServerIp, r.ServerPort)
+	conn, err := net.Dial("udp", serverAddress)
+	if err != nil {
+		log.Errorf("Rcon: reconnect failed: %v", err)
+		return
+	}
+	r.Connection = conn
+	log.Info("Rcon: reconnected successfully")
+}
+
+func (r *Rcon) drain() {
+	buf := make([]byte, BufferSize)
+	r.Connection.SetDeadline(time.Now().Add(1 * time.Millisecond))
+	for {
+		if _, err := r.Connection.Read(buf); err != nil {
+			break
+		}
+	}
+}
+
+func (r *Rcon) sendWithDeadline(command string) error {
+	r.drain()
+	if err := r.Connection.SetDeadline(time.Now().Add(2 * time.Second)); err != nil {
+		return fmt.Errorf("set deadline failed: %w", err)
+	}
+	return r.Send(command)
+}
+
+func (r *Rcon) RconCommand(command string) string {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	if r.Connection == nil {
-		return ""
+		r.reconnect()
+		if r.Connection == nil {
+			return ""
+		}
 	}
 
-	err := r.Connection.SetDeadline(time.Now().Add(2 * time.Second))
+	if err := r.sendWithDeadline(command); err != nil {
+		log.Warnf("Rcon: send error, attempting reconnect: %v", err)
+		r.reconnect()
+		if r.Connection == nil {
+			return ""
+		}
+		if err := r.sendWithDeadline(command); err != nil {
+			log.Errorf("Rcon: send failed after reconnect: %v", err)
+			return ""
+		}
+	}
+
+	res, err := r.Read()
 	if err != nil {
+		log.Warnf("Rcon: read error: %v", err)
 		return ""
 	}
-
-	r.Send(command)
-	return r.Read()
+	return res
 }
 
 func (r *Rcon) RconCommandExtractValue(command string) string {
