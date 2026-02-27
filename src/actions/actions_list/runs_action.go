@@ -102,7 +102,7 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 			}
 			go func() {
 				sendToDiscordWebhook(c, runInfo, discordMsg)
-				deleteDemoIfNotImprovement(c, runInfo, isImprovement)
+				moveDemoIfImprovement(c, runInfo, isImprovement)
 			}()
 		}
 	}
@@ -176,14 +176,20 @@ func sendToDiscordWebhook(c *appcontext.AppContext, runInfo models.PlayerRunInfo
 	}
 }
 
-func deleteDemoIfNotImprovement(c *appcontext.AppContext, runInfo models.PlayerRunInfo, isImprovement bool) {
-	if isImprovement {
+func moveDemoIfImprovement(c *appcontext.AppContext, runInfo models.PlayerRunInfo, isImprovement bool) {
+	if !isImprovement {
 		return
 	}
-	demoFile := c.UrtConfig.DemoPath + "/" + runInfo.GetDemoName()
-	if err := os.Remove(demoFile); err != nil {
-		log.Errorf("Failed to delete demo file: %v", err)
+	src := c.UrtConfig.DemoPath + "/" + runInfo.GetDemoName()
+	destDir := c.UrtConfig.DemoPath + "/improvement"
+	if err := os.MkdirAll(destDir, 0755); err != nil {
+		log.Errorf("Failed to create improvement directory: %v", err)
+		return
+	}
+	dest := destDir + "/" + runInfo.GetDemoName()
+	if err := os.Rename(src, dest); err != nil {
+		log.Errorf("Failed to move improvement demo: %v", err)
 	} else {
-		log.Debugf("Deleted non-improvement demo: %s", demoFile)
+		log.Debugf("Moved improvement demo to: %s", dest)
 	}
 }
