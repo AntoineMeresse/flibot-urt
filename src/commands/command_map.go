@@ -42,6 +42,7 @@ var Commands = map[string]Command{
 	"ignore":     {commandslist.Ignore, 0, "!ignore [player]", true},
 	"unignore":   {commandslist.Unignore, 0, "!unignore [id]", true},
 	"cp":         {commandslist.Cp, 0, "!cp", true},
+	"tp":         {commandslist.Tp, 0, "!tp [player]", true},
 	"status":     {commandslist.ServerStatus, 0, "!status", true},
 	"quit":       {commandslist.Quit, 0, "!quit [reason]", true},
 	//"register":   {commandslist.Register, 0, "!register", true},
@@ -54,7 +55,9 @@ var Commands = map[string]Command{
 
 	// Level: 80
 	"setgoto":          {commandslist.SetGoto, 60, "", true},
+	"force":            {commandslist.Force, 60, "!force [player] [red/blue/spectator/free]", true},
 	"kick":             {commandslist.Kick, 80, "!kick [playerId/Name] [reason]", true},
+	"movePlayer":       {commandslist.MovePlayer, 80, "!movePlayer [player1] [player2]", true},
 	"mute":             {commandslist.Mute, 80, "!mute [playerId/Name]", true},
 	"addquote":         {commandslist.AddQuote, 80, "!addQuote [text]", true},
 	"portGotos":        {commandslist.PortGotos, 80, "!portGotos [sourcemap]", true},
