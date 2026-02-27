@@ -35,5 +35,9 @@ func Unignore(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
+	if onlinePlayer, ok := cmd.Context.Players.GetPlayerByGuid(target.Guid); ok {
+		cmd.RconCommand("spoof %s ignore %s", cmd.PlayerId, onlinePlayer.Number)
+	}
+
 	cmd.RconText("^7%s^7 removed from your ignore list.", target.Name)
 }

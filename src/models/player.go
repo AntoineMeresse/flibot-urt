@@ -92,6 +92,17 @@ func (players *Players) RemovePlayer(playerNumber string) {
 	players.Mutex.Unlock()
 }
 
+func (players *Players) GetPlayerByGuid(guid string) (*Player, bool) {
+	players.Mutex.RLock()
+	defer players.Mutex.RUnlock()
+	for _, player := range players.PlayerMap {
+		if player.Guid == guid {
+			return player, true
+		}
+	}
+	return nil, false
+}
+
 func (players *Players) GetPlayer(searchCriteria string) (*Player, error) {
 	players.Mutex.RLock()
 	defer players.Mutex.RUnlock()
