@@ -23,3 +23,36 @@ func (q *Queries) GetBan(ctx context.Context, guid string) (string, error) {
 	err := q.db.QueryRow(ctx, getBan, guid).Scan(&reason)
 	return reason, err
 }
+
+const removeBan = `-- name: RemoveBan :exec
+DELETE FROM bans WHERE guid = (SELECT guid FROM player WHERE id = $1)`
+
+func (q *Queries) RemoveBan(ctx context.Context, playerDbId int) error {
+	_, err := q.db.Exec(ctx, removeBan, playerDbId)
+	return err
+}
+
+const getBans = `-- name: GetBans :many
+SELECT p.id, p.name FROM bans b JOIN player p ON p.guid = b.guid`
+
+type BanRow struct {
+	Id   int
+	Name string
+}
+
+func (q *Queries) GetBans(ctx context.Context) ([]BanRow, error) {
+	rows, err := q.db.Query(ctx, getBans)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BanRow
+	for rows.Next() {
+		var b BanRow
+		if err := rows.Scan(&b.Id, &b.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, b)
+	}
+	return items, rows.Err()
+}

@@ -77,6 +77,8 @@ type DataPersister interface {
 
 	AddBan(guid, ip, reason string) error
 	GetBan(guid string) (reason string, banned bool, err error)
+	RemoveBan(playerDbId int) error
+	GetBans() ([]BanEntry, error)
 
 	GetRandomQuote() (string, error)
 	SaveQuote(text string) error
@@ -90,6 +92,11 @@ type IgnoredPlayer struct {
 	Id   int
 	Name string
 	Guid string
+}
+
+type BanEntry struct {
+	Id   int
+	Name string
 }
 
 type LookupResult struct {

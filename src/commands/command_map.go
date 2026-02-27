@@ -80,6 +80,7 @@ var Commands = map[string]Command{
 	"nuke":   {commandslist.Nuke, 90, "!nuke [playerId/Name]", true},
 	"slap":   {commandslist.Slap, 90, "!slap [playerId/Name]", true},
 	"ban":    {commandslist.Ban, 90, "!ban [playerId/Name] [reason]", true},
+	"unban":  {commandslist.Unban, 90, "!unban [id]", true},
 	"lookup":     {commandslist.Lookup, 90, "!lookup [name/alias]", true},
 	"playerid":   {commandslist.PlayerId, 99, "!playerid [id]", true},
 	"resetGotos": {commandslist.ResetGotos, 90, "!resetGotos [map] (-f)", true},

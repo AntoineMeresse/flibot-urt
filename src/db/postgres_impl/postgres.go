@@ -505,6 +505,26 @@ func (db *PostGresqlDB) AddBan(guid, ip, reason string) error {
 	return db.queries.AddBan(c, guid, ip, reason)
 }
 
+func (db *PostGresqlDB) RemoveBan(playerDbId int) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.RemoveBan(c, playerDbId)
+}
+
+func (db *PostGresqlDB) GetBans() ([]mydb.BanEntry, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.GetBans(c)
+	if err != nil {
+		return nil, err
+	}
+	var result []mydb.BanEntry
+	for _, r := range rows {
+		result = append(result, mydb.BanEntry{Id: r.Id, Name: r.Name})
+	}
+	return result, nil
+}
+
 func (db *PostGresqlDB) GetBan(guid string) (string, bool, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
