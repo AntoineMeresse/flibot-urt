@@ -16,8 +16,10 @@ type Command struct {
 	Function     func(*appcontext.CommandsArgs)
 	Level        int
 	Usage        string
-	sendToBridge bool
+	excludeFromBridge bool
+	excludeFromGuess      bool
 }
+
 
 type commandInfo struct {
 	command     Command
@@ -31,7 +33,7 @@ type commandInfo struct {
 
 func (info *commandInfo) sendCommandToBridge() error {
 	// TODO: implement logic
-	if info.command.sendToBridge {
+	if !info.command.excludeFromBridge {
 		log.Debugf("Sending command to bridge: %s", info.message)
 	} else {
 		log.Debugf("Not sending command to bridge: %s", info.message)
@@ -78,8 +80,10 @@ func findClosestCommands(name string) (matches []string) {
 		}
 	}
 
-	for cmdName := range Commands {
-		consider(cmdName, cmdName)
+	for cmdName, cmd := range Commands {
+		if !cmd.excludeFromGuess {
+			consider(cmdName, cmdName)
+		}
 	}
 	for alias, cmdName := range Alias {
 		consider(alias, cmdName)
@@ -112,10 +116,10 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 				command := Commands[matches[0]]
 				return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: matches[0], params: params, message: message, suggestions: matches}
 			}
-			return commandInfo{command: Command{sendToBridge: true}, message: message, suggestions: matches}
+			return commandInfo{command: Command{}, message: message, suggestions: matches}
 		}
 	}
-	return commandInfo{command: Command{sendToBridge: true}, message: message}
+	return commandInfo{command: Command{}, message: message}
 }
 
 func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppContext) (canAccess bool, required int, got int) {
