@@ -28,6 +28,7 @@ var Commands = map[string]Command{
 	"missing":    {Function: commandslist.Missing, Usage: "!missing [maxlvl]"},
 	"similar":    {Function: commandslist.Similar, Usage: "!similar [map]"},
 	"coin":       {Function: commandslist.Coin, Usage: "!coin"},
+	"cyclemap":   {Function: commandslist.Cyclemap, Usage: "!cyclemap"},
 	"top":        {Function: commandslist.TopInformation},
 	"latestruns": {Function: commandslist.LatestRuns},
 	"latestmaps": {Function: commandslist.LatestMaps},
@@ -99,6 +100,7 @@ var Commands = map[string]Command{
 }
 
 var Alias = map[string]string{
+	"cycle":         "cyclemap",
 	"pl":            "play",
 	"sp":            "spec",
 	"rmgoto":        "removegoto",
