@@ -19,6 +19,5 @@ func Callvote(cmd *appcontext.CommandsArgs) {
 	} else {
 		v := models.Vote{Params: cmd.Params, PlayerId: cmd.PlayerId}
 		cmd.Context.NewVote(v)
-		VoteYes(cmd)
 	}
 }

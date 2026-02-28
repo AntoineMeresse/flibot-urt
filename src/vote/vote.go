@@ -65,6 +65,7 @@ func createVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vo
 		c.RconText(false, vote.PlayerId, "Can't ^1start^3 a new vote !")
 		return
 	}
+	voteSystem.addYesVote(vote.PlayerId)
 
 	continueVote, endFunction, msg := getVoteInfos(c, vote)
 	if !continueVote {
@@ -136,7 +137,9 @@ func voteKeysMessage(cpt *int, c *appcontext.AppContext) {
 }
 
 func hasMajority(c *appcontext.AppContext, voteSystem *VoteSystem) bool {
+	c.Players.Mutex.RLock()
 	majority := (len(c.Players.PlayerMap) / 2) + 1
+	c.Players.Mutex.RUnlock()
 	yes, no := voteSystem.voteCounts()
 	return yes >= majority || no >= majority
 }
