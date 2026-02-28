@@ -9,13 +9,21 @@ func SetNextMap(cmd *appcontext.CommandsArgs) {
 }
 
 func ChangeNextMap(cmd *appcontext.CommandsArgs) {
-	if len(cmd.Params) >= 1 {
-		mapName, err := cmd.Context.GetMapWithCriteria(cmd.Params[0])
-		if err != nil {
-			cmd.RconText("Can not change next map because: ^7%s", err.Error())
-		} else {
-			cmd.RconText("Changing nextmap to: %s", *mapName)
-			cmd.Context.SetNextMap(*mapName)
-		}
+	if len(cmd.Params) == 0 {
+		cmd.RconUsage()
+		return
 	}
+
+	indexStr := ""
+	if len(cmd.Params) > 1 {
+		indexStr = cmd.Params[1]
+	}
+
+	mapName, ok := resolveMap(cmd, cmd.Params[0], indexStr)
+	if !ok {
+		return
+	}
+
+	cmd.RconText("Changing nextmap to: ^5%s", mapName)
+	cmd.Context.SetNextMap(mapName)
 }

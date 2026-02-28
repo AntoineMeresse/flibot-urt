@@ -17,9 +17,13 @@ func ChangeMap(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	mapName, err := cmd.Context.GetMapWithCriteria(args[0])
-	if err != nil {
-		cmd.RconText(err.Error())
+	indexStr := ""
+	if len(args) > 1 {
+		indexStr = args[1]
+	}
+
+	mapName, ok := resolveMap(cmd, args[0], indexStr)
+	if !ok {
 		return
 	}
 
@@ -35,12 +39,12 @@ func ChangeMap(cmd *appcontext.CommandsArgs) {
 	}
 
 	if player.Role <= 60 {
-		v := models.Vote{Params: []string{"map", *mapName}, PlayerId: cmd.PlayerId}
+		v := models.Vote{Params: []string{"map", mapName}, PlayerId: cmd.PlayerId}
 		cmd.Context.NewVote(v)
 	} else {
-		cmd.RconBigText(msg.MAP_CHANGE, *mapName)
+		cmd.RconBigText(msg.MAP_CHANGE, mapName)
 		time.Sleep(200 * time.Millisecond)
-		cmd.RconCommand("map %s", *mapName)
-		cmd.Context.SetMapName(*mapName)
+		cmd.RconCommand("map %s", mapName)
+		cmd.Context.SetMapName(mapName)
 	}
 }

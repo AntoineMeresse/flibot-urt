@@ -10,27 +10,29 @@ import (
 func MapRemove(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
 		removeMap(cmd, cmd.Context.GetCurrentMap())
-	} else {
-		for _, mapname := range cmd.Params {
-			removeMap(cmd, mapname)
-		}
+		return
 	}
+
+	indexStr := ""
+	if len(cmd.Params) > 1 {
+		indexStr = cmd.Params[1]
+	}
+
+	mapName, ok := resolveMap(cmd, cmd.Params[0], indexStr)
+	if !ok {
+		return
+	}
+
+	removeMap(cmd, mapName)
 }
 
-func removeMap(cmd *appcontext.CommandsArgs, mapSearch string) {
-	mapName, err := cmd.Context.GetMapWithCriteria(mapSearch)
-
-	if err != nil {
-		cmd.RconText(err.Error())
-		return
-	}
-
-	path := fmt.Sprintf("%s/%s.pk3", cmd.Context.UrtConfig.DownloadPath, *mapName)
+func removeMap(cmd *appcontext.CommandsArgs, mapName string) {
+	path := fmt.Sprintf("%s/%s.pk3", cmd.Context.UrtConfig.DownloadPath, mapName)
 	if os.Remove(path) != nil {
-		cmd.RconText("Error while trying to remove: %s", *mapName)
+		cmd.RconText("Error while trying to remove: ^5%s", mapName)
 		return
 	}
 
-	cmd.RconText("^7Map (^5%s^7) has been removed.", *mapName)
+	cmd.RconText("^7Map (^5%s^7) has been removed.", mapName)
 	cmd.Context.MapSync()
 }

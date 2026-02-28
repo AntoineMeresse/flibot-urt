@@ -17,7 +17,19 @@ func Callvote(cmd *appcontext.CommandsArgs) {
 		}
 		cmd.RconList(voteList)
 	} else {
-		v := models.Vote{Params: cmd.Params, PlayerId: cmd.PlayerId}
+		params := cmd.Params
+		if (params[0] == "map" || params[0] == "nextmap") && len(params) > 1 {
+			indexStr := ""
+			if len(params) > 2 {
+				indexStr = params[2]
+			}
+			mapName, ok := resolveMap(cmd, params[1], indexStr)
+			if !ok {
+				return
+			}
+			params = []string{params[0], mapName}
+		}
+		v := models.Vote{Params: params, PlayerId: cmd.PlayerId}
 		cmd.Context.NewVote(v)
 	}
 }

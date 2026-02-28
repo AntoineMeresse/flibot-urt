@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -91,6 +92,35 @@ func (c *AppContext) initSettings() {
 func (c *AppContext) IsMapAlreadyDownloaded(mapname string) bool {
 	res := slices.Contains(c.GetMapList(), mapname)
 	// log.Debugf("IsMapAlreadyDownloaded (%s): %v", mapname, res)
+	return res
+}
+
+func (c *AppContext) ResolveMapWithIndex(search string, indexStr string) (mapName string, candidates []string, err error) {
+	matches := c.GetMapsMatching(search)
+	switch len(matches) {
+	case 0:
+		return "", nil, fmt.Errorf("no map found using (^6%s^3)", search)
+	case 1:
+		return matches[0], nil, nil
+	default:
+		if indexStr != "" {
+			idx, err := strconv.Atoi(indexStr)
+			if err != nil || idx < 1 || idx > len(matches) {
+				return "", matches, fmt.Errorf("^3invalid index, use 1-%d", len(matches))
+			}
+			return matches[idx-1], nil, nil
+		}
+		return "", matches, nil
+	}
+}
+
+func (c *AppContext) GetMapsMatching(searchCriteria string) []string {
+	var res []string
+	for _, m := range c.GetMapList() {
+		if strings.Contains(strings.ToLower(m), strings.ToLower(searchCriteria)) {
+			res = append(res, m)
+		}
+	}
 	return res
 }
 
