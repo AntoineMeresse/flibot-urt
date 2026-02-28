@@ -91,7 +91,7 @@ var Commands = map[string]Command{
 	// Level: 100
 	"pencoin":  {Function: commandslist.PenCoin, Level: 100, Usage: "!pencoin [player]"},
 	"password": {Function: commandslist.Password, Level: 100, Usage: "!password [password]"},
-	"rcon":     {Function: commandslist.Rcon, Level: 100, Usage: "!rcon [command]", excludeFromGuess: true},
+	"rcon":     {Function: commandslist.Rcon, Level: 100, Usage: "!rcon [command]", excludeFromGuess: true, forcePM: true},
 
 	// Dev Only
 	"healthcheck": {Function: commandslist.HealthCheck, Level: 100, Usage: "!healthcheck", forcePM: true},
