@@ -147,6 +147,13 @@ func (runs *RunsInfo) AddCheckpoint(playerNumber string, time string) {
 	info.appendCheckpoint(time)
 }
 
+func (runs *RunsInfo) ClearRuns() {
+	runs.RunMutex.Lock()
+	defer runs.RunMutex.Unlock()
+	runs.PlayerRuns = map[string]*RunPlayerInfo{}
+	runs.History = map[string][]int{}
+}
+
 func (runs *RunsInfo) RunCanceled(playerNumber string) {
 	log.Debugf("RunCanceled %s", playerNumber)
 	runs.RunMutex.Lock()

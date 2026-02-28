@@ -9,6 +9,7 @@ func ClientDisconnect(actionParams []string, c *appcontext.AppContext) {
 	log.Debugf("ClientDisconnect: %v", actionParams)
 	log.Debugf("[Before] ClientDisconnect: %v", c.Players.PlayerMap)
 	if len(actionParams) > 0 {
+		c.Runs.RunCanceled(actionParams[0])
 		c.Players.RemovePlayer(actionParams[0])
 	}
 	log.Debugf("[After] ClientDisconnect: %v", c.Players.PlayerMap)

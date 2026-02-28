@@ -68,7 +68,7 @@ func ClientJumpRunCheckpoint(actionParams []string, c *appcontext.AppContext) {
 }
 
 func RunLog(actionParams []string, c *appcontext.AppContext) {
-	runJson := strings.Join(actionParams, "")
+	runJson := strings.Join(actionParams, " ")
 	runJson = strings.ReplaceAll(runJson, "'", "\"")
 	log.Debugf("RunLog: %v", runJson)
 
