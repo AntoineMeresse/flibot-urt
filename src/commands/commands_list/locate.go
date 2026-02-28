@@ -34,5 +34,10 @@ func Locate(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	cmd.RconText("^5%s^7: ^3%s^7, ^3%s^7 (^6%s^7)", target.Name, result.Country, result.RegionName, result.Timezone)
+	caller, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
+	if err == nil && caller.Role >= 90 {
+		cmd.RconText("^5%s^7: ^3%s^7, ^3%s^7 (^6%s^7)", target.Name, result.Country, result.RegionName, result.Timezone)
+	} else {
+		cmd.RconText("^5%s^7: ^3%s", target.Name, result.Country)
+	}
 }
