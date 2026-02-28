@@ -53,13 +53,13 @@ var Commands = map[string]Command{
 	"quote":      {Function: commandslist.Quote, Usage: "!quote"},
 
 	// Level: 40
-	"afk": {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name]", excludeFromGuess: true},
+	"afk": {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},
 
 	// Level: 60-80
 	"setgoto":          {Function: commandslist.SetGoto, Level: 60},
 	"force":            {Function: commandslist.Force, Level: 60, Usage: "!force [player] [red/blue/spectator/free]", excludeFromGuess: true},
-	"kick":             {Function: commandslist.Kick, Level: 80, Usage: "!kick [playerId/Name] [reason]", excludeFromGuess: true},
-	"moveplayer":       {Function: commandslist.MovePlayer, Level: 80, Usage: "!moveplayer [player1] [player2]"},
+	"kick":             {Function: commandslist.Kick, Level: 80, Usage: "!kick [playerId/Name] [reason] (-f)", excludeFromGuess: true},
+	"moveplayer":       {Function: commandslist.MovePlayer, Level: 80, Usage: "!moveplayer [player1] [player2] (-f)"},
 	"mute":             {Function: commandslist.Mute, Level: 80, Usage: "!mute [playerId/Name]"},
 	"addquote":         {Function: commandslist.AddQuote, Level: 80, Usage: "!addquote [text]"},
 	"portgotos":        {Function: commandslist.PortGotos, Level: 80, Usage: "!portgotos [sourcemap]"},

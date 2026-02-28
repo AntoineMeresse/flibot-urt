@@ -2,14 +2,16 @@ package commandslist
 
 import (
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 func Afk(cmd *appcontext.CommandsArgs) {
-	if len(cmd.Params) > 0 {
-		player, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
+	args, force := utils.ExtractForceFlag(cmd.Params)
+	if len(args) > 0 {
+		player, err := cmd.Context.Players.GetPlayer(args[0])
 		if err == nil {
-			if cmd.Context.Runs.IsRunning(player.Number) {
-				cmd.RconText("^5%s^3 is currently running, can't move to spec.", player.Name)
+			if cmd.Context.Runs.IsRunning(player.Number) && !force {
+				cmd.RconText("^5%s^3 is currently running. Add ^3-f^7 to move to spec anyway.", player.Name)
 				return
 			}
 			cmd.RconCommand("forceteam %s spec", player.Number)
