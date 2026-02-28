@@ -18,7 +18,12 @@ func Goto(cmd *appcontext.CommandsArgs) {
 		}
 		cmd.RconList(gotoshared.BuildDisplayLocation(mapname, utils.NaturalSort(names)))
 	} else {
-		jumpName := cmd.Params[0]
+		args, force := utils.ExtractForceFlag(cmd.Params)
+		if cmd.Context.Runs.IsRunning(cmd.PlayerId) && !force {
+			cmd.RconText("^3You are currently running. Add ^3-f^7 to teleport anyway.")
+			return
+		}
+		jumpName := args[0]
 		g, ok := cmd.Context.DB.GetGoto(mapname, jumpName)
 		if !ok {
 			cmd.RconText(msg.GOTO_NO_LOCATION, jumpName)
