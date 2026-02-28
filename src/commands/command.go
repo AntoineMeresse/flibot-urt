@@ -13,11 +13,13 @@ import (
 )
 
 type Command struct {
-	Function     func(*appcontext.CommandsArgs)
-	Level        int
-	Usage        string
+	Function          func(*appcontext.CommandsArgs)
+	Level             int
+	Usage             string
 	excludeFromBridge bool
-	excludeFromGuess      bool
+	excludeFromGuess  bool
+	forcePM           bool
+	forceGlobal       bool
 }
 
 
@@ -173,11 +175,17 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 				c.RconText(false, playerNumber, "^3From what you typed, I guess you meant ^5!%s^3 ;)", commandInfos.suggestions[0])
 			}
 			displayCommandInfos(actionParams[2], playerNumber, commandInfos.params, commandInfos.isGlobal)
+			isGlobal := commandInfos.isGlobal
+			if commandInfos.command.forcePM {
+				isGlobal = false
+			} else if commandInfos.command.forceGlobal {
+				isGlobal = true
+			}
 			args := appcontext.CommandsArgs{
 				Context:  c,
 				PlayerId: playerNumber,
 				Params:   commandInfos.params,
-				IsGlobal: commandInfos.isGlobal,
+				IsGlobal: isGlobal,
 				Usage:    commandInfos.command.Usage,
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)

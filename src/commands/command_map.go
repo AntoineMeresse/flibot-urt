@@ -27,7 +27,7 @@ var Commands = map[string]Command{
 	"ahead":      {Function: commandslist.Ahead, Usage: "!ahead [map]"},
 	"missing":    {Function: commandslist.Missing, Usage: "!missing [maxlvl]"},
 	"similar":    {Function: commandslist.Similar, Usage: "!similar [map]"},
-	"coin":       {Function: commandslist.Coin, Usage: "!coin"},
+	"coin":       {Function: commandslist.Coin, Usage: "!coin", forceGlobal: true},
 	"cyclemap":   {Function: commandslist.CycleMap, Usage: "!cyclemap (-f)"},
 	"top":        {Function: commandslist.TopInformation},
 	"latestruns": {Function: commandslist.LatestRuns},
@@ -51,7 +51,7 @@ var Commands = map[string]Command{
 	"locate":     {Function: commandslist.Locate, Usage: "!locate [player]"},
 	"website":    {Function: commandslist.Website, Usage: "!website"},
 	"discord":    {Function: commandslist.Discord, Usage: "!discord"},
-	"quote":      {Function: commandslist.Quote, Usage: "!quote"},
+	"quote":      {Function: commandslist.Quote, Usage: "!quote", forceGlobal: true},
 
 	// Level: 40
 	"afk": {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},
@@ -94,11 +94,11 @@ var Commands = map[string]Command{
 	"rcon":     {Function: commandslist.Rcon, Level: 100, Usage: "!rcon [command]", excludeFromGuess: true},
 
 	// Dev Only
-	"healthcheck": {Function: commandslist.HealthCheck, Level: 100, Usage: "!healthcheck"},
-	"players":     {Function: commandslist.PlayersList, Level: 90, Usage: "!players", excludeFromBridge: true},
-	"player":      {Function: commandslist.PlayersGet, Level: 90, Usage: "!player", excludeFromBridge: true},
-	"runs":        {Function: commandslist.RunsDescribe, Level: 90, Usage: "!runs", excludeFromBridge: true},
-	"runshistory": {Function: commandslist.RunsHistory, Level: 90, Usage: "!runshistory", excludeFromBridge: true},
+	"healthcheck": {Function: commandslist.HealthCheck, Level: 100, Usage: "!healthcheck", forcePM: true},
+	"players":     {Function: commandslist.PlayersList, Level: 90, Usage: "!players", excludeFromBridge: true, forcePM: true},
+	"player":      {Function: commandslist.PlayersGet, Level: 90, Usage: "!player", excludeFromBridge: true, forcePM: true},
+	"runs":        {Function: commandslist.RunsDescribe, Level: 90, Usage: "!runs", excludeFromBridge: true, forcePM: true},
+	"runshistory": {Function: commandslist.RunsHistory, Level: 90, Usage: "!runshistory", excludeFromBridge: true, forcePM: true},
 }
 
 var Alias = map[string]string{
