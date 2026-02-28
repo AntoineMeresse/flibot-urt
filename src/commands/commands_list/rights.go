@@ -15,8 +15,8 @@ func SetRights(cmd *appcontext.CommandsArgs) {
 	}
 
 	level, err := strconv.Atoi(cmd.Params[1])
-	if err != nil || level < 0 || level > 100 {
-		cmd.RconText("Please enter a number [0-100]. %s is not valid.", cmd.Params[1])
+	if err != nil || level < -1 || level > 100 {
+		cmd.RconText("Please enter a number [-1 to 100]. %s is not valid.", cmd.Params[1])
 	} else {
 		player, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
 		logrus.Debugf("player: %v", player)

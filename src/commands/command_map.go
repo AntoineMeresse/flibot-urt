@@ -73,7 +73,7 @@ var Commands = map[string]Command{
 	"extend":           {Function: commandslist.Extend, Level: 80, Usage: "!extend or !extend [1-999]"},
 	"veto":             {Function: commandslist.VoteVeto, Level: 80, Usage: "!veto"},
 	"overbounces":      {Function: commandslist.Overbounces, Level: 80, Usage: "!overbounces [0 or 1]"},
-	"putgroup":         {Function: commandslist.SetRights, Usage: "!putgroup [player] [0-100]"},
+	"putgroup":         {Function: commandslist.SetRights, Usage: "!putgroup [player] [-1 to 100]"},
 	"setmapoptions":    {Function: commandslist.SetMapOptions, Level: 80, Usage: "!setmapoptions [opt1, opt2, ...]"},
 	"resetoptions":     {Function: commandslist.ResetOptions, Level: 80, Usage: "!resetoptions"},
 	"mapoptions":       {Function: commandslist.MapOptions, Level: 80, Usage: "!mapoptions"},

@@ -137,7 +137,7 @@ func checkPlayerRights(playerNumber string, command Command, c *appcontext.AppCo
 		canUseCmd = role >= command.Level
 	}
 
-	if command.Level == 0 {
+	if command.Level == 0 && role >= 0 {
 		log.Trace("Command that can be used by everyone.")
 		canUseCmd = true
 	}
