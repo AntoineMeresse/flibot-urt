@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 var teamAliases = map[string]string{
@@ -24,20 +25,26 @@ var teamAliases = map[string]string{
 }
 
 func Force(cmd *appcontext.CommandsArgs) {
-	if len(cmd.Params) < 2 {
+	args, force := utils.ExtractForceFlag(cmd.Params)
+	if len(args) < 2 {
 		cmd.RconUsage()
 		return
 	}
 
-	target, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
+	target, err := cmd.Context.Players.GetPlayer(args[0])
 	if err != nil {
 		cmd.RconText("%s", err.Error())
 		return
 	}
 
-	team, ok := teamAliases[strings.ToLower(cmd.Params[1])]
+	team, ok := teamAliases[strings.ToLower(args[1])]
 	if !ok {
-		cmd.RconText("^1Invalid team ^3%s^1. Use: red, blue, spectator, green, free.", cmd.Params[1])
+		cmd.RconText("^1Invalid team ^3%s^1. Use: red, blue, spectator, green, free.", args[1])
+		return
+	}
+
+	if cmd.Context.Runs.IsRunning(target.Number) && !force {
+		cmd.RconText("^5%s^3 is currently running. Add ^3-f^7 to force anyway.", target.Name)
 		return
 	}
 

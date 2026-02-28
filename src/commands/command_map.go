@@ -58,7 +58,7 @@ var Commands = map[string]Command{
 
 	// Level: 60-80
 	"setgoto":          {Function: commandslist.SetGoto, Level: 60},
-	"force":            {Function: commandslist.Force, Level: 60, Usage: "!force [player] [red/blue/spectator/free]", excludeFromGuess: true},
+	"force":            {Function: commandslist.Force, Level: 60, Usage: "!force [player] [red/blue/spectator/free] (-f)", excludeFromGuess: true},
 	"kick":             {Function: commandslist.Kick, Level: 80, Usage: "!kick [playerId/Name] [reason] (-f)", excludeFromGuess: true},
 	"moveplayer":       {Function: commandslist.MovePlayer, Level: 80, Usage: "!moveplayer [player1] [player2] (-f)"},
 	"mute":             {Function: commandslist.Mute, Level: 80, Usage: "!mute [playerId/Name]"},
@@ -81,7 +81,7 @@ var Commands = map[string]Command{
 
 	// Level: 90
 	"nuke":       {Function: commandslist.Nuke, Level: 90, Usage: "!nuke [playerId/Name]"},
-	"slap":       {Function: commandslist.Slap, Level: 90, Usage: "!slap [playerId/Name]", excludeFromGuess: true},
+	"slap":       {Function: commandslist.Slap, Level: 90, Usage: "!slap [playerId/Name] (-f)", excludeFromGuess: true},
 	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name] [reason]", excludeFromGuess: true},
 	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [id]", excludeFromGuess: true},
 	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias]"},
