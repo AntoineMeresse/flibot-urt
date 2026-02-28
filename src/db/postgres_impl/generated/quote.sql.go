@@ -37,3 +37,12 @@ func (q *Queries) SaveQuote(ctx context.Context, text string) (Quote, error) {
 	err := row.Scan(&i.ID, &i.Text, &i.CreatedAt)
 	return i, err
 }
+
+const deleteQuote = `-- name: DeleteQuote :exec
+DELETE FROM quotes WHERE id = $1
+`
+
+func (q *Queries) DeleteQuote(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteQuote, id)
+	return err
+}

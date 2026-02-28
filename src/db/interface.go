@@ -80,8 +80,9 @@ type DataPersister interface {
 	RemoveBan(playerDbId int) error
 	GetBans() ([]BanEntry, error)
 
-	GetRandomQuote() (string, error)
+	GetRandomQuote() (int, string, error)
 	SaveQuote(text string) error
+	DeleteQuote(id int) error
 
 	LookupPlayers(search string) ([]LookupResult, error)
 	GetPlayerById(id int) (LookupResult, bool)

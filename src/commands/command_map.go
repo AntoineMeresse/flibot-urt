@@ -62,6 +62,7 @@ var Commands = map[string]Command{
 	"moveplayer":       {Function: commandslist.MovePlayer, Level: 80, Usage: "!moveplayer [player1] [player2] (-f)"},
 	"mute":             {Function: commandslist.Mute, Level: 80, Usage: "!mute [playerId/Name]"},
 	"addquote":         {Function: commandslist.AddQuote, Level: 80, Usage: "!addquote [text]"},
+	"removequote":      {Function: commandslist.RemoveQuote, Level: 80, Usage: "!removequote [id]"},
 	"portgotos":        {Function: commandslist.PortGotos, Level: 80, Usage: "!portgotos [sourcemap]"},
 	"portmapoptions":   {Function: commandslist.PortMapOptions, Level: 80, Usage: "!portmapoptions [sourcemap]"},
 	"removegoto":       {Function: commandslist.RemoveGoto, Level: 80},
