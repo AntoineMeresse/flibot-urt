@@ -27,17 +27,17 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 				return
 			}
 			currentPlayer := c.Players.PlayerMap[playerNumber]
-			if currentPlayer == nil {
+			if currentPlayer == nil || currentPlayer.Guid != guid {
 				name := utils.DecolorString(info["name"])
 				ip := strings.Split(info["ip"], ":")[0]
 				currentPlayer = c.InitPlayer(playerNumber, guid, name, ip)
-			}
-
-			// Only player update
-			wasUpdated := c.Players.UpdatePlayer(currentPlayer, info)
-			if wasUpdated {
-				log.Infof("Updating db with new player info: %v", *currentPlayer)
-				c.UpdatePlayerAliases(currentPlayer)
+			} else {
+				// Same player: only update name/ip if changed
+				wasUpdated := c.Players.UpdatePlayer(currentPlayer, info)
+				if wasUpdated {
+					log.Infof("Updating db with new player info: %v", *currentPlayer)
+					c.UpdatePlayerAliases(currentPlayer)
+				}
 			}
 		} else {
 			log.Warn("Could not find guid in client user info")
