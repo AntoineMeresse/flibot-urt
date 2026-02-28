@@ -5,18 +5,26 @@ import (
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	"github.com/AntoineMeresse/flibot-urt/src/utils/msg"
 )
 
-func MapFn(cmd *appcontext.CommandsArgs) {
-	if len(cmd.Params) != 1 {
+func ChangeMap(cmd *appcontext.CommandsArgs) {
+	args, force := utils.ExtractForceFlag(cmd.Params)
+
+	if len(args) == 0 {
 		cmd.RconUsage()
 		return
 	}
 
-	mapName, err := cmd.Context.GetMapWithCriteria(cmd.Params[0])
+	mapName, err := cmd.Context.GetMapWithCriteria(args[0])
 	if err != nil {
 		cmd.RconText(err.Error())
+		return
+	}
+
+	if n := cmd.Context.Runs.AnyRunning(); n > 0 && !force {
+		cmd.RconText("^3%d^7 player(s) are currently running. Add ^3-f^7 to change map anyway.", n)
 		return
 	}
 

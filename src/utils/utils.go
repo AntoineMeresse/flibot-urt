@@ -14,6 +14,17 @@ import (
 	"github.com/maruel/natural"
 )
 
+func ExtractForceFlag(params []string) (args []string, force bool) {
+	for _, p := range params {
+		if p == "-f" {
+			force = true
+		} else {
+			args = append(args, p)
+		}
+	}
+	return args, force
+}
+
 func CleanEmptyElements(data []string) []string {
 	var res []string
 	for _, value := range data {
