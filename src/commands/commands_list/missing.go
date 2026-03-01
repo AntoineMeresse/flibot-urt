@@ -24,10 +24,6 @@ func Missing(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	if len(maps) == 0 {
-		cmd.RconText("^7No missing maps found under lvl %s.", maxlvl)
-		return
-	}
 	m := "maps"
 	if len(maps) == 1 {
 		m = "map"
