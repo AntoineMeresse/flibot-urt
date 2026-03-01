@@ -5,6 +5,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/healthcheck"
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
+	"github.com/AntoineMeresse/flibot-urt/src/portgotos"
 	"github.com/AntoineMeresse/flibot-urt/src/vote"
 )
 
@@ -20,6 +21,10 @@ func main() {
 
 	defer c.Rcon.CloseConnection()
 	defer c.DB.Close()
+
+	if c.UrtConfig.PortGotoPath != "" {
+		portgotos.PortGotos(c.UrtConfig.PortGotoPath, c.DB)
+	}
 
 	// Initialize tail
 	go logparser.InitLogParser(myLogChannel, c)

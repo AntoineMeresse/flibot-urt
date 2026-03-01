@@ -32,6 +32,7 @@ type UrtConfig struct {
 	ApiConfig     ApiConfig
 	DbUri         string
 	ResetOptions  []string
+	PortGotoPath  string
 }
 
 func (u *UrtConfig) LoadConfig() {
@@ -77,6 +78,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("botWorkerNumber", "botWorkerNumber")
 	viper.BindEnv("discordWebhook", "discordWebhook")
 	viper.BindEnv("resetOptions", "resetOptions")
+	viper.BindEnv("portGotoPath", "portGotoPath")
 
 	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
@@ -103,6 +105,7 @@ func (u *UrtConfig) LoadConfig() {
 
 	u.LogFile = viper.GetString("logFilePath")
 	u.DbUri = viper.GetString("dbUri")
+	u.PortGotoPath = viper.GetString("portGotoPath")
 
 	raw := viper.GetStringSlice("resetOptions")
 	u.ResetOptions = make([]string, 0, len(raw))
