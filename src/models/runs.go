@@ -49,6 +49,16 @@ func (p *PlayerRunInfo) GetDemoName() string {
 	return s[len(s)-1]
 }
 
+func (runs *RunsInfo) RunningPlayerNumbers() []string {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	numbers := make([]string, 0, len(runs.PlayerRuns))
+	for number := range runs.PlayerRuns {
+		numbers = append(numbers, number)
+	}
+	return numbers
+}
+
 func (runs *RunsInfo) AnyRunning() int {
 	runs.RunMutex.RLock()
 	defer runs.RunMutex.RUnlock()
@@ -83,7 +93,7 @@ func (runs *RunsInfo) IsCpEnabled(playerNumber string) bool {
 	return runs.CpEnabled[playerNumber]
 }
 
-func (runs *RunsInfo) GetCpMsg(playerNumber string, playerName string) string {
+func (runs *RunsInfo) GetCpMsg(playerNumber string) string {
 	runs.RunMutex.RLock()
 	defer runs.RunMutex.RUnlock()
 

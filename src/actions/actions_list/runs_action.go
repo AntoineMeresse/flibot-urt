@@ -59,8 +59,8 @@ func ClientJumpRunCheckpoint(actionParams []string, c *appcontext.AppContext) {
 	c.Runs.AddCheckpoint(playerNumber, actionParams[6])
 
 	if c.Runs.IsCpEnabled(playerNumber) {
-		if player, err := c.Players.GetPlayer(playerNumber); err == nil {
-			if msg := c.Runs.GetCpMsg(playerNumber, player.Name); msg != "" {
+		if _, err := c.Players.GetPlayer(playerNumber); err == nil {
+			if msg := c.Runs.GetCpMsg(playerNumber); msg != "" {
 				c.RconText(false, playerNumber, "%s", msg)
 			}
 		}

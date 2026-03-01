@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/AntoineMeresse/flibot-urt/src/models"
@@ -25,6 +26,7 @@ type AppContext struct {
 	Settings    ServerSettings
 	Api         *api.Api
 	VoteChannel chan models.Vote
+	VoteActive  atomic.Bool
 	Runs        models.RunsInfo
 }
 

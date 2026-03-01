@@ -65,10 +65,14 @@ func createVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vo
 		c.RconText(false, vote.PlayerId, "Can't ^1start^3 a new vote !")
 		return
 	}
-	voteSystem.addYesVote(vote.PlayerId)
+	c.VoteActive.Store(true)
+	if vote.PlayerId != "" {
+		voteSystem.addYesVote(vote.PlayerId)
+	}
 
 	continueVote, endFunction, msg := getVoteInfos(c, vote)
 	if !continueVote {
+		c.VoteActive.Store(false)
 		voteSystem.reset()
 		return
 	}
@@ -156,6 +160,7 @@ func endVote(c *appcontext.AppContext, voteSystem *VoteSystem, vote models.Vote,
 	} else {
 		c.RconBigText("^1Vote Canceled")
 	}
+	c.VoteActive.Store(false)
 	voteSystem.reset()
 }
 
