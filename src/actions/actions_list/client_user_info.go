@@ -39,9 +39,6 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 					c.UpdatePlayerAliases(currentPlayer)
 				}
 			}
-			if info["t"] == "3" {
-				c.Runs.RunCanceled(playerNumber)
-			}
 		} else {
 			log.Warn("Could not find guid in client user info")
 		}

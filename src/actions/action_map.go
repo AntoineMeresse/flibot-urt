@@ -16,7 +16,7 @@ var Actions = map[string]ActionFunc{
 	"ClientUserinfo:":        actionslist.ClientUserinfo,
 	"ClientSpawn:":           actionslist.ClientSpawn,
 	"Timelimit:":             actionslist.TimelimitHit,
-	"ClientUserinfoChanged:": actionslist.DefaultAction,
+	"ClientUserinfoChanged:": actionslist.ClientUserinfoChanged,
 	"tell:":                  actionslist.Tell,
 	"saytell:":               actionslist.SayTell,
 	"PlayersDump:":           actionslist.PlayersDump,
