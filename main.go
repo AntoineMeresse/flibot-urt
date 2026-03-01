@@ -25,6 +25,9 @@ func main() {
 	if c.UrtConfig.PortGotoPath != "" {
 		portgotos.PortGotos(c.UrtConfig.PortGotoPath, c.DB)
 	}
+	if c.UrtConfig.PortMapOptionsPath != "" {
+		portgotos.PortMapOptions(c.UrtConfig.PortMapOptionsPath, c.DB)
+	}
 
 	// Initialize tail
 	go logparser.InitLogParser(myLogChannel, c)

@@ -107,7 +107,9 @@ func ToShorterChunkArraySep(strList []string, sep string, exceptFirst bool) []st
 			line = current + sep
 		}
 	}
-	res = append(res, line[0:len(line)-len(sep)])
+	if len(line) >= len(sep) {
+		res = append(res, line[0:len(line)-len(sep)])
+	}
 	return res
 }
 
