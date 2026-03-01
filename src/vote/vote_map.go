@@ -14,7 +14,8 @@ type VoteInfo struct {
 
 var Votes = map[string]VoteInfo{
 	"map":     {voteslist.MapVote, voteslist.MapMessage, "Changing map to %s", "map [mapname]^3"},
-	"cycle":   {voteslist.Cyclemap, voteslist.CyclemapMessage, "Cycling to %s", "cycle^3"},
+	"cycle":    {voteslist.Cyclemap, voteslist.CyclemapMessage, "Cycling to %s", "cycle^3"},
+	"cyclemap": {voteslist.Cyclemap, voteslist.CyclemapMessage, "Cycling to %s", "cycle^3"},
 	"extend":  {voteslist.Extend, voteslist.ExtendMessage, "Extend %d minute(s)", "extend [minutes*]^3. Default: ^61h^3"},
 	"reload":  {voteslist.Reload, noFormatting, "Reload", "reload"},
 	"nextmap": {voteslist.Nextmap, voteslist.MapMessage, "Changing nextmap to %s", "nextmap [mapname]^3"},

@@ -16,6 +16,7 @@ func InitGame(actionParams []string, c *appcontext.AppContext) {
 			mapname := parts[i+1]
 			c.SetMapName(mapname)
 			c.Runs.ClearRuns()
+			c.RollNextMap()
 			log.Debugf("InitGame: mapname set to %s", mapname)
 
 			for _, opt := range c.UrtConfig.ResetOptions {

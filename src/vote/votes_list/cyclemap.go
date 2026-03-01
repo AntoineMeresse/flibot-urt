@@ -8,7 +8,6 @@ import (
 
 func Cyclemap(_ string, c *appcontext.AppContext) {
 	c.Rcon.RconCommand("cyclemap")
-	// set currentmap
 }
 
 func CyclemapMessage(c *appcontext.AppContext, msg string, _ string) (bool, string) {

@@ -66,18 +66,20 @@ func (c *AppContext) initMapName() {
 	log.Debugf("Current map is: %s\n", c.Settings.Mapname)
 }
 
-func (c *AppContext) initNextMapName() {
+func (c *AppContext) RollNextMap() {
 	var allMapsExcludingCurrent []string
 	for _, m := range c.Settings.Maplist {
 		if m != c.Settings.Mapname {
 			allMapsExcludingCurrent = append(allMapsExcludingCurrent, m)
 		}
 	}
+	var nextmap string
 	if len(allMapsExcludingCurrent) == 0 {
-		c.Settings.Nextmap = c.Settings.Mapname
+		nextmap = c.Settings.Mapname
 	} else {
-		c.Settings.Nextmap = utils.RandomValueFromSlice(allMapsExcludingCurrent)
+		nextmap = utils.RandomValueFromSlice(allMapsExcludingCurrent)
 	}
+	c.SetNextMap(nextmap)
 	log.Debugf("Nextmap is: %s\n", c.Settings.Nextmap)
 }
 
@@ -85,7 +87,7 @@ func (c *AppContext) initSettings() {
 	log.Debug("Initializing settings... [Start]")
 	c.SetMapList()
 	c.initMapName()
-	c.initNextMapName()
+	c.RollNextMap()
 	log.Debug("Initializing settings... [End]")
 }
 

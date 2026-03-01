@@ -12,7 +12,18 @@ func Roll(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	mapName := utils.RandomValueFromSlice(maps)
+	currentMap := cmd.Context.GetCurrentMap()
+	filtered := make([]string, 0, len(maps))
+	for _, m := range maps {
+		if m != currentMap {
+			filtered = append(filtered, m)
+		}
+	}
+	if len(filtered) == 0 {
+		filtered = maps
+	}
+
+	mapName := utils.RandomValueFromSlice(filtered)
 	cmd.RconText("^7Next map rolled: ^5%s", mapName)
 	cmd.Context.SetNextMap(mapName)
 }

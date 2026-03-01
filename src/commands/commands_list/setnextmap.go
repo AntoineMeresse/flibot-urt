@@ -24,6 +24,11 @@ func ChangeNextMap(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
+	if mapName == cmd.Context.GetCurrentMap() && len(cmd.Context.GetMapList()) > 1 {
+		cmd.RconText("^7Can't set nextmap to the current map.")
+		return
+	}
+
 	cmd.RconText("Changing nextmap to: ^5%s", mapName)
 	cmd.Context.SetNextMap(mapName)
 }
