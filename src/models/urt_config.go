@@ -22,16 +22,16 @@ type ApiConfig struct {
 }
 
 type UrtConfig struct {
-	ServerConfig  ServerConfig
-	BasePath      string
-	DownloadPath  string
-	DemoPath      string
-	MapRepository string
-	LogFile       string
-	WorkerNumber  int
-	ApiConfig     ApiConfig
-	DbUri         string
-	ResetOptions  []string
+	ServerConfig       ServerConfig
+	BasePath           string
+	DownloadPath       string
+	DemoPath           string
+	MapRepository      string
+	LogFile            string
+	WorkerNumber       int
+	ApiConfig          ApiConfig
+	DbUri              string
+	ResetOptions       []string
 	PortGotoPath       string
 	PortMapOptionsPath string
 }
@@ -110,13 +110,7 @@ func (u *UrtConfig) LoadConfig() {
 	u.PortGotoPath = viper.GetString("portGotoPath")
 	u.PortMapOptionsPath = viper.GetString("portMapOptionsPath")
 
-	raw := viper.GetStringSlice("resetOptions")
-	u.ResetOptions = make([]string, 0, len(raw))
-	for _, opt := range raw {
-		if trimmed := strings.TrimSpace(opt); trimmed != "" {
-			u.ResetOptions = append(u.ResetOptions, trimmed)
-		}
-	}
+	u.ResetOptions = parseStringSliceOption(viper.Get("resetOptions"))
 
 	log.Info("Db uri: ", u.DbUri)
 	log.Info("Direct env: ", os.Getenv("dbUri"))
@@ -141,4 +135,27 @@ func (u *UrtConfig) initWorkerNumber() {
 
 func (s ServerConfig) GetServerUrl() string {
 	return fmt.Sprintf("%s:%s", s.Ip, s.Port)
+}
+
+func parseStringSliceOption(raw any) []string {
+	var items []string
+	switch v := raw.(type) {
+	case []string:
+		items = v
+	case string:
+		items = strings.Split(v, ",")
+	case []interface{}:
+		for _, item := range v {
+			if s, ok := item.(string); ok {
+				items = append(items, s)
+			}
+		}
+	}
+	result := make([]string, 0, len(items))
+	for _, opt := range items {
+		if trimmed := strings.TrimSpace(opt); trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
 }
