@@ -19,11 +19,16 @@ func configureLogger() {
 	}
 	log.SetLevel(level)
 	log.SetReportCaller(true)
-	if os.Getenv("logFormat") == "json" {
-		log.SetFormatter(&log.JSONFormatter{
+	if os.Getenv("logFormat") == "dokploy" {
+		log.SetFormatter(&log.TextFormatter{
+			DisableTimestamp: true,
+			DisableColors:    true,
 			CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-				return "", path.Base(frame.File) + ":" + strconv.Itoa(frame.Line)
+				fileName := " " + path.Base(frame.File) + ":" + strconv.Itoa(frame.Line) + " | "
+				return "", fileName
 			},
+			DisableLevelTruncation: true,
+			PadLevelText:           true,
 		})
 	} else {
 		log.SetFormatter(&log.TextFormatter{
