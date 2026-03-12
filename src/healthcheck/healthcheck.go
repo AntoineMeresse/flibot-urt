@@ -45,7 +45,7 @@ func Run(c *appcontext.AppContext) {
 		if err := write(status); err != nil {
 			log.Errorf("[healthcheck] Failed to write health file: %v", err)
 		} else {
-			log.Debugf("[healthcheck] alive=%v", alive)
+			log.Tracef("[healthcheck] alive=%v", alive)
 		}
 
 		time.Sleep(Interval)
