@@ -38,6 +38,7 @@ type UrtConfig struct {
 	ResetOptions       []string
 	PortGotoPath       string
 	PortMapOptionsPath string
+	WelcomeMessage     string
 }
 
 func (u *UrtConfig) LoadConfig() {
@@ -89,6 +90,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("resetOptions", "resetOptions")
 	viper.BindEnv("portGotoPath", "portGotoPath")
 	viper.BindEnv("portMapOptionsPath", "portMapOptionsPath")
+	viper.BindEnv("welcomeMessage", "welcomeMessage")
 
 	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
@@ -124,6 +126,7 @@ func (u *UrtConfig) LoadConfig() {
 	u.DbUri = viper.GetString("dbUri")
 	u.PortGotoPath = viper.GetString("portGotoPath")
 	u.PortMapOptionsPath = viper.GetString("portMapOptionsPath")
+	u.WelcomeMessage = viper.GetString("welcomeMessage")
 
 	u.ResetOptions = parseStringSliceOption(viper.Get("resetOptions"))
 

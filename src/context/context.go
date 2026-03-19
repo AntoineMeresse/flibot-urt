@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -188,10 +189,12 @@ func (c *AppContext) registerPlayer(playerNumber string, player models.Player) *
 	if player.Role == 0 {
 		c.RconText(false, playerNumber, "You can register using: ^5!register")
 	} else {
-		c.RconText(false, playerNumber,
-			"Welcome back on server ^5%s^3 [%s]. ^3This is a ^1TEST SERVER^3 so some features might be ^1BROKEN^3.",
-			player.Name, player.Id,
-		)
+		welcomeMsg := c.UrtConfig.WelcomeMessage
+		if welcomeMsg == "" {
+			welcomeMsg = "Welcome back on server ^5{name}^3 [{id}]."
+		}
+		msg := strings.NewReplacer("{name}", player.Name, "{id}", player.Id).Replace(welcomeMsg)
+		c.RconText(false, playerNumber, "%s", msg)
 	}
 	go c.notifyIgnoredOnline(playerNumber, player.Guid)
 	return &player
