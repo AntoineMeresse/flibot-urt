@@ -52,6 +52,7 @@ var Commands = map[string]Command{
 	"website":    {Function: commandslist.Website, Usage: "!website"},
 	"discord":    {Function: commandslist.Discord, Usage: "!discord"},
 	"quote":      {Function: commandslist.Quote, Usage: "!quote", forceGlobal: true},
+	"all":        {Function: commandslist.All, Usage: "!all [message]"},
 
 	// Level: 40
 	"afk": {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},

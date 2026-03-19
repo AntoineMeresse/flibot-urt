@@ -21,6 +21,8 @@ type ApiConfig struct {
 	DiscordWebhook string
 	ChannelId      int64
 	ServerName     string
+	BridgeUrl      string
+	BridgeApiKey   string
 }
 
 type UrtConfig struct {
@@ -82,6 +84,8 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("discordWebhook", "discordWebhook")
 	viper.BindEnv("channelId", "channelId")
 	viper.BindEnv("serverName", "serverName")
+	viper.BindEnv("bridgeUrl", "bridgeUrl")
+	viper.BindEnv("bridgeApiKey", "bridgeApiKey")
 	viper.BindEnv("resetOptions", "resetOptions")
 	viper.BindEnv("portGotoPath", "portGotoPath")
 	viper.BindEnv("portMapOptionsPath", "portMapOptionsPath")
@@ -109,6 +113,8 @@ func (u *UrtConfig) LoadConfig() {
 	u.ApiConfig.ApiKey = viper.GetString("ujmApiKey")
 	u.ApiConfig.DiscordWebhook = viper.GetString("discordWebhook")
 	u.ApiConfig.ChannelId = viper.GetInt64("channelId")
+	u.ApiConfig.BridgeUrl = viper.GetString("bridgeUrl")
+	u.ApiConfig.BridgeApiKey = viper.GetString("bridgeApiKey")
 	u.ApiConfig.ServerName = viper.GetString("serverName")
 	if u.ApiConfig.ServerName == "" {
 		u.ApiConfig.ServerName = "Server"

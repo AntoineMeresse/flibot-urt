@@ -8,6 +8,7 @@ import (
 type Api struct {
 	BridgeUrl      string
 	BridgeLocalUrl string
+	BridgeApiKey   string
 	UjmUrl         string
 	Apikey         string
 	Client         http.Client

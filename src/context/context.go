@@ -57,11 +57,13 @@ func (c *AppContext) initRuns() {
 }
 
 func (c *AppContext) initApi() {
+	bridgeUrl := c.UrtConfig.ApiConfig.BridgeUrl
 	c.Api = &api.Api{
 		UjmUrl:         c.UrtConfig.ApiConfig.Url,
 		Apikey:         c.UrtConfig.ApiConfig.ApiKey,
-		BridgeUrl:      "https://ujm-servers.ovh",
-		BridgeLocalUrl: "https://ujm-servers.ovh/local",
+		BridgeUrl:      bridgeUrl,
+		BridgeLocalUrl: bridgeUrl + "/local",
+		BridgeApiKey:   c.UrtConfig.ApiConfig.BridgeApiKey,
 		Client:         http.Client{Timeout: time.Second * 2},
 		ServerUrl:      c.UrtConfig.ServerConfig.GetServerUrl(),
 		DiscordWebhook: c.UrtConfig.ApiConfig.DiscordWebhook,

@@ -1,9 +1,11 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -37,6 +39,28 @@ func (api *Api) MapSync() error {
 	log.Debug("MapSync called.")
 	// TODO: Implement mapsync via Bridge
 	return fmt.Errorf("mapsync method not implemented yet")
+}
+
+func (api *Api) SendGlobalMessage(playerName, message string) error {
+	url := fmt.Sprintf("%s/message/all", api.BridgeUrl)
+	payload, err := json.Marshal(map[string]string{
+		"message":       message,
+		"serverAddress": api.ServerUrl,
+		"name":          playerName,
+		"apikey":        api.BridgeApiKey,
+	})
+	if err != nil {
+		return err
+	}
+	resp, err := api.Client.Post(url, "application/json", bytes.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bridge returned status %d", resp.StatusCode)
+	}
+	return nil
 }
 
 type ServersListStatus []map[string]ServerStatus
