@@ -68,6 +68,26 @@ func (api *Api) SendServerInfo(mapname string, players []BridgePlayer) error {
 	return nil
 }
 
+func (api *Api) SendEmbed(mapname string) error {
+	url := fmt.Sprintf("%s/emb", api.BridgeLocalUrl)
+	payload, err := json.Marshal(map[string]string{
+		"serverAddress": api.ServerUrl,
+		"mapname":       mapname,
+	})
+	if err != nil {
+		return err
+	}
+	resp, err := api.Client.Post(url, "application/json", bytes.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bridge returned status %d", resp.StatusCode)
+	}
+	return nil
+}
+
 func (api *Api) SendMessage(message, team string) error {
 	url := fmt.Sprintf("%s/message", api.BridgeLocalUrl)
 	payload, err := json.Marshal(map[string]string{
