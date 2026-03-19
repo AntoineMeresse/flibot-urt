@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/AntoineMeresse/flibot-urt/src/bridge"
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	"github.com/AntoineMeresse/flibot-urt/src/healthcheck"
 	logparser "github.com/AntoineMeresse/flibot-urt/src/logs"
@@ -39,6 +40,9 @@ func main() {
 
 	// Initialize Vote system
 	go vote.InitVoteSystem(voteChannel, c)
+
+	// Send server info to bridge every 10s
+	go bridge.SendServerInfoToBridge(c)
 
 	// Keep-alive loop: probes the server every 30s and writes health status to file.
 	healthcheck.Run(c)
