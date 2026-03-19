@@ -41,12 +41,17 @@ func (info *commandInfo) sendCommandToBridge(c *appcontext.AppContext, playerNum
 	if c.Api.BridgeUrl == "" {
 		return nil
 	}
-	log.Debugf("Sending command to bridge: %s", info.message)
 	team := "[game] "
-	if player, err := c.Players.GetPlayer(playerNumber); err == nil && player.IsSpec() {
-		team = "[spec] "
+	name := playerNumber
+	if player, err := c.Players.GetPlayer(playerNumber); err == nil {
+		name = player.Name
+		if player.IsSpec() {
+			team = "[spec] "
+		}
 	}
-	return c.Api.SendMessage(info.message, team)
+	message := fmt.Sprintf("%s: %s", name, info.message)
+	log.Debugf("Sending command to bridge: %s", message)
+	return c.Api.SendMessage(message, team)
 }
 
 func isCommand(text string) bool {
