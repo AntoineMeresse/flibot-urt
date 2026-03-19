@@ -10,6 +10,8 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
+const TeamSpec = 3
+
 type Player struct {
 	Id      string
 	Number  string
@@ -18,6 +20,11 @@ type Player struct {
 	Ip      string
 	Aliases []string
 	Role    int
+	Team    int
+}
+
+func (p *Player) IsSpec() bool {
+	return p.Team == TeamSpec
 }
 
 type DumpPlayer struct {
@@ -84,6 +91,14 @@ func (players *Players) GetGuids() []string {
 		}
 	}
 	return guids
+}
+
+func (players *Players) SetTeam(playerNumber string, team int) {
+	players.Mutex.Lock()
+	defer players.Mutex.Unlock()
+	if p, ok := players.PlayerMap[playerNumber]; ok {
+		p.Team = team
+	}
 }
 
 func (players *Players) RemovePlayer(playerNumber string) {

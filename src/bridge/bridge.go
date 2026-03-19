@@ -35,7 +35,7 @@ func sendServerInfo(c *appcontext.AppContext) {
 		}
 		players = append(players, api.BridgePlayer{
 			Name:    p.Name,
-			Ingame:  true,
+			Ingame:  !p.IsSpec(),
 			Running: c.Runs.IsRunning(p.Number),
 		})
 	}

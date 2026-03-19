@@ -1,6 +1,7 @@
 package actionslist
 
 import (
+	"strconv"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
@@ -15,7 +16,12 @@ func ClientUserinfoChanged(actionParams []string, c *appcontext.AppContext) {
 	playerNumber := actionParams[0]
 	info := splitInfos(strings.Join(actionParams[1:], ""))
 	log.Debugf("ClientUserinfoChanged info: %v", info)
-	if info["t"] == "3" {
-		c.Runs.RunCanceled(playerNumber)
+	if t, ok := info["t"]; ok {
+		if team, err := strconv.Atoi(t); err == nil {
+			c.Players.SetTeam(playerNumber, team)
+		}
+		if t == "3" {
+			c.Runs.RunCanceled(playerNumber)
+		}
 	}
 }

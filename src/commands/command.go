@@ -33,14 +33,20 @@ type commandInfo struct {
 	suggestions []string
 }
 
-func (info *commandInfo) sendCommandToBridge() error {
-	// TODO: implement logic
-	if !info.command.excludeFromBridge {
-		log.Debugf("Sending command to bridge: %s", info.message)
-	} else {
+func (info *commandInfo) sendCommandToBridge(c *appcontext.AppContext, playerNumber string) error {
+	if info.command.excludeFromBridge {
 		log.Debugf("Not sending command to bridge: %s", info.message)
+		return nil
 	}
-	return fmt.Errorf("sendCommandToBridge not implemented yet")
+	if c.Api.BridgeUrl == "" {
+		return nil
+	}
+	log.Debugf("Sending command to bridge: %s", info.message)
+	team := "[game] "
+	if player, err := c.Players.GetPlayer(playerNumber); err == nil && player.IsSpec() {
+		team = "[spec] "
+	}
+	return c.Api.SendMessage(info.message, team)
 }
 
 func isCommand(text string) bool {
@@ -197,7 +203,7 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 			c.RconText(false, playerNumber, msg.NOT_ENOUGH_RIGHTS, actionParams[2], level, role)
 		}
 	}
-	err := commandInfos.sendCommandToBridge()
+	err := commandInfos.sendCommandToBridge(c, playerNumber)
 	if err != nil {
 		//Todo: uncomment log.Error(err)
 	}
