@@ -38,9 +38,6 @@ func (info *commandInfo) sendCommandToBridge(c *appcontext.AppContext, playerNum
 		log.Debugf("Not sending command to bridge: %s", info.message)
 		return nil
 	}
-	if c.Api.BridgeUrl == "" {
-		return nil
-	}
 	team := "[game] "
 	name := playerNumber
 	if player, err := c.Players.GetPlayer(playerNumber); err == nil {
@@ -51,7 +48,8 @@ func (info *commandInfo) sendCommandToBridge(c *appcontext.AppContext, playerNum
 	}
 	message := fmt.Sprintf("%s: %s", name, info.message)
 	log.Debugf("Sending command to bridge: %s", message)
-	return c.Api.SendMessage(message, team)
+	c.SendBridgeMessage(message, team)
+	return nil
 }
 
 func isCommand(text string) bool {

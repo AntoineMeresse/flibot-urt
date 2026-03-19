@@ -18,6 +18,7 @@ var Actions = map[string]ActionFunc{
 	"Timelimit:":             actionslist.TimelimitHit,
 	"ClientUserinfoChanged:": actionslist.ClientUserinfoChanged,
 	"tell:":                  actionslist.Tell,
+	"Radio:":                 actionslist.Radio,
 	"saytell:":               actionslist.SayTell,
 	"PlayersDump:":           actionslist.PlayersDump,
 

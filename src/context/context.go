@@ -2,6 +2,7 @@ package appcontext
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
@@ -104,6 +105,17 @@ func (c *AppContext) registerServer() {
 	} else {
 		log.Debugf("Server registered: %s:%d", c.UrtConfig.ServerConfig.Ip, port)
 	}
+}
+
+func (c *AppContext) SendBridgeMessage(message, team string) {
+	if c.Api.BridgeUrl == "" {
+		return
+	}
+	go func() {
+		if err := c.Api.SendMessage(message, team); err != nil {
+			log.Errorf("[bridge] SendMessage error: %v", err)
+		}
+	}()
 }
 
 func (c *AppContext) SendEmbed(mapname string) {
@@ -224,6 +236,7 @@ func (c *AppContext) InitPlayer(playerNumber string, guid string, name string, i
 			log.Errorf("[InitPlayer] Error updating player on join: %v", err)
 		}
 	}
+	c.SendBridgeMessage(fmt.Sprintf("%s has joined the game.", name), "")
 	return c.registerPlayer(playerNumber, player)
 }
 
