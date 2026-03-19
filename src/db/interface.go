@@ -87,6 +87,8 @@ type DataPersister interface {
 	LookupPlayers(search string) ([]LookupResult, error)
 	GetPlayerById(id int) (LookupResult, bool)
 	GetPlayersByIp(ip string) ([]LookupResult, error)
+
+	RegisterServer(ip string, port int, rconpassword string, channelId int64, name string) error
 }
 
 type IgnoredPlayer struct {

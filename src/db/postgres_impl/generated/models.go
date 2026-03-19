@@ -55,6 +55,14 @@ type Quote struct {
 	CreatedAt pgtype.Timestamp
 }
 
+type Server struct {
+	Ip           string
+	Port         int32
+	Rconpassword string
+	ChannelID    int64
+	Name         string
+}
+
 type Run struct {
 	ID          int32
 	Guid        string

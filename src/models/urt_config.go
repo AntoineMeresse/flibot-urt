@@ -19,6 +19,8 @@ type ApiConfig struct {
 	Url            string
 	ApiKey         string
 	DiscordWebhook string
+	ChannelId      int64
+	ServerName     string
 }
 
 type UrtConfig struct {
@@ -78,6 +80,8 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("demoPath", "demoPath")
 	viper.BindEnv("botWorkerNumber", "botWorkerNumber")
 	viper.BindEnv("discordWebhook", "discordWebhook")
+	viper.BindEnv("channelId", "channelId")
+	viper.BindEnv("serverName", "serverName")
 	viper.BindEnv("resetOptions", "resetOptions")
 	viper.BindEnv("portGotoPath", "portGotoPath")
 	viper.BindEnv("portMapOptionsPath", "portMapOptionsPath")
@@ -104,6 +108,11 @@ func (u *UrtConfig) LoadConfig() {
 	u.ApiConfig.Url = viper.GetString("ujmUrl")
 	u.ApiConfig.ApiKey = viper.GetString("ujmApiKey")
 	u.ApiConfig.DiscordWebhook = viper.GetString("discordWebhook")
+	u.ApiConfig.ChannelId = viper.GetInt64("channelId")
+	u.ApiConfig.ServerName = viper.GetString("serverName")
+	if u.ApiConfig.ServerName == "" {
+		u.ApiConfig.ServerName = "Server"
+	}
 
 	u.LogFile = viper.GetString("logFilePath")
 	u.DbUri = viper.GetString("dbUri")

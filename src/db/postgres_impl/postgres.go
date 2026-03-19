@@ -531,6 +531,18 @@ func (db *PostGresqlDB) GetBans() ([]mydb.BanEntry, error) {
 	return result, nil
 }
 
+func (db *PostGresqlDB) RegisterServer(ip string, port int, rconpassword string, channelId int64, name string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	return db.queries.UpsertServer(c, postgres_genererated.UpsertServerParams{
+		Ip:           ip,
+		Port:         int32(port),
+		Rconpassword: rconpassword,
+		ChannelID:    channelId,
+		Name:         name,
+	})
+}
+
 func (db *PostGresqlDB) GetBan(guid string) (string, bool, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

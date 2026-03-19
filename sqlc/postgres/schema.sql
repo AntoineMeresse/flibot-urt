@@ -87,3 +87,13 @@ CREATE TABLE IF NOT EXISTS quotes (
     text TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Servers
+CREATE TABLE IF NOT EXISTS server (
+    ip TEXT NOT NULL,
+    port INTEGER NOT NULL,
+    rconpassword TEXT NOT NULL,
+    channel_id BIGINT NOT NULL DEFAULT 0,
+    name TEXT NOT NULL DEFAULT 'Server',
+    PRIMARY KEY (ip, port)
+);
