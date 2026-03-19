@@ -17,6 +17,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/api"
 	"github.com/AntoineMeresse/flibot-urt/src/db"
 	"github.com/AntoineMeresse/flibot-urt/src/db/postgres_impl"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 type AppContext struct {
@@ -220,6 +221,26 @@ func updateAliases(current []string, name string) []string {
 	return updated
 }
 
+func (c *AppContext) SendPersonalBest(playerNumber, mapname, guid string, isGlobal bool) {
+	infos, err := c.Api.GetPersonalBestInformation(mapname, guid)
+	if err != nil || len(infos.RunsInfos) == 0 {
+		return
+	}
+	c.RconText(isGlobal, playerNumber, "^7|   ^3========^7 Personal best for: ^5%s^7 ^3========^7", infos.Mapname)
+	for i, data := range infos.RunsInfos {
+		c.RconText(isGlobal, playerNumber, "^7|-> Runs for ^5way %s^7 :", data.Wayname)
+		c.RconText(isGlobal, playerNumber, "^7|-------->(^3%s^7) ^6%s^7 | %s | %s", data.Rank, data.Run.RunTime, data.Run.RunDate, utils.DecolorString(data.Run.PlayerName))
+		if i != len(infos.RunsInfos)-1 {
+			c.RconText(isGlobal, playerNumber, "^7|")
+		}
+	}
+}
+
+func (c *AppContext) showPersonalBestOnJoin(playerNumber, guid string) {
+	time.Sleep(1 * time.Second)
+	c.SendPersonalBest(playerNumber, c.GetCurrentMap(), guid, false)
+}
+
 func (c *AppContext) InitPlayer(playerNumber string, guid string, name string, ip string) *models.Player {
 	player, found := c.DB.GetPlayerByGuid(guid)
 	if !found {
@@ -237,6 +258,7 @@ func (c *AppContext) InitPlayer(playerNumber string, guid string, name string, i
 		}
 	}
 	c.SendBridgeMessage(fmt.Sprintf("%s has joined the game.", name), "")
+	go c.showPersonalBestOnJoin(playerNumber, player.Guid)
 	return c.registerPlayer(playerNumber, player)
 }
 
