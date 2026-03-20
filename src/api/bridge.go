@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -138,6 +139,37 @@ type ServerStatus struct {
 	NbPlayers int      `json:"nbPlayers"`
 	Ingame    []string `json:"ingame"`
 	Spec      []string `json:"spec"`
+}
+
+func (api *Api) UploadDemoToBridge(fileContent []byte, filename, msg, chatMessage string) error {
+	url := fmt.Sprintf("%s/demo/upload", api.BridgeLocalUrl)
+
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	defer writer.Close()
+
+	part, err := writer.CreateFormFile("file", filename)
+	if err != nil {
+		return err
+	}
+	if _, err = part.Write(fileContent); err != nil {
+		return err
+	}
+
+	writer.WriteField("serverAddress", api.ServerUrl)
+	writer.WriteField("msg", msg)
+	writer.WriteField("chatMessage", chatMessage)
+	writer.Close()
+
+	resp, err := api.Client.Post(url, writer.FormDataContentType(), &body)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bridge returned status %d", resp.StatusCode)
+	}
+	return nil
 }
 
 func (api *Api) GetServerStatus() (ServersListStatus, error) {

@@ -102,6 +102,7 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 			}
 			go func() {
 				sendToDiscordWebhook(c, runInfo, discordMsg)
+				sendDemoToBridge(c, runInfo, discordMsg)
 				moveDemoIfImprovement(c, runInfo, isImprovement)
 			}()
 		}
@@ -160,12 +161,16 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 	return discordMsg, isImprovement
 }
 
+func runMsg(runInfo models.PlayerRunInfo) string {
+	return fmt.Sprintf("[Flibot] %s finished way %s of %s in %ss.", utils.DecolorString(runInfo.Playername), runInfo.Way,
+		runInfo.Mapname, utils.FormatRunTime(runInfo.Time))
+}
+
 func sendToDiscordWebhook(c *appcontext.AppContext, runInfo models.PlayerRunInfo, discordMsg string) {
 	if c.Api.DiscordWebhook == "" {
 		return
 	}
-	msg := fmt.Sprintf("[Flibot] %s finished way %s of %s in %ss.", runInfo.Playername, runInfo.Way,
-		runInfo.Mapname, utils.FormatRunTime(runInfo.Time))
+	msg := runMsg(runInfo)
 	if discordMsg != "" {
 		msg += fmt.Sprintf(" :stopwatch: `%s` :stopwatch:", discordMsg)
 	}
@@ -173,6 +178,23 @@ func sendToDiscordWebhook(c *appcontext.AppContext, runInfo models.PlayerRunInfo
 		log.Errorf("Webhook send failed: %v", err)
 	} else {
 		log.Debugf("Demo uploaded to Discord webhook: %s", runInfo.GetDemoName())
+	}
+}
+
+func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo, discordMsg string) {
+	if c.Api.BridgeLocalUrl == "" {
+		return
+	}
+	path := c.UrtConfig.DemoPath + "/" + runInfo.GetDemoName()
+	fileContent, err := os.ReadFile(path)
+	if err != nil {
+		log.Errorf("sendDemoToBridge: could not read demo file: %v", err)
+		return
+	}
+	if err := c.Api.UploadDemoToBridge(fileContent, runInfo.GetDemoName(), runMsg(runInfo), discordMsg); err != nil {
+		log.Errorf("sendDemoToBridge: upload failed: %v", err)
+	} else {
+		log.Debugf("Demo uploaded to bridge: %s", runInfo.GetDemoName())
 	}
 }
 
