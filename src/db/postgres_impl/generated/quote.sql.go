@@ -38,6 +38,38 @@ func (q *Queries) SaveQuote(ctx context.Context, text string) (Quote, error) {
 	return i, err
 }
 
+const searchQuotes = `-- name: SearchQuotes :many
+SELECT id, text, created_at FROM quotes WHERE text ILIKE $1
+`
+
+func (q *Queries) SearchQuotes(ctx context.Context, search string) ([]Quote, error) {
+	rows, err := q.db.Query(ctx, searchQuotes, "%"+search+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Quote
+	for rows.Next() {
+		var i Quote
+		if err := rows.Scan(&i.ID, &i.Text, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	return items, rows.Err()
+}
+
+const getQuoteById = `-- name: GetQuoteById :one
+SELECT id, text, created_at FROM quotes WHERE id = $1
+`
+
+func (q *Queries) GetQuoteById(ctx context.Context, id int32) (Quote, error) {
+	row := q.db.QueryRow(ctx, getQuoteById, id)
+	var i Quote
+	err := row.Scan(&i.ID, &i.Text, &i.CreatedAt)
+	return i, err
+}
+
 const deleteQuote = `-- name: DeleteQuote :exec
 DELETE FROM quotes WHERE id = $1
 `

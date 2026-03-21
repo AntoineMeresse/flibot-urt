@@ -398,6 +398,30 @@ func (db *PostGresqlDB) GetIgnoredPlayers(guid string) ([]mydb.IgnoredPlayer, er
 	return result, nil
 }
 
+func (db *PostGresqlDB) SearchQuotes(search string) ([]mydb.QuoteEntry, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.SearchQuotes(c, search)
+	if err != nil {
+		return nil, err
+	}
+	results := make([]mydb.QuoteEntry, len(rows))
+	for i, q := range rows {
+		results[i] = mydb.QuoteEntry{Id: int(q.ID), Text: q.Text}
+	}
+	return results, nil
+}
+
+func (db *PostGresqlDB) GetQuoteById(id int) (int, string, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	quote, err := db.queries.GetQuoteById(c, int32(id))
+	if err != nil {
+		return 0, "", err
+	}
+	return int(quote.ID), quote.Text, nil
+}
+
 func (db *PostGresqlDB) GetRandomQuote() (int, string, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

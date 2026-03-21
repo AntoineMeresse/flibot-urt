@@ -80,7 +80,9 @@ type DataPersister interface {
 	RemoveBan(playerDbId int) error
 	GetBans() ([]BanEntry, error)
 
+	GetQuoteById(id int) (int, string, error)
 	GetRandomQuote() (int, string, error)
+	SearchQuotes(search string) ([]QuoteEntry, error)
 	SaveQuote(text string) error
 	DeleteQuote(id int) error
 
@@ -95,6 +97,11 @@ type IgnoredPlayer struct {
 	Id   int
 	Name string
 	Guid string
+}
+
+type QuoteEntry struct {
+	Id   int
+	Text string
 }
 
 type BanEntry struct {

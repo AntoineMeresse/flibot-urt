@@ -51,7 +51,8 @@ var Commands = map[string]Command{
 	"locate":     {Function: commandslist.Locate, Usage: "!locate [player]"},
 	"website":    {Function: commandslist.Website, Usage: "!website"},
 	"discord":    {Function: commandslist.Discord, Usage: "!discord"},
-	"quote":      {Function: commandslist.Quote, Usage: "!quote", forceGlobal: true},
+	"quote":      {Function: commandslist.Quote, Usage: "!quote [id]", forceGlobal: true},
+	"findquote":  {Function: commandslist.FindQuote, Usage: "!findquote [text]"},
 	"all":        {Function: commandslist.All, Usage: "!all [message]"},
 
 	// Level: 40
