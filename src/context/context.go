@@ -45,8 +45,6 @@ func (c *AppContext) Init() {
 	c.initApi()
 	c.initDb()
 
-	c.SendEmbed(c.GetCurrentMap())
-
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", c.Rcon.ServerIp, c.Rcon.ServerPort)
 	c.RconText(true, "", "^6 Flibot initialized ^5:)")
 }
@@ -124,9 +122,11 @@ func (c *AppContext) SendEmbed(mapname string) {
 	if c.Api.BridgeUrl == "" {
 		return
 	}
-	if err := c.Api.SendEmbed(mapname); err != nil {
-		log.Errorf("[bridge] SendEmbed error: %v", err)
-	}
+	go func() {
+		if err := c.Api.SendEmbed(mapname); err != nil {
+			log.Errorf("[bridge] SendEmbed error: %v", err)
+		}
+	}()
 }
 
 func (c *AppContext) MapSync() {

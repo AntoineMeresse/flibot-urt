@@ -18,7 +18,6 @@ func InitGame(actionParams []string, c *appcontext.AppContext) {
 			c.Runs.ClearRuns()
 			c.RollNextMap()
 			log.Debugf("InitGame: mapname set to %s", mapname)
-			c.SendEmbed(mapname)
 
 			for _, opt := range c.UrtConfig.ResetOptions {
 				c.RconCommand(opt)

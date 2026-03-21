@@ -21,8 +21,13 @@ type ServerSettings struct {
 
 func (c *AppContext) SetMapName(mapName string) {
 	c.Settings.mu.Lock()
-	defer c.Settings.mu.Unlock()
+	if c.Settings.Mapname == mapName {
+		c.Settings.mu.Unlock()
+		return
+	}
 	c.Settings.Mapname = mapName
+	c.Settings.mu.Unlock()
+	c.SendEmbed(mapName)
 }
 
 func (c *AppContext) SetNextMap(nextMapName string) {
