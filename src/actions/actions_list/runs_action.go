@@ -102,7 +102,7 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 			}
 			go func() {
 				sendToDiscordWebhook(c, runInfo, discordMsg)
-				sendDemoToBridge(c, runInfo, discordMsg)
+				sendDemoToBridge(c, runInfo)
 				moveDemoIfImprovement(c, runInfo, isImprovement)
 			}()
 		}
@@ -156,7 +156,7 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		gameMsg += fmt.Sprintf(" ^7(^3%s^7)", *r.Rank)
 	}
 
-	c.RconText(isImprovement, playerNumber, gameMsg)
+	c.RconText(isImprovement, playerNumber, "%s", gameMsg)
 
 	return discordMsg, isImprovement
 }
@@ -181,7 +181,7 @@ func sendToDiscordWebhook(c *appcontext.AppContext, runInfo models.PlayerRunInfo
 	}
 }
 
-func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo, discordMsg string) {
+func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo) {
 	if c.Api.BridgeLocalUrl == "" {
 		return
 	}
@@ -191,10 +191,17 @@ func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo, di
 		log.Errorf("sendDemoToBridge: could not read demo file: %v", err)
 		return
 	}
-	if err := c.Api.UploadDemoToBridge(fileContent, runInfo.GetDemoName(), runMsg(runInfo), discordMsg); err != nil {
+
+	nameClean := strings.ReplaceAll(utils.DecolorString(runInfo.Playername), " ", "_")
+	formattedTime := utils.FormatRunTime(runInfo.Time)
+	date := utils.GetTodayDateFormated()
+	demoName := fmt.Sprintf("%s_way%s_%ss_%s_%s.urtdemo", runInfo.Mapname, runInfo.Way, formattedTime, nameClean, date)
+	bridgeMsg := fmt.Sprintf(":cinema: `Serverside demo available for (%s | %s way%s | %s)`", nameClean, runInfo.Mapname, runInfo.Way, formattedTime)
+
+	if err := c.Api.UploadDemoToBridge(fileContent, demoName, runMsg(runInfo), bridgeMsg); err != nil {
 		log.Errorf("sendDemoToBridge: upload failed: %v", err)
 	} else {
-		log.Debugf("Demo uploaded to bridge: %s", runInfo.GetDemoName())
+		log.Debugf("Demo uploaded to bridge: %s", demoName)
 	}
 }
 
