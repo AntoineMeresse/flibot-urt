@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -44,6 +44,8 @@ func (c *AppContext) Init() {
 	c.initRuns()
 	c.initApi()
 	c.initDb()
+
+	c.SendEmbed(c.GetCurrentMap())
 
 	log.Debugf("-------> Flibot started (/connect %s:%s)\n", c.Rcon.ServerIp, c.Rcon.ServerPort)
 	c.RconText(true, "", "^6 Flibot initialized ^5:)")

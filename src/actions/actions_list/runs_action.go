@@ -196,13 +196,19 @@ func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo) {
 	formattedTime := utils.FormatRunTime(runInfo.Time)
 	date := utils.GetTodayDateFormated()
 	demoName := fmt.Sprintf("%s_way%s_%ss_%s_%s.urtdemo", runInfo.Mapname, runInfo.Way, formattedTime, nameClean, date)
+
+	demo := strings.ReplaceAll(strings.TrimPrefix(runInfo.Demopath, "serverdemos/"), "\"", "")
+	msg := fmt.Sprintf("%s finished way %s of %s in %s", nameClean, runInfo.Way, runInfo.Mapname, formattedTime)
+	initialMessage := fmt.Sprintf("`%s (%s)`", msg, demo)
+
 	bridgeMsg := fmt.Sprintf(":cinema: `Serverside demo available for (%s | %s way%s | %s)`", nameClean, runInfo.Mapname, runInfo.Way, formattedTime)
 
-	if err := c.Api.UploadDemoToBridge(fileContent, demoName, runMsg(runInfo), bridgeMsg); err != nil {
+	c.SendBridgeMessage(initialMessage, "")
+	if err := c.Api.UploadDemoToBridge(fileContent, demoName, initialMessage, bridgeMsg); err != nil {
 		log.Errorf("sendDemoToBridge: upload failed: %v", err)
-	} else {
-		log.Debugf("Demo uploaded to bridge: %s", demoName)
+		return
 	}
+	log.Debugf("Demo uploaded to bridge: %s", demoName)
 }
 
 func moveDemoIfImprovement(c *appcontext.AppContext, runInfo models.PlayerRunInfo, isImprovement bool) {
