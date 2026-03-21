@@ -11,8 +11,7 @@ import (
 
 var runningMessages = []string{
 	"I'm currently running, please wait !",
-	"Don't you dare end this map, I'm on a run !",
-	"EXTEND ! I can feel it this time !",
+	"I can feel it this time !",
 	"I was BORN to finish this run !",
 	"My fingers are sweating, extend pls",
 	"One more try I swear",
@@ -36,6 +35,6 @@ func announceRunningPlayers(c *appcontext.AppContext) {
 	numbers := c.Runs.RunningPlayerNumbers()
 	for _, number := range numbers {
 		msg := runningMessages[rand.Intn(len(runningMessages))]
-		c.RconCommand("spoof %s say + %s", number, msg)
+		c.RconCommand("spoof %s say + %s [auto vote]", number, msg)
 	}
 }

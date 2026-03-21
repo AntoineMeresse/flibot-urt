@@ -21,7 +21,7 @@ func SetRights(cmd *appcontext.CommandsArgs) {
 		player, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
 		logrus.Debugf("player: %v", player)
 		if err != nil {
-			cmd.RconText(err.Error())
+			cmd.RconText("%s", err.Error())
 			return
 		}
 		cmd.Context.Players.UpdatePlayerRights(player.Number, level)

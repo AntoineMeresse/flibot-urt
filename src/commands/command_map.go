@@ -4,8 +4,8 @@ import commandslist "github.com/AntoineMeresse/flibot-urt/src/commands/commands_
 
 var Commands = map[string]Command{
 	// Level: 0
-	"play":       {Function: commandslist.Play},
-	"spec":       {Function: commandslist.Spec, excludeFromGuess: true},
+	"play":       {Function: commandslist.Play, excludeFromBridge: true},
+	"spec":       {Function: commandslist.Spec, excludeFromGuess: true, excludeFromBridge: true},
 	"currentmap": {Function: commandslist.CurrentMap},
 	"setnextmap": {Function: commandslist.SetNextMap, Usage: "!setnextmap [search] [index]"},
 	"roll":       {Function: commandslist.Roll},
@@ -75,6 +75,7 @@ var Commands = map[string]Command{
 	"extend":           {Function: commandslist.Extend, Level: 80, Usage: "!extend or !extend [1-999]"},
 	"veto":             {Function: commandslist.VoteVeto, Level: 80, Usage: "!veto"},
 	"overbounces":      {Function: commandslist.Overbounces, Level: 80, Usage: "!overbounces [0 or 1]"},
+	// "putgroup":         {Function: commandslist.SetRights, Level: 80, Usage: "!putgroup [player] [-1 to 100]"},
 	"putgroup":         {Function: commandslist.SetRights, Usage: "!putgroup [player] [-1 to 100]"},
 	"setmapoptions":    {Function: commandslist.SetMapOptions, Level: 80, Usage: "!setmapoptions [opt1, opt2, ...]"},
 	"resetoptions":     {Function: commandslist.ResetOptions, Level: 80, Usage: "!resetoptions"},
@@ -99,8 +100,8 @@ var Commands = map[string]Command{
 	"healthcheck": {Function: commandslist.HealthCheck, Level: 100, Usage: "!healthcheck", forcePM: true},
 	"players":     {Function: commandslist.PlayersList, Level: 90, Usage: "!players", excludeFromBridge: true, forcePM: true},
 	"player":      {Function: commandslist.PlayersGet, Level: 90, Usage: "!player", excludeFromBridge: true, forcePM: true},
-	"runs":        {Function: commandslist.RunsDescribe, Level: 90, Usage: "!runs", excludeFromBridge: true, forcePM: true},
-	"runshistory": {Function: commandslist.RunsHistory, Level: 90, Usage: "!runshistory", excludeFromBridge: true, forcePM: true},
+	"runs":        {Function: commandslist.RunsDescribe, Level: 100, Usage: "!runs", excludeFromBridge: true, forcePM: true},
+	"runshistory": {Function: commandslist.RunsHistory, Level: 100, Usage: "!runshistory", excludeFromBridge: true, forcePM: true},
 }
 
 var Alias = map[string]string{
