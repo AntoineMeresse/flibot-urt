@@ -86,7 +86,7 @@ var Commands = map[string]Command{
 	"slap":       {Function: commandslist.Slap, Level: 90, Usage: "!slap [playerId/Name] (-f)", excludeFromGuess: true},
 	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name] [reason]", excludeFromGuess: true},
 	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [id]", excludeFromGuess: true},
-	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias]"},
+	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias] or !lookup @[id]"},
 	"playerid":   {Function: commandslist.PlayerId, Level: 99, Usage: "!playerid [id]"},
 	"resetgotos": {Function: commandslist.ResetGotos, Level: 90, Usage: "!resetgotos [map] (-f)"},
 
@@ -135,6 +135,7 @@ var Alias = map[string]string{
 	"pcoin":         "pencoin",
 	"h":             "help",
 	"alias":         "aliases",
+	"l":             "lookup",
 	"rh":            "runshistory",
 	"ff":            "quit",
 	"site":          "website",

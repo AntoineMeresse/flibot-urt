@@ -28,7 +28,6 @@ func Locate(cmd *appcontext.CommandsArgs) {
 		cmd.RconText("^1Failed to locate player.")
 		return
 	}
-
 	if result.Status != "success" {
 		cmd.RconText("^1Could not locate ^5%s^7.", target.Name)
 		return
@@ -40,4 +39,16 @@ func Locate(cmd *appcontext.CommandsArgs) {
 	} else {
 		cmd.RconText("^5%s^7: ^3%s", target.Name, result.Country)
 	}
+}
+
+func geoIPText(cmd *appcontext.CommandsArgs, ip string) string {
+	result, err := cmd.Context.Api.GetGeoIP(ip)
+	if err != nil {
+		log.Errorf("[GeoIP] Error: %v", err)
+		return ""
+	}
+	if result.Status != "success" {
+		return ""
+	}
+	return result.Country + "^7, ^3" + result.RegionName + "^7 (^6" + result.Timezone + "^7)"
 }
