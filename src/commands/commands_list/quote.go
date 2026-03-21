@@ -87,6 +87,10 @@ func FindQuote(cmd *appcontext.CommandsArgs) {
 	}
 
 	search := strings.Join(cmd.Params, " ")
+	if len(search) < 3 {
+		cmd.RconText("^1Search must be at least 3 characters.")
+		return
+	}
 	quotes, err := cmd.Context.DB.SearchQuotes(search)
 	if err != nil {
 		log.Errorf("[FindQuote] Error: %v", err)
