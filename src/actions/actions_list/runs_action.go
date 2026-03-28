@@ -96,7 +96,7 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 					log.Errorf("RunLog: Error posting run: %v", err)
 				}
 			}
-			discordMsg, isPbImprovement, isWrImprovement := processRunData(c, demoResponse, player.Number)
+			discordMsg, isPbImprovement, isWrImprovement := processRunData(c, demoResponse, player.Number, player.Name)
 			go func() {
 				handlePenCoin(c, *player, isPbImprovement, isWrImprovement)
 				sendToDiscordWebhook(c, runInfo, discordMsg)
@@ -122,7 +122,7 @@ func handlePenCoin(c *appcontext.AppContext, player models.Player, isPbImproveme
 	}
 }
 
-func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string) (string, bool, bool) {
+func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string, playerName string) (string, bool, bool) {
 	log.Debugf("SendDemoResponse: %+v", r)
 	gameMsg := ""
 	discordMsg := ""
@@ -170,7 +170,11 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		gameMsg += fmt.Sprintf(" ^7(^3%s^7)", *r.Rank)
 	}
 
-	c.RconText(isPbImprovement || isWrImprovement, playerNumber, "%s", gameMsg)
+	isGlobal := isPbImprovement || isWrImprovement
+	if gameMsg != "" {
+		gameMsg = fmt.Sprintf("^7[%s^7] %s", playerName, gameMsg)
+	}
+	c.RconText(isGlobal, playerNumber, "%s", gameMsg)
 
 	return discordMsg, isPbImprovement, isWrImprovement
 }
