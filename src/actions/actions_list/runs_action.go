@@ -170,7 +170,7 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		gameMsg += fmt.Sprintf(" ^7(^3%s^7)", *r.Rank)
 	}
 
-	isGlobal := isPbImprovement || isWrImprovement
+	isGlobal := r.Added > 0
 	if gameMsg != "" {
 		gameMsg = fmt.Sprintf("^7[%s^7] %s", playerName, gameMsg)
 	}
