@@ -18,8 +18,9 @@ func All(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	message := "[" + cmd.Context.UrtConfig.ApiConfig.ServerName + "] " + strings.Join(cmd.Params, " ")
-	if err := cmd.Context.Api.SendGlobalMessage(player.Name, message); err != nil {
+	senderName := "(" + cmd.Context.UrtConfig.ApiConfig.ServerName + ") " + player.Name
+	message := strings.Join(cmd.Params, " ")
+	if err := cmd.Context.Api.SendGlobalMessage(senderName, message); err != nil {
 		cmd.RconText("^1Could not send global message: %s", err.Error())
 	}
 }
