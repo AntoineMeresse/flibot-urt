@@ -88,15 +88,15 @@ var Commands = map[string]Command{
 	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name] [reason]", excludeFromGuess: true},
 	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [id]", excludeFromGuess: true},
 	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias] or !lookup @[id]"},
-	"playerid":   {Function: commandslist.PlayerId, Level: 99, Usage: "!playerid [id]"},
 	"resetgotos": {Function: commandslist.ResetGotos, Level: 90, Usage: "!resetgotos [map] (-f)"},
 
 	// Level: 100
 	"pencoin":      {Function: commandslist.PenCoin, Level: 100, Usage: "!pencoin [player]"},
-	"resetpencoin": {Function: commandslist.ResetPenCoin, Level: 100, Usage: "!resetpencoin [amount]"},
-	"globalpen": {Function: commandslist.GlobalPen, Level: 100, Usage: "!globalpen", excludeFromBridge: true},
+	"resetpencoin": {Function: commandslist.ResetPenCoin, Level: 100, Usage: "!resetpencoin [amount]",  excludeFromBridge: true},
 	"password": {Function: commandslist.Password, Level: 100, Usage: "!password [password]"},
 	"rcon":     {Function: commandslist.Rcon, Level: 100, Usage: "!rcon [command]", excludeFromGuess: true, forcePM: true},
+	"playerid":   {Function: commandslist.PlayerId, Level: 100, Usage: "!playerid [id]"},
+	"globalpen": {Function: commandslist.GlobalPen, Level: 100, Usage: "!globalpen", excludeFromBridge: true},
 
 	// Dev Only
 	"healthcheck": {Function: commandslist.HealthCheck, Level: 100, Usage: "!healthcheck", forcePM: true},
