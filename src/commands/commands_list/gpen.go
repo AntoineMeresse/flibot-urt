@@ -18,11 +18,14 @@ func GlobalPen(cmd *appcontext.CommandsArgs) {
 	if player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId); err == nil {
 		adminName = player.Name
 	}
+	cmd.RconGlobalText("^7-----------------------------------------------------------------------")
 	cmd.RconGlobalText("^7With great power comes great responsibility: ^5Pen comp^7 started by ^3%s", adminName)
+	cmd.RconGlobalText("^7-----------------------------------------------------------------------")
 
 	go func() {
 		for _, number := range numbers {
 			cmd.RconCommand("spoof %s say !pen [auto pen]", number)
+			cmd.RconGlobalText("^7-----------------------------------------------------------------------")
 			time.Sleep(1 * time.Second)
 		}
 	}()

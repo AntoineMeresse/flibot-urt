@@ -31,7 +31,7 @@ func InitGame(actionParams []string, c *appcontext.AppContext) {
 				} else {
 					log.Debugf("InitGame: map options for %s: %v", mapname, options)
 					for _, opt := range options {
-						c.RconCommand(opt)
+						c.RconCommand("%s", opt)
 					}
 				}
 			} else {
