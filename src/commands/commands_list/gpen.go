@@ -23,7 +23,7 @@ func GlobalPen(cmd *appcontext.CommandsArgs) {
 	go func() {
 		for _, number := range numbers {
 			cmd.RconCommand("spoof %s say !pen [auto pen]", number)
-			time.Sleep(10 * time.Millisecond)
+			time.Sleep(1 * time.Second)
 		}
 	}()
 }
