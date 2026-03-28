@@ -48,6 +48,7 @@ var Commands = map[string]Command{
 	"status":     {Function: commandslist.ServerStatus, Usage: "!status [p(layers)/e(mpty)]"},
 	"quit":       {Function: commandslist.Quit, Usage: "!quit [reason]"},
 	"admins":     {Function: commandslist.Admins, Usage: "!admins"},
+	"level":      {Function: commandslist.Level, Usage: "!level"},
 	"locate":     {Function: commandslist.Locate, Usage: "!locate [player]"},
 	"website":    {Function: commandslist.Website, Usage: "!website"},
 	"discord":    {Function: commandslist.Discord, Usage: "!discord"},
