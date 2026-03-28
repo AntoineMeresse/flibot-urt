@@ -6,6 +6,11 @@ import (
 )
 
 func ServerStatus(cmd *appcontext.CommandsArgs) {
+	filter := ""
+	if len(cmd.Params) > 0 {
+		filter = cmd.Params[0]
+	}
+
 	cmd.RconText("Status !")
 	infos, err := cmd.Context.Api.GetServerStatus()
 
@@ -16,6 +21,13 @@ func ServerStatus(cmd *appcontext.CommandsArgs) {
 
 	for _, serverlist := range infos {
 		for servername, serverInfos := range serverlist {
+			hasPlayers := serverInfos.NbPlayers > 0
+			if (filter == "p" || filter == "players") && !hasPlayers {
+				continue
+			}
+			if (filter == "e" || filter == "empty") && hasPlayers {
+				continue
+			}
 			cmd.RconText("^7  |^8----------------------------------------------------------------- ")
 			cmd.RconText("^7  |--->^5%s^7 - %s ( ^2%d^7 / 24 )", servername, serverInfos.Mapname, serverInfos.NbPlayers)
 			if len(serverInfos.Ingame) > 0 {

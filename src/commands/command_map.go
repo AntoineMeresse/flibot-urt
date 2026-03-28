@@ -45,7 +45,7 @@ var Commands = map[string]Command{
 	"cp":         {Function: commandslist.Cp, Usage: "!cp"},
 	"time":       {Function: commandslist.Time, Usage: "!time"},
 	"tp":         {Function: commandslist.Tp, Usage: "!tp [player]", excludeFromGuess: true},
-	"status":     {Function: commandslist.ServerStatus, Usage: "!status"},
+	"status":     {Function: commandslist.ServerStatus, Usage: "!status [p(layers)/e(mpty)]"},
 	"quit":       {Function: commandslist.Quit, Usage: "!quit [reason]"},
 	"admins":     {Function: commandslist.Admins, Usage: "!admins"},
 	"locate":     {Function: commandslist.Locate, Usage: "!locate [player]"},
