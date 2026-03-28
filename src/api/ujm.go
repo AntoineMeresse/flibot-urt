@@ -427,8 +427,8 @@ type DemoBody struct {
 
 type SendDemoResponse struct {
 	Added        int     `json:"added"`
-	Improvement  string  `json:"improvement"`
-	Wrdifference string  `json:"wrdifference"`
+	Improvement  *string `json:"improvement"`
+	Wrdifference *string `json:"wrdifference"`
 	Rank         *string `json:"rank"`
 	Process      bool
 }

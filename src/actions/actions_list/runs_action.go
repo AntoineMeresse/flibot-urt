@@ -129,26 +129,26 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		return "^2"
 	}
 
-	if r.Improvement != "" {
-		discordMsg += fmt.Sprintf("PB difference: %s", r.Improvement)
-		if utils.IsImprovement(r.Improvement) {
+	if r.Improvement != nil {
+		discordMsg += fmt.Sprintf("PB difference: %s", *r.Improvement)
+		if utils.IsImprovement(*r.Improvement) {
 			isImprovement = true
 		}
-		gameMsg += fmt.Sprintf("^5PB ^7difference: %s%s^7", diffColor(r.Improvement), cleanDiff(r.Improvement))
+		gameMsg += fmt.Sprintf("^5PB ^7difference: %s%s^7", diffColor(*r.Improvement), cleanDiff(*r.Improvement))
 	}
 
-	if r.Wrdifference != "" {
+	if r.Wrdifference != nil {
 		if gameMsg != "" {
 			gameMsg += " | "
 			discordMsg += " | "
 		}
-		if utils.IsImprovement(r.Wrdifference) {
+		if utils.IsImprovement(*r.Wrdifference) {
 			isImprovement = true
-			discordMsg += fmt.Sprintf("WR difference: %s. New WR, gg!", r.Wrdifference)
+			discordMsg += fmt.Sprintf("WR difference: %s. New WR, gg!", *r.Wrdifference)
 		} else {
-			discordMsg += fmt.Sprintf("WR difference: %s", r.Wrdifference)
+			discordMsg += fmt.Sprintf("WR difference: %s", *r.Wrdifference)
 		}
-		gameMsg += fmt.Sprintf("^5WR ^7difference: %s%s^7", diffColor(r.Wrdifference), cleanDiff(r.Wrdifference))
+		gameMsg += fmt.Sprintf("^5WR ^7difference: %s%s^7", diffColor(*r.Wrdifference), cleanDiff(*r.Wrdifference))
 	}
 
 	if r.Rank != nil {
