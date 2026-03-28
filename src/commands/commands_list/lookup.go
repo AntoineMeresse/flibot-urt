@@ -2,7 +2,6 @@ package commandslist
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
@@ -15,12 +14,11 @@ func Lookup(cmd *appcontext.CommandsArgs) {
 	}
 
 	if strings.HasPrefix(cmd.Params[0], "@") {
-		id, err := strconv.Atoi(cmd.Params[0][1:])
-		if err != nil {
-			cmd.RconText("^1Invalid id: %s", cmd.Params[0][1:])
+		r, ok := cmd.ResolveAtId(cmd.Params[0])
+		if !ok {
 			return
 		}
-		displayPlayerById(cmd, id)
+		displayPlayerById(cmd, r.Id)
 		return
 	}
 

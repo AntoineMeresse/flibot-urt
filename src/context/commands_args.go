@@ -2,7 +2,10 @@ package appcontext
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
+	db "github.com/AntoineMeresse/flibot-urt/src/db"
 	"github.com/AntoineMeresse/flibot-urt/src/models"
 	"github.com/sirupsen/logrus"
 )
@@ -38,7 +41,7 @@ func (c *CommandsArgs) RconUsageWithText(text string, a ...any) {
 
 func (c *CommandsArgs) RconList(list []string) {
 	for _, text := range list {
-		c.RconText(text)
+		c.RconText("%s", text)
 	}
 }
 
@@ -61,6 +64,20 @@ func (c *CommandsArgs) GetPlayerGuid() (guid string) {
 	}
 
 	return player.Guid
+}
+
+func (c *CommandsArgs) ResolveAtId(param string) (db.LookupResult, bool) {
+	id, err := strconv.Atoi(strings.TrimPrefix(param, "@"))
+	if err != nil {
+		c.RconText("^1Invalid id: %s", strings.TrimPrefix(param, "@"))
+		return db.LookupResult{}, false
+	}
+	r, found := c.Context.DB.GetPlayerById(id)
+	if !found {
+		c.RconText("^7No player found with id ^5%d", id)
+		return db.LookupResult{}, false
+	}
+	return r, true
 }
 
 func (c *CommandsArgs) ResolveAdminTarget(search string) (*models.Player, bool) {
