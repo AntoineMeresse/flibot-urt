@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name == 'push' }}
-          tags: ${{ secrets.REGISTRY_URL }}/flibot-urt:0.3.5
+          tags: ${{ secrets.REGISTRY_URL }}/flibot-urt:0.3.6

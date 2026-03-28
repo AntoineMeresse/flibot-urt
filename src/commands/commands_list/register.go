@@ -10,7 +10,7 @@ const registeredRole = 20
 func Register(cmd *appcontext.CommandsArgs) {
 	player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 

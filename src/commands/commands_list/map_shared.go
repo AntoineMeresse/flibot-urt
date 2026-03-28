@@ -27,6 +27,6 @@ func showMapCandidates(cmd *appcontext.CommandsArgs, matches []string, search st
 	}
 	cmd.RconText("^3Multiple maps [^5%d^3] for ^6%s^3:", len(matches), search)
 	for _, chunk := range utils.ToShorterChunkArray(entries) {
-		cmd.RconText(chunk)
+		cmd.RconText("%s", chunk)
 	}
 }

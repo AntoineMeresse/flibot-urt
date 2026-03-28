@@ -55,7 +55,7 @@ func penRankDisplay(rank int, hos bool) (string, string) {
 func Pen(cmd *appcontext.CommandsArgs) {
 	player, err := cmd.Context.Players.GetPlayer(cmd.PlayerId)
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 
@@ -66,7 +66,7 @@ func Pen(cmd *appcontext.CommandsArgs) {
 	dayOfYear := time.Now().YearDay()
 	attempts, err := cmd.Context.DB.PenGetAttempts(player.Guid)
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 	remaining := dayOfYear - attempts
@@ -87,12 +87,12 @@ func Pen(cmd *appcontext.CommandsArgs) {
 
 	size := utils.RandomFloat(0., 50., 5)
 	if err = cmd.Context.DB.PenAdd(player.Guid, size); err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 
 	if err = cmd.Context.DB.PenIncrementAttempts(player.Guid); err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 
@@ -110,7 +110,7 @@ func penGambleHint(cmd *appcontext.CommandsArgs, remaining int) {
 func PenOfTheDay(cmd *appcontext.CommandsArgs) {
 	date, datas, err := cmd.Context.DB.PenPenOfTheDay()
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 
@@ -128,7 +128,7 @@ func PenOfTheDay(cmd *appcontext.CommandsArgs) {
 func PenHallOfFame(cmd *appcontext.CommandsArgs) {
 	datas, err := cmd.Context.DB.PenPenHallOfFame()
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 
@@ -146,7 +146,7 @@ func PenHallOfFame(cmd *appcontext.CommandsArgs) {
 func PenHallOfShame(cmd *appcontext.CommandsArgs) {
 	datas, err := cmd.Context.DB.PenPenHallOfShame()
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 

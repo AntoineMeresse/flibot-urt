@@ -23,7 +23,7 @@ func ResetGotos(cmd *appcontext.CommandsArgs) {
 	} else {
 		m, err := cmd.Context.GetMapWithCriteria(mapPattern)
 		if err != nil {
-			cmd.RconText(err.Error())
+			cmd.RconText("%s", err.Error())
 			return
 		}
 		mapname = *m

@@ -16,7 +16,7 @@ func Afk(cmd *appcontext.CommandsArgs) {
 			}
 			cmd.RconCommand("forceteam %s spec", player.Number)
 		} else {
-			cmd.RconText(err.Error())
+			cmd.RconText("%s", err.Error())
 		}
 	}
 }

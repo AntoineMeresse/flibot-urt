@@ -6,7 +6,7 @@ import (
 
 func NextMap(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) == 0 {
-		cmd.RconText(cmd.Context.GetNextMap())
+		cmd.RconText("%s", cmd.Context.GetNextMap())
 		return
 	}
 	ChangeNextMap(cmd)

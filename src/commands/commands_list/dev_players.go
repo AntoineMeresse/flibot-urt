@@ -14,7 +14,7 @@ func PlayersList(cmd *appcontext.CommandsArgs) {
 	for key, value := range cmd.Context.Players.PlayerMap {
 		text := fmt.Sprintf("%s: %v", key, value)
 		log.Debug(text)
-		cmd.RconText(text)
+		cmd.RconText("%s", text)
 	}
 	cmd.Context.Players.Mutex.RUnlock()
 }
@@ -27,7 +27,7 @@ func PlayersGet(cmd *appcontext.CommandsArgs) {
 		if err == nil {
 			cmd.RconText("Player found: (%v)", *player)
 		} else {
-			cmd.RconText(err.Error())
+			cmd.RconText("%s", err.Error())
 		}
 	} else {
 		cmd.RconText("Add criteria")

@@ -20,7 +20,7 @@ func InitGame(actionParams []string, c *appcontext.AppContext) {
 			log.Debugf("InitGame: mapname set to %s", mapname)
 
 			for _, opt := range c.UrtConfig.ResetOptions {
-				c.RconCommand(opt)
+				c.RconCommand("%s", opt)
 			}
 			log.Debugf("InitGame: reset options applied: %v", c.UrtConfig.ResetOptions)
 

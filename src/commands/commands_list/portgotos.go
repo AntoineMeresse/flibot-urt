@@ -7,7 +7,7 @@ import (
 
 func PortGotos(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) < 1 {
-		cmd.RconText(cmd.Usage)
+		cmd.RconText("%s", cmd.Usage)
 		return
 	}
 

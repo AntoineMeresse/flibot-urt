@@ -20,7 +20,7 @@ func CycleMap(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	if player.Role <= 60 {
+	if player.Role < 90 {
 		v := models.Vote{Params: []string{"cycle"}, PlayerId: cmd.PlayerId}
 		cmd.Context.NewVote(v)
 	} else {

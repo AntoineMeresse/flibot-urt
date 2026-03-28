@@ -10,7 +10,7 @@ import (
 func SetRights(cmd *appcontext.CommandsArgs) {
 	logrus.Debugf("Set rights: %v", cmd.Params)
 	if len(cmd.Params) < 2 {
-		cmd.RconText(cmd.Usage)
+		cmd.RconText("%s", cmd.Usage)
 		return
 	}
 

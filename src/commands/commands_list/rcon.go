@@ -11,7 +11,7 @@ var blockedRconCommands = []string{"quit", "exit", "shutdown", "killserver"}
 
 func Rcon(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) < 1 {
-		cmd.Context.RconText(false, cmd.PlayerId, cmd.Usage)
+		cmd.Context.RconText(false, cmd.PlayerId, "%s", cmd.Usage)
 		return
 	}
 	command := strings.ToLower(cmd.Params[0])

@@ -15,7 +15,7 @@ func ServerStatus(cmd *appcontext.CommandsArgs) {
 	infos, err := cmd.Context.Api.GetServerStatus()
 
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 
@@ -34,14 +34,14 @@ func ServerStatus(cmd *appcontext.CommandsArgs) {
 				ingame := []string{"^7  |---------> ^2In game^7: "}
 				ingame = append(ingame, serverInfos.Ingame...)
 				for _, ingamePlayerLine := range utils.ToShorterChunkArraySep(ingame, ", ", true) {
-					cmd.RconText(ingamePlayerLine)
+					cmd.RconText("%s", ingamePlayerLine)
 				}
 			}
 			if len(serverInfos.Spec) > 0 {
 				inspec := []string{"^7  |---------> ^1In spec^7: "}
 				inspec = append(inspec, serverInfos.Spec...)
 				for _, specPlayerLine := range utils.ToShorterChunkArraySep(inspec, ", ", true) {
-					cmd.RconText(specPlayerLine)
+					cmd.RconText("%s", specPlayerLine)
 				}
 			}
 		}

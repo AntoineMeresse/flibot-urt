@@ -26,7 +26,7 @@ func Extend(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	if player.Role <= 60 {
+	if player.Role < 70 {
 		v := models.Vote{Params: []string{"extend", fmt.Sprintf("%d", extendTime)}, PlayerId: cmd.PlayerId}
 		cmd.Context.NewVote(v)
 	} else {

@@ -6,13 +6,13 @@ import (
 
 func PenCoin(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) < 1 {
-		cmd.RconText(cmd.Usage)
+		cmd.RconText("%s", cmd.Usage)
 		return
 	}
 
 	player, err := cmd.Context.Players.GetPlayer(cmd.Params[0])
 	if err != nil {
-		cmd.RconText(err.Error())
+		cmd.RconText("%s", err.Error())
 		return
 	}
 

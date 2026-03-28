@@ -38,7 +38,7 @@ func ChangeMap(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	if player.Role <= 60 {
+	if player.Role < 90 {
 		v := models.Vote{Params: []string{"map", mapName}, PlayerId: cmd.PlayerId}
 		cmd.Context.NewVote(v)
 	} else {

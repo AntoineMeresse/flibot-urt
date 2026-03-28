@@ -55,13 +55,23 @@ var Commands = map[string]Command{
 	"quote":      {Function: commandslist.Quote, Usage: "!quote [id]", forceGlobal: true},
 	"findquote":  {Function: commandslist.FindQuote, Usage: "!findquote [text]"},
 	"all":        {Function: commandslist.All, Usage: "!all [message]"},
+	"extend":     {Function: commandslist.Extend, Usage: "!extend or !extend [1-999]"},
 
 	// Level: 40
 	"afk": {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},
+	"nuke":       {Function: commandslist.Nuke, Level: 40, Usage: "!nuke [playerId/Name]"},
 
-	// Level: 60-80
+	// Level: 60
+	"slap":       		{Function: commandslist.Slap, Level: 60, Usage: "!slap [playerId/Name] (-f)", excludeFromGuess: true},
 	"setgoto":          {Function: commandslist.SetGoto, Level: 60},
+	"removegoto":       {Function: commandslist.RemoveGoto, Level: 60},
 	"force":            {Function: commandslist.Force, Level: 60, Usage: "!force [player] [red/blue/spectator/free] (-f)", excludeFromGuess: true},
+	"mapget":           {Function: commandslist.MapGet, Level: 60},
+	"mapremove":        {Function: commandslist.MapRemove, Level: 60},
+	"timelimit":        {Function: commandslist.Timelimit, Level: 60, Usage: "!timelimit [1-999]"},
+	"putgroup":         {Function: commandslist.SetRights, Level: 60, Usage: "!putgroup [player] [-1 to 100]"},
+
+	// Level : 80
 	"kick":             {Function: commandslist.Kick, Level: 80, Usage: "!kick [playerId/Name] [reason] (-f)", excludeFromGuess: true},
 	"moveplayer":       {Function: commandslist.MovePlayer, Level: 80, Usage: "!moveplayer [player1] [player2] (-f)"},
 	"mute":             {Function: commandslist.Mute, Level: 80, Usage: "!mute [playerId/Name]"},
@@ -69,22 +79,14 @@ var Commands = map[string]Command{
 	"removequote":      {Function: commandslist.RemoveQuote, Level: 80, Usage: "!removequote [id]"},
 	"portgotos":        {Function: commandslist.PortGotos, Level: 80, Usage: "!portgotos [sourcemap]"},
 	"portmapoptions":   {Function: commandslist.PortMapOptions, Level: 80, Usage: "!portmapoptions [sourcemap]"},
-	"removegoto":       {Function: commandslist.RemoveGoto, Level: 80},
-	"mapget":           {Function: commandslist.MapGet, Level: 80},
-	"mapremove":        {Function: commandslist.MapRemove, Level: 80},
-	"timelimit":        {Function: commandslist.Timelimit, Level: 80, Usage: "!timelimit [1-999]"},
-	"extend":           {Function: commandslist.Extend, Level: 80, Usage: "!extend or !extend [1-999]"},
 	"veto":             {Function: commandslist.VoteVeto, Level: 80, Usage: "!veto"},
 	"overbounces":      {Function: commandslist.Overbounces, Level: 80, Usage: "!overbounces [0 or 1]"},
-	"putgroup":         {Function: commandslist.SetRights, Level: 80, Usage: "!putgroup [player] [-1 to 100]"},
 	"setmapoptions":    {Function: commandslist.SetMapOptions, Level: 80, Usage: "!setmapoptions [opt1, opt2, ...]"},
 	"resetoptions":     {Function: commandslist.ResetOptions, Level: 80, Usage: "!resetoptions"},
 	"mapoptions":       {Function: commandslist.MapOptions, Level: 80, Usage: "!mapoptions"},
 	"removemapoptions": {Function: commandslist.RemoveMapOptions, Level: 80, Usage: "!removemapoptions"},
 
 	// Level: 90
-	"nuke":       {Function: commandslist.Nuke, Level: 90, Usage: "!nuke [playerId/Name]"},
-	"slap":       {Function: commandslist.Slap, Level: 90, Usage: "!slap [playerId/Name] (-f)", excludeFromGuess: true},
 	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name] [reason]", excludeFromGuess: true},
 	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [id]", excludeFromGuess: true},
 	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias] or !lookup @[id]"},
@@ -100,8 +102,8 @@ var Commands = map[string]Command{
 
 	// Dev Only
 	"healthcheck": {Function: commandslist.HealthCheck, Level: 100, Usage: "!healthcheck", forcePM: true},
-	"players":     {Function: commandslist.PlayersList, Level: 90, Usage: "!players", excludeFromBridge: true, forcePM: true},
-	"player":      {Function: commandslist.PlayersGet, Level: 90, Usage: "!player", excludeFromBridge: true, forcePM: true},
+	"players":     {Function: commandslist.PlayersList, Level: 100, Usage: "!players", excludeFromBridge: true, forcePM: true},
+	"player":      {Function: commandslist.PlayersGet, Level: 100, Usage: "!player", excludeFromBridge: true, forcePM: true},
 	"runs":        {Function: commandslist.RunsDescribe, Level: 100, Usage: "!runs", excludeFromBridge: true, forcePM: true},
 	"runshistory": {Function: commandslist.RunsHistory, Level: 100, Usage: "!runshistory", excludeFromBridge: true, forcePM: true},
 }
@@ -146,4 +148,5 @@ var Alias = map[string]string{
 	"mo":            "mapoptions",
 	"smo":           "setmapoptions",
 	"rmmo":          "removemapoptions",
+	"lvl": 			 "level",
 }
