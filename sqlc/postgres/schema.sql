@@ -64,6 +64,14 @@ CREATE TABLE IF NOT EXISTS pen_counter (
     UNIQUE (guid, year)
 );
 
+-- PB Pencoin daily limit
+CREATE TABLE IF NOT EXISTS pb_pencoin_daily (
+    guid TEXT NOT NULL REFERENCES player(guid),
+    date DATE NOT NULL,
+    count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (guid, date)
+);
+
 -- Ignore list
 CREATE TABLE IF NOT EXISTS ignore_list (
     id SERIAL PRIMARY KEY,

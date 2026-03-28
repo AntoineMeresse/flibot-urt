@@ -195,6 +195,31 @@ func (db *PostGresqlDB) PenPenHallOfShame() ([]mydb.PenData, error) {
 	return res, nil
 }
 
+func (db *PostGresqlDB) GetDailyPbPenCoinCount(guid string) (int, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	var count int
+	err := db.pool.QueryRow(c,
+		`SELECT count FROM pb_pencoin_daily WHERE guid = $1 AND date = CURRENT_DATE`,
+		guid,
+	).Scan(&count)
+	if err != nil {
+		return 0, nil
+	}
+	return count, nil
+}
+
+func (db *PostGresqlDB) IncrementDailyPbPenCoinCount(guid string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	_, err := db.pool.Exec(c,
+		`INSERT INTO pb_pencoin_daily (guid, date, count) VALUES ($1, CURRENT_DATE, 1)
+		 ON CONFLICT (guid, date) DO UPDATE SET count = pb_pencoin_daily.count + 1`,
+		guid,
+	)
+	return err
+}
+
 func (db *PostGresqlDB) PenPlayerGetDailySize(guid string) (float64, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

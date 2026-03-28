@@ -96,24 +96,38 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 					log.Errorf("RunLog: Error posting run: %v", err)
 				}
 			}
-			discordMsg, isImprovement := processRunData(c, demoResponse, player.Number)
-			if isImprovement {
-				c.GivePenCoin(*player)
-			}
+			discordMsg, isPbImprovement, isWrImprovement := processRunData(c, demoResponse, player.Number)
 			go func() {
+				handlePenCoin(c, *player, isPbImprovement, isWrImprovement)
 				sendToDiscordWebhook(c, runInfo, discordMsg)
 				sendDemoToBridge(c, runInfo)
-				moveDemoIfImprovement(c, runInfo, isImprovement)
+				moveDemoIfImprovement(c, runInfo, isPbImprovement || isWrImprovement)
 			}()
 		}
 	}
 }
 
-func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string) (string, bool) {
+func handlePenCoin(c *appcontext.AppContext, player models.Player, isPbImprovement, isWrImprovement bool) {
+	if isWrImprovement {
+		c.GivePenCoin(player)
+	}
+	if isPbImprovement {
+		limit := c.UrtConfig.DailyPbPenCoinLimit
+		count, err := c.DB.GetDailyPbPenCoinCount(player.Guid)
+		if err == nil && count < limit {
+			c.GivePenCoin(player)
+			c.DB.IncrementDailyPbPenCoinCount(player.Guid)
+			c.RconText(false, player.Number, "[PM] ^5PB ^7pencoin: ^5%d^7/%d today", count+1, limit)
+		}
+	}
+}
+
+func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumber string) (string, bool, bool) {
 	log.Debugf("SendDemoResponse: %+v", r)
 	gameMsg := ""
 	discordMsg := ""
-	isImprovement := false
+	isPbImprovement := false
+	isWrImprovement := false
 
 	cleanDiff := func(v string) string {
 		stripped := strings.TrimPrefix(v, "-")
@@ -132,7 +146,7 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 	if r.Improvement != nil {
 		discordMsg += fmt.Sprintf("PB difference: %s", *r.Improvement)
 		if utils.IsImprovement(*r.Improvement) {
-			isImprovement = true
+			isPbImprovement = true
 		}
 		gameMsg += fmt.Sprintf("^5PB ^7difference: %s%s^7", diffColor(*r.Improvement), cleanDiff(*r.Improvement))
 	}
@@ -143,7 +157,7 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 			discordMsg += " | "
 		}
 		if utils.IsImprovement(*r.Wrdifference) {
-			isImprovement = true
+			isWrImprovement = true
 			discordMsg += fmt.Sprintf("WR difference: %s. New WR, gg!", *r.Wrdifference)
 		} else {
 			discordMsg += fmt.Sprintf("WR difference: %s", *r.Wrdifference)
@@ -156,9 +170,9 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 		gameMsg += fmt.Sprintf(" ^7(^3%s^7)", *r.Rank)
 	}
 
-	c.RconText(isImprovement, playerNumber, "%s", gameMsg)
+	c.RconText(isPbImprovement || isWrImprovement, playerNumber, "%s", gameMsg)
 
-	return discordMsg, isImprovement
+	return discordMsg, isPbImprovement, isWrImprovement
 }
 
 func runMsg(runInfo models.PlayerRunInfo) string {

@@ -56,6 +56,8 @@ type DataPersister interface {
 	PenPenOfTheDay() (string, []PenData, error)
 	PenPenHallOfFame() ([]PenData, error)
 	PenPenHallOfShame() ([]PenData, error)
+	GetDailyPbPenCoinCount(guid string) (int, error)
+	IncrementDailyPbPenCoinCount(guid string) error
 
 	HandleRun(info models.PlayerRunInfo, checkpoints []int) error
 	GetBestCheckpoints(mapname, way string) ([]int, string, error)
