@@ -97,15 +97,24 @@ func (c *AppContext) initDb() {
 	c.registerServer()
 }
 
+func isLocalhost(ip string) bool {
+	return ip == "localhost" || ip == "127.0.0.1" || ip == "::1"
+}
+
 func (c *AppContext) registerServer() {
+	ip := c.UrtConfig.ServerConfig.Ip
+	if isLocalhost(ip) {
+		log.Debugf("Skipping server registration for local address: %s", ip)
+		return
+	}
 	port, err := strconv.Atoi(c.UrtConfig.ServerConfig.Port)
 	if err != nil {
 		log.Fatalf("Invalid server port: %v", err)
 	}
-	if err := c.DB.RegisterServer(c.UrtConfig.ServerConfig.Ip, port, c.UrtConfig.ServerConfig.Password, c.UrtConfig.ApiConfig.ChannelId, c.UrtConfig.ApiConfig.ServerName); err != nil {
+	if err := c.DB.RegisterServer(ip, port, c.UrtConfig.ServerConfig.Password, c.UrtConfig.ApiConfig.ChannelId, c.UrtConfig.ApiConfig.ServerName); err != nil {
 		log.Errorf("Failed to register server in db: %v", err)
 	} else {
-		log.Debugf("Server registered: %s:%d", c.UrtConfig.ServerConfig.Ip, port)
+		log.Debugf("Server registered: %s:%d", ip, port)
 	}
 }
 
