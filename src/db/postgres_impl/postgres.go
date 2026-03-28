@@ -94,6 +94,37 @@ func (db *PostGresqlDB) SetPlayerRole(guid string, role int) error {
 	})
 }
 
+func defaultPenCoins() int {
+	dayOfYear := time.Now().YearDay()
+	coins := dayOfYear - 5
+	if coins < 0 {
+		return 0
+	}
+	return coins
+}
+
+func (db *PostGresqlDB) PenInitIfNotExists(guid string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	_, err := db.pool.Exec(c,
+		`INSERT INTO pen_counter (guid, year, attempts) VALUES ($1, $2, $3) ON CONFLICT (guid, year) DO NOTHING`,
+		guid, time.Now().Year(), defaultPenCoins(),
+	)
+	return err
+}
+
+func (db *PostGresqlDB) PenSetAllAttempts(attempts int) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	_, err := db.pool.Exec(c,
+		`INSERT INTO pen_counter (guid, year, attempts)
+		 SELECT guid, $2, $1 FROM player
+		 ON CONFLICT (guid, year) DO UPDATE SET attempts = $1`,
+		attempts, time.Now().Year(),
+	)
+	return err
+}
+
 func (db *PostGresqlDB) PenAdd(guid string, size float64) error {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

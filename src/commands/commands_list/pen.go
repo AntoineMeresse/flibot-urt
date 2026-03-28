@@ -61,6 +61,8 @@ func Pen(cmd *appcontext.CommandsArgs) {
 
 	forceReroll := len(cmd.Params) > 0 && cmd.Params[0] == "-f"
 
+	cmd.Context.DB.PenInitIfNotExists(player.Guid)
+
 	dayOfYear := time.Now().YearDay()
 	attempts, err := cmd.Context.DB.PenGetAttempts(player.Guid)
 	if err != nil {

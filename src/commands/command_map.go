@@ -92,7 +92,8 @@ var Commands = map[string]Command{
 	"resetgotos": {Function: commandslist.ResetGotos, Level: 90, Usage: "!resetgotos [map] (-f)"},
 
 	// Level: 100
-	"pencoin":  {Function: commandslist.PenCoin, Level: 100, Usage: "!pencoin [player]"},
+	"pencoin":      {Function: commandslist.PenCoin, Level: 100, Usage: "!pencoin [player]"},
+	"resetpencoin": {Function: commandslist.ResetPenCoin, Level: 100, Usage: "!resetpencoin [amount]"},
 	"globalpen": {Function: commandslist.GlobalPen, Level: 100, Usage: "!globalpen", excludeFromBridge: true},
 	"password": {Function: commandslist.Password, Level: 100, Usage: "!password [password]"},
 	"rcon":     {Function: commandslist.Rcon, Level: 100, Usage: "!rcon [command]", excludeFromGuess: true, forcePM: true},
