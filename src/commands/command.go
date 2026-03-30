@@ -171,8 +171,31 @@ func overrideParamsForCommands(commandName string, role int, cmdArgs *appcontext
 	cmdArgs.Params = buildHelpLines(role)
 }
 
+func handleRepeatCommand(actionParams []string, c *appcontext.AppContext) {
+	playerNumber := actionParams[0]
+	newParams := utils.CleanEmptyElements(actionParams[3:])
+
+	entry, ok := c.GetLastCmd(playerNumber)
+	if !ok {
+		c.RconText(false, playerNumber, "^7No previous command to repeat.")
+		return
+	}
+
+	merged := make([]string, 0, len(entry.Params)+len(newParams))
+	merged = append(merged, entry.Params...)
+	merged = append(merged, newParams...)
+	rebuilt := append([]string{actionParams[0], actionParams[1], "!" + entry.Name}, merged...)
+	HandleCommand(rebuilt, c)
+}
+
 func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 	playerNumber := actionParams[0]
+
+	if len(actionParams) >= 3 && actionParams[2] == "!!" {
+		handleRepeatCommand(actionParams, c)
+		return
+	}
+
 	commandInfos := extractCmdInfos(actionParams)
 	if !commandInfos.isValid && len(commandInfos.suggestions) > 1 {
 		c.RconText(false, playerNumber, "^3I'm not a magician, could you choose between ^5%s^3 ? :D", "!"+strings.Join(commandInfos.suggestions, "^3 and ^5!"))
@@ -199,6 +222,7 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)
 			commandInfos.command.Function(&args)
+			c.SetLastCmd(playerNumber, commandInfos.name, commandInfos.params)
 		} else {
 			log.Errorf("Player with id (%s) doesn't have enough rights to use command %s (required: %d | got: %d) ",
 				playerNumber, actionParams[2], level, role,

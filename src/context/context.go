@@ -21,6 +21,11 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
+type LastCmdEntry struct {
+	Name   string
+	Params []string
+}
+
 type AppContext struct {
 	DB          db.DataPersister
 	Rcon        quake3_rcon.Rcon
@@ -31,6 +36,19 @@ type AppContext struct {
 	VoteChannel chan models.Vote
 	VoteActive  atomic.Bool
 	Runs        models.RunsInfo
+	lastCmds    sync.Map
+}
+
+func (c *AppContext) SetLastCmd(playerNumber, name string, params []string) {
+	c.lastCmds.Store(playerNumber, LastCmdEntry{Name: name, Params: params})
+}
+
+func (c *AppContext) GetLastCmd(playerNumber string) (LastCmdEntry, bool) {
+	v, ok := c.lastCmds.Load(playerNumber)
+	if !ok {
+		return LastCmdEntry{}, false
+	}
+	return v.(LastCmdEntry), true
 }
 
 type RconFunction func(format string, a ...any)
