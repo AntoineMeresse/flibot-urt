@@ -122,3 +122,40 @@ func (q *Queries) GetBestCheckpointsByMapWay(ctx context.Context, arg GetBestChe
 	err := row.Scan(&r.Checkpoints, &r.Name)
 	return r, err
 }
+
+const getTopCheckpointsByMapWay = `-- name: GetTopCheckpointsByMapWay :many
+SELECT r.checkpoints, r.runtime, p.name
+FROM runs r
+JOIN player p ON p.guid = r.guid
+WHERE r.mapname = $1 AND r.way = $2
+ORDER BY r.runtime ASC
+LIMIT $3`
+
+type GetTopCheckpointsByMapWayParams struct {
+	Mapname string
+	Way     string
+	Limit   int32
+}
+
+type GetTopCheckpointsByMapWayRow struct {
+	Checkpoints string
+	Runtime     int32
+	Name        string
+}
+
+func (q *Queries) GetTopCheckpointsByMapWay(ctx context.Context, arg GetTopCheckpointsByMapWayParams) ([]GetTopCheckpointsByMapWayRow, error) {
+	rows, err := q.db.Query(ctx, getTopCheckpointsByMapWay, arg.Mapname, arg.Way, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTopCheckpointsByMapWayRow
+	for rows.Next() {
+		var r GetTopCheckpointsByMapWayRow
+		if err := rows.Scan(&r.Checkpoints, &r.Runtime, &r.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, r)
+	}
+	return items, rows.Err()
+}

@@ -42,7 +42,7 @@ var Commands = map[string]Command{
 	"aliases":    {Function: commandslist.Aliases, Level: 20, Usage: "!aliases [player]"},
 	"ignore":     {Function: commandslist.Ignore, Usage: "!ignore [player]"},
 	"unignore":   {Function: commandslist.Unignore, Usage: "!unignore [id]"},
-	"cp":         {Function: commandslist.Cp, Usage: "!cp"},
+	"compare":    {Function: commandslist.Compare, Usage: "!compare [-list | 1-10 [1-10] [1-10]]"},
 	"time":       {Function: commandslist.Time, Usage: "!time"},
 	"tp":         {Function: commandslist.Tp, Usage: "!tp [player]", excludeFromGuess: true},
 	"status":     {Function: commandslist.ServerStatus, Usage: "!status [p(layers)/e(mpty)]"},
@@ -149,4 +149,5 @@ var Alias = map[string]string{
 	"smo":           "setmapoptions",
 	"rmmo":          "removemapoptions",
 	"lvl": 			 "level",
+	"cp":            "compare",
 }

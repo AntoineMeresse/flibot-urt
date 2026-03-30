@@ -9,24 +9,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type RunCompare struct {
-	playerName string
-	checkpoint []int
+type CompareTarget struct {
+	Name        string
+	Runtime     int
+	Checkpoints []int
 }
 
 type RunPlayerInfo struct {
-	way             string
-	checkpoint      []int
-	bestCheckpoints []int
-	bestPlayerName  string
-	runCompare      RunCompare
+	way            string
+	checkpoint     []int
+	compareTargets []CompareTarget
+	compareIdxs    []int
 }
 
 type RunsInfo struct {
-	RunMutex   sync.RWMutex
-	PlayerRuns map[string]*RunPlayerInfo
-	History    map[string][]int
-	CpEnabled  map[string]bool
+	RunMutex     sync.RWMutex
+	PlayerRuns   map[string]*RunPlayerInfo
+	History      map[string][]int
+	CpEnabled    map[string]bool
+	CpTargetIdxs map[string][]int
 }
 
 type PlayerRunInfo struct {
@@ -72,12 +73,80 @@ func (runs *RunsInfo) IsRunning(playerNumber string) bool {
 	return ok
 }
 
-func (runs *RunsInfo) RunStart(playerNumber string, wayName string, bestCheckpoints []int, bestPlayerName string) {
+func (runs *RunsInfo) RunStart(playerNumber string, wayName string, targets []CompareTarget) {
 	log.Debugf("Starting run %s", playerNumber)
 	runs.RunMutex.Lock()
 	defer runs.RunMutex.Unlock()
 
-	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}, bestCheckpoints: bestCheckpoints, bestPlayerName: bestPlayerName}
+	idxs := runs.CpTargetIdxs[playerNumber]
+	if len(idxs) == 0 {
+		idxs = []int{0}
+	}
+	// clamp indices that exceed available targets
+	valid := make([]int, 0, len(idxs))
+	for _, idx := range idxs {
+		if idx < len(targets) {
+			valid = append(valid, idx)
+		}
+	}
+	if len(valid) == 0 {
+		valid = []int{0}
+	}
+	runs.PlayerRuns[playerNumber] = &RunPlayerInfo{way: wayName, checkpoint: []int{}, compareTargets: targets, compareIdxs: valid}
+}
+
+// GetTargetLimit returns how many DB rows to fetch at run start (max saved index + 1, min 1).
+func (runs *RunsInfo) GetTargetLimit(playerNumber string) int {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	idxs := runs.CpTargetIdxs[playerNumber]
+	max := 0
+	for _, idx := range idxs {
+		if idx > max {
+			max = idx
+		}
+	}
+	return max + 1
+}
+
+func (runs *RunsInfo) GetCurrentWay(playerNumber string) (string, bool) {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	info, ok := runs.PlayerRuns[playerNumber]
+	if !ok {
+		return "", false
+	}
+	return info.way, true
+}
+
+func (runs *RunsInfo) UpdateCompareTargets(playerNumber string, targets []CompareTarget, idxs []int) {
+	runs.RunMutex.Lock()
+	defer runs.RunMutex.Unlock()
+	if info, ok := runs.PlayerRuns[playerNumber]; ok {
+		info.compareTargets = targets
+		info.compareIdxs = idxs
+	}
+	runs.CpTargetIdxs[playerNumber] = idxs
+}
+
+func (runs *RunsInfo) GetCompareTargets(playerNumber string) ([]CompareTarget, bool) {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	info, ok := runs.PlayerRuns[playerNumber]
+	if !ok {
+		return nil, false
+	}
+	return info.compareTargets, true
+}
+
+func (runs *RunsInfo) GetCompareIdxs(playerNumber string) []int {
+	runs.RunMutex.RLock()
+	defer runs.RunMutex.RUnlock()
+	info, ok := runs.PlayerRuns[playerNumber]
+	if ok {
+		return info.compareIdxs
+	}
+	return runs.CpTargetIdxs[playerNumber]
 }
 
 func (runs *RunsInfo) ToggleCp(playerNumber string) bool {
@@ -93,43 +162,48 @@ func (runs *RunsInfo) IsCpEnabled(playerNumber string) bool {
 	return runs.CpEnabled[playerNumber]
 }
 
-func (runs *RunsInfo) GetCpMsg(playerNumber string) string {
+func (runs *RunsInfo) GetCpMsgs(playerNumber string) []string {
 	runs.RunMutex.RLock()
 	defer runs.RunMutex.RUnlock()
 
 	info, ok := runs.PlayerRuns[playerNumber]
-	if !ok || len(info.bestCheckpoints) == 0 || len(info.checkpoint) == 0 {
-		return ""
+	if !ok || len(info.compareTargets) == 0 || len(info.checkpoint) == 0 {
+		return nil
 	}
 
 	l := len(info.checkpoint)
-	lBest := len(info.bestCheckpoints)
-	if l > lBest {
-		return ""
-	}
-
 	cpIdx := l - 1
 	currentTime := info.checkpoint[cpIdx]
-	bestTime := info.bestCheckpoints[cpIdx]
-	diff := bestTime - currentTime // positive = player is ahead of best
 
-	var color string
-	absDiff := diff
-	if diff == 0 {
-		color = "^7"
-	} else if diff < 0 {
-		color = "^1-"
-		absDiff = -diff
-	} else {
-		color = "^2+"
+	parts := []string{fmt.Sprintf("^5CP %d:", cpIdx+1)}
+	for _, idx := range info.compareIdxs {
+		if idx >= len(info.compareTargets) {
+			continue
+		}
+		target := info.compareTargets[idx]
+		if cpIdx >= len(target.Checkpoints) {
+			continue
+		}
+		bestTime := target.Checkpoints[cpIdx]
+		diff := bestTime - currentTime
+
+		var sign string
+		absDiff := diff
+		if diff == 0 {
+			sign = "^7"
+		} else if diff < 0 {
+			sign = "^1-"
+			absDiff = -diff
+		} else {
+			sign = "^2+"
+		}
+		parts = append(parts, fmt.Sprintf("^7[^3#%d^7: ^8%s^7 %s%s^7]", idx+1, target.Name, sign, FormatMs(absDiff)))
 	}
 
-	lastPart := ""
-	if l == lBest {
-		lastPart = fmt.Sprintf(" ^7than ^5%s^7.", FormatMs(bestTime))
+	if len(parts) == 1 {
+		return nil
 	}
-
-	return fmt.Sprintf("^7[^8%s^7] CP %d: %s%s%s", info.bestPlayerName, cpIdx+1, color, FormatMs(absDiff), lastPart)
+	return parts
 }
 
 func FormatMs(ms int) string {

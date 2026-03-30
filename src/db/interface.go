@@ -63,6 +63,7 @@ type DataPersister interface {
 
 	HandleRun(info models.PlayerRunInfo, checkpoints []int) error
 	GetBestCheckpoints(mapname, way string) ([]int, string, error)
+	GetTopCheckpoints(mapname, way string, limit int) ([]TopCheckpoint, error)
 
 	SetMapOptions(mapname, options string) error
 	GetMapOptions(mapname string) (string, bool)
@@ -111,6 +112,12 @@ type QuoteEntry struct {
 type BanEntry struct {
 	Id   int
 	Name string
+}
+
+type TopCheckpoint struct {
+	Name        string
+	Runtime     int
+	Checkpoints []int
 }
 
 type LookupResult struct {

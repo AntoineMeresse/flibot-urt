@@ -281,6 +281,32 @@ func (db *PostGresqlDB) GetBestCheckpoints(mapname, way string) ([]int, string, 
 	return checkpoints, row.Name, err
 }
 
+func (db *PostGresqlDB) GetTopCheckpoints(mapname, way string, limit int) ([]mydb.TopCheckpoint, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	rows, err := db.queries.GetTopCheckpointsByMapWay(c, postgres_genererated.GetTopCheckpointsByMapWayParams{
+		Mapname: mapname,
+		Way:     way,
+		Limit:   int32(limit),
+	})
+	if err != nil {
+		return nil, err
+	}
+	result := make([]mydb.TopCheckpoint, 0, len(rows))
+	for _, row := range rows {
+		var cps []int
+		if err := json.Unmarshal([]byte(row.Checkpoints), &cps); err != nil {
+			continue
+		}
+		result = append(result, mydb.TopCheckpoint{
+			Name:        row.Name,
+			Runtime:     int(row.Runtime),
+			Checkpoints: cps,
+		})
+	}
+	return result, nil
+}
+
 func (db *PostGresqlDB) HandleRun(info models.PlayerRunInfo, checkpoints []int) error {
 	logrus.Debugf("HandleRun: %v | %v", info, checkpoints)
 	runtime, err := strconv.Atoi(info.Time)

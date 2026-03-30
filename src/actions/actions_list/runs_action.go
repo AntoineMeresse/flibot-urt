@@ -22,13 +22,19 @@ func ClientJumpRunStarted(actionParams []string, c *appcontext.AppContext) {
 	playerNumber := actionParams[0]
 	wayName := actionParams[3]
 
-	var bestCheckpoints []int
-	var bestPlayerName string
-	if cps, name, err := c.DB.GetBestCheckpoints(c.GetCurrentMap(), wayName); err == nil {
-		bestCheckpoints = cps
-		bestPlayerName = name
+	var targets []models.CompareTarget
+	if rows, err := c.DB.GetTopCheckpoints(c.GetCurrentMap(), wayName, c.Runs.GetTargetLimit(playerNumber)); err != nil {
+		log.Errorf("GetTopCheckpoints(%s, %s): %v", c.GetCurrentMap(), wayName, err)
+	} else {
+		for _, row := range rows {
+			targets = append(targets, models.CompareTarget{
+				Name:        row.Name,
+				Runtime:     row.Runtime,
+				Checkpoints: row.Checkpoints,
+			})
+		}
 	}
-	c.Runs.RunStart(playerNumber, wayName, bestCheckpoints, bestPlayerName)
+	c.Runs.RunStart(playerNumber, wayName, targets)
 }
 
 func ClientJumpRunCanceled(actionParams []string, c *appcontext.AppContext) {
@@ -60,8 +66,8 @@ func ClientJumpRunCheckpoint(actionParams []string, c *appcontext.AppContext) {
 
 	if c.Runs.IsCpEnabled(playerNumber) {
 		if _, err := c.Players.GetPlayer(playerNumber); err == nil {
-			if msg := c.Runs.GetCpMsg(playerNumber); msg != "" {
-				c.RconText(false, playerNumber, "%s", msg)
+			for _, chunk := range utils.ToShorterChunkArraySep(c.Runs.GetCpMsgs(playerNumber), " ^7", false) {
+				c.RconText(false, playerNumber, "%s", chunk)
 			}
 		}
 	}
