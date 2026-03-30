@@ -27,14 +27,14 @@ type PostGresqlDB struct {
 	queries *postgres_genererated.Queries
 }
 
-func InitPostGresqlDb(ctx context.Context, uri string) (*PostGresqlDB, error) {
+func InitPostGresqlDb(ctx context.Context, uri string, schemaPath string) (*PostGresqlDB, error) {
 	pool, err := pgxpool.New(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
 
 	queries := postgres_genererated.New(pool)
-	schema := mydb.ReadSchema("./sqlc/postgres/schema.sql")
+	schema := mydb.ReadSchema(schemaPath)
 	_, err = pool.Exec(ctx, schema)
 
 	if err != nil {

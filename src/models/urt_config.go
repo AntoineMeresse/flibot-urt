@@ -40,6 +40,7 @@ type UrtConfig struct {
 	PortMapOptionsPath string
 	WelcomeMessage         string
 	DailyPbPenCoinLimit    int
+	SchemaPath             string
 }
 
 func (u *UrtConfig) LoadConfig() {
@@ -47,6 +48,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.SetDefault("serverport", "27960")
 	viper.SetDefault("botWorkerNumber", 1)
 	viper.SetDefault("dailyPbPenCoinLimit", 2)
+	viper.SetDefault("schemaPath", "./sqlc/postgres/schema.sql")
 	viper.SetDefault("resetOptions", []string{
 		"sv_fps 125",
 		"g_maxGameClients 0",
@@ -94,6 +96,7 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("portMapOptionsPath", "portMapOptionsPath")
 	viper.BindEnv("welcomeMessage", "welcomeMessage")
 	viper.BindEnv("dailyPbPenCoinLimit", "dailyPbPenCoinLimit")
+	viper.BindEnv("schemaPath", "schemaPath")
 
 	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
@@ -131,6 +134,7 @@ func (u *UrtConfig) LoadConfig() {
 	u.PortMapOptionsPath = viper.GetString("portMapOptionsPath")
 	u.WelcomeMessage = viper.GetString("welcomeMessage")
 	u.DailyPbPenCoinLimit = viper.GetInt("dailyPbPenCoinLimit")
+	u.SchemaPath = viper.GetString("schemaPath")
 
 	u.ResetOptions = parseStringSliceOption(viper.Get("resetOptions"))
 

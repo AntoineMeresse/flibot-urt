@@ -105,7 +105,7 @@ func (c *AppContext) initRcon() {
 
 func (c *AppContext) initDb() {
 	log.Debug("Initializing Db...")
-	database, dbErr := postgres_impl.InitPostGresqlDb(context.TODO(), c.UrtConfig.DbUri)
+	database, dbErr := postgres_impl.InitPostGresqlDb(context.TODO(), c.UrtConfig.DbUri, c.UrtConfig.SchemaPath)
 
 	if dbErr != nil {
 		log.Fatalf("Error trying to instantiate db. Err: %v", dbErr)

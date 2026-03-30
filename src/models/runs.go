@@ -156,6 +156,12 @@ func (runs *RunsInfo) ToggleCp(playerNumber string) bool {
 	return runs.CpEnabled[playerNumber]
 }
 
+func (runs *RunsInfo) EnableCp(playerNumber string) {
+	runs.RunMutex.Lock()
+	defer runs.RunMutex.Unlock()
+	runs.CpEnabled[playerNumber] = true
+}
+
 func (runs *RunsInfo) IsCpEnabled(playerNumber string) bool {
 	runs.RunMutex.RLock()
 	defer runs.RunMutex.RUnlock()
@@ -242,6 +248,8 @@ func (runs *RunsInfo) ClearRuns() {
 	defer runs.RunMutex.Unlock()
 	runs.PlayerRuns = map[string]*RunPlayerInfo{}
 	runs.History = map[string][]int{}
+	runs.CpEnabled = map[string]bool{}
+	runs.CpTargetIdxs = map[string][]int{}
 }
 
 func (runs *RunsInfo) RunCanceled(playerNumber string) {
@@ -250,6 +258,8 @@ func (runs *RunsInfo) RunCanceled(playerNumber string) {
 	defer runs.RunMutex.Unlock()
 
 	delete(runs.PlayerRuns, playerNumber)
+	delete(runs.CpEnabled, playerNumber)
+	delete(runs.CpTargetIdxs, playerNumber)
 }
 
 func (runs *RunsInfo) RunStopped(playerNumber string, playerGuid string, time string) {

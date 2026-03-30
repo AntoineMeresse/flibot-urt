@@ -86,6 +86,8 @@ func Compare(cmd *appcontext.CommandsArgs) {
 		idxs = append(idxs, n-1) // convert to 0-based
 	}
 
+	cmd.Context.Runs.EnableCp(cmd.PlayerId)
+
 	way, running := cmd.Context.Runs.GetCurrentWay(cmd.PlayerId)
 	if !running {
 		cmd.Context.Runs.UpdateCompareTargets(cmd.PlayerId, nil, idxs)
@@ -93,7 +95,7 @@ func Compare(cmd *appcontext.CommandsArgs) {
 		for i, idx := range idxs {
 			parts[i] = fmt.Sprintf("^3#%d^7", idx+1)
 		}
-		cmd.RconText("^7Comparison checkpoints saved: %s ^7(applied on next run)", strings.Join(parts, "^7, "))
+		cmd.RconText("^7Compare checkpoints: ^2On ^7- saved: %s ^7(applied on next run)", strings.Join(parts, "^7, "))
 		return
 	}
 
