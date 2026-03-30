@@ -56,10 +56,12 @@ var Commands = map[string]Command{
 	"findquote":  {Function: commandslist.FindQuote, Usage: "!findquote [text]"},
 	"all":        {Function: commandslist.All, Usage: "!all [message]"},
 	"extend":     {Function: commandslist.Extend, Usage: "!extend or !extend [1-999]"},
+	"redo":       {Function: commandslist.Redo, Usage: "!redo [extra params]"},
 
 	// Level: 40
-	"afk": {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},
+	"afk":        {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},
 	"nuke":       {Function: commandslist.Nuke, Level: 40, Usage: "!nuke [playerId/Name]"},
+	"veto":       {Function: commandslist.VoteVeto, Level: 40, Usage: "!veto"},
 
 	// Level: 60
 	"slap":       		{Function: commandslist.Slap, Level: 60, Usage: "!slap [playerId/Name] (-f)", excludeFromGuess: true},
@@ -79,7 +81,6 @@ var Commands = map[string]Command{
 	"removequote":      {Function: commandslist.RemoveQuote, Level: 80, Usage: "!removequote [id]"},
 	"portgotos":        {Function: commandslist.PortGotos, Level: 80, Usage: "!portgotos [sourcemap]"},
 	"portmapoptions":   {Function: commandslist.PortMapOptions, Level: 80, Usage: "!portmapoptions [sourcemap]"},
-	"veto":             {Function: commandslist.VoteVeto, Level: 80, Usage: "!veto"},
 	"overbounces":      {Function: commandslist.Overbounces, Level: 80, Usage: "!overbounces [0 or 1]"},
 	"setmapoptions":    {Function: commandslist.SetMapOptions, Level: 80, Usage: "!setmapoptions [opt1, opt2, ...]"},
 	"resetoptions":     {Function: commandslist.ResetOptions, Level: 80, Usage: "!resetoptions"},
@@ -150,4 +151,6 @@ var Alias = map[string]string{
 	"rmmo":          "removemapoptions",
 	"lvl": 			 "level",
 	"cp":            "compare",
+	"lcmd":          "redo",
+	"lc":            "redo",
 }

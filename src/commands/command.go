@@ -191,9 +191,16 @@ func handleRepeatCommand(actionParams []string, c *appcontext.AppContext) {
 func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 	playerNumber := actionParams[0]
 
-	if len(actionParams) >= 3 && actionParams[2] == "!!" {
-		handleRepeatCommand(actionParams, c)
-		return
+	if len(actionParams) >= 3 {
+		raw := actionParams[2]
+		if len(raw) > 1 && (raw[0] == '!' || raw[0] == '@') {
+			name := strings.ToLower(raw[1:])
+			replaceShortcutByKnownCommand(&name)
+			if name == "redo" {
+				handleRepeatCommand(actionParams, c)
+				return
+			}
+		}
 	}
 
 	commandInfos := extractCmdInfos(actionParams)
