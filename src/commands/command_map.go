@@ -155,4 +155,6 @@ var Alias = map[string]string{
 	"cp":            "compare",
 	"lcmd":          "redo",
 	"lc":            "redo",
+	"start":         "ready",
+	"run":           "ready",
 }
