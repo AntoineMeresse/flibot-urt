@@ -22,7 +22,7 @@ func Say(actionParams []string, c *appcontext.AppContext) {
 
 func autoTrad(actionParams []string, c *appcontext.AppContext) {
 	message := strings.Join(actionParams[2:], " ")
-	if strings.HasPrefix(message, "!") {
+	if strings.HasPrefix(message, "!") || len(message) <= 3 {
 		return
 	}
 	targets := c.TradEnabledPlayers()

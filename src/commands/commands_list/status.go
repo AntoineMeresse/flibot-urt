@@ -11,7 +11,7 @@ func ServerStatus(cmd *appcontext.CommandsArgs) {
 		filter = cmd.Params[0]
 	}
 
-	cmd.RconText("Status !")
+	cmd.RconText("Server status:")
 	infos, err := cmd.Context.Api.GetServerStatus()
 
 	if err != nil {

@@ -38,8 +38,8 @@ func TradTo(cmd *appcontext.CommandsArgs) {
 		cmd.RconText("^1Translation service unavailable.")
 		return
 	}
-	if result.Confidence < MinConfidence {
-		log.Debugf("[tradto] skipped: confidence too low (%.0f%% < %.0f%%) — guessed lang: %s", result.Confidence, MinConfidence, result.Lang)
+	if result.Confidence < MinConfidenceTradTo {
+		log.Debugf("[tradto] skipped: confidence too low (%.0f%% < %.0f%%) — guessed lang: %s", result.Confidence, MinConfidenceTradTo, result.Lang)
 		return
 	}
 

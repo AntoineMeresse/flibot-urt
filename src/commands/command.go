@@ -185,6 +185,7 @@ func handleRepeatCommand(actionParams []string, c *appcontext.AppContext) {
 	merged = append(merged, entry.Params...)
 	merged = append(merged, newParams...)
 	rebuilt := append([]string{actionParams[0], actionParams[1], "!" + entry.Name}, merged...)
+	c.RconText(false, playerNumber, "^7Replaying: ^5%s", strings.Join(rebuilt[2:], " "))
 	HandleCommand(rebuilt, c)
 }
 

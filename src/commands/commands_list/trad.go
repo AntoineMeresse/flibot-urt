@@ -7,6 +7,7 @@ import (
 )
 
 const MinConfidence = 70.0
+const MinConfidenceTradTo = 40.0
 
 func Trad(cmd *appcontext.CommandsArgs) {
 	translateUrl := cmd.Context.UrtConfig.TranslateUrl
