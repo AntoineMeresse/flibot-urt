@@ -611,6 +611,25 @@ func (db *PostGresqlDB) GetPlayerByGuid(guid string) (models.Player, bool) {
 	}
 }
 
+func (db *PostGresqlDB) UpsertPreferences(guid string, commands []string) error {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	data, _ := json.Marshal(commands)
+	return db.queries.UpsertPreferences(c, guid, string(data))
+}
+
+func (db *PostGresqlDB) GetPreferences(guid string) ([]string, bool, error) {
+	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
+	defer cancel()
+	raw, err := db.queries.GetPreferences(c, guid)
+	if err != nil {
+		return nil, false, nil
+	}
+	var commands []string
+	json.Unmarshal([]byte(raw), &commands) //nolint: errcheck
+	return commands, true, nil
+}
+
 func (db *PostGresqlDB) AddBan(guid, ip, reason string) error {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()

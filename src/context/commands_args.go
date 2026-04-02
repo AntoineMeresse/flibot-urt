@@ -11,11 +11,12 @@ import (
 )
 
 type CommandsArgs struct {
-	Context  *AppContext
-	PlayerId string
-	Params   []string
-	IsGlobal bool
-	Usage    string
+	Context       *AppContext
+	PlayerId      string
+	Params        []string
+	IsGlobal      bool
+	Usage         string
+	CommandExists func(string) bool
 }
 
 func (c *CommandsArgs) RconText(text string, a ...any) {

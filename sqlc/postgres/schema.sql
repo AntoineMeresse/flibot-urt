@@ -96,6 +96,12 @@ CREATE TABLE IF NOT EXISTS quotes (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Player preferences
+CREATE TABLE IF NOT EXISTS player_preferences (
+    guid TEXT NOT NULL REFERENCES player(guid) PRIMARY KEY,
+    commands TEXT NOT NULL DEFAULT ''
+);
+
 -- Servers
 CREATE TABLE IF NOT EXISTS server (
     ip TEXT NOT NULL,

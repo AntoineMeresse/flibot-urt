@@ -54,6 +54,10 @@ func (c *AppContext) IsTradEnabled(playerNumber string) bool {
 	return ok && v.(bool)
 }
 
+func (c *AppContext) EnableTrad(playerNumber string) {
+	c.tradEnabled.Store(playerNumber, true)
+}
+
 func (c *AppContext) ClearTrad(playerNumber string) {
 	c.tradEnabled.Delete(playerNumber)
 }

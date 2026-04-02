@@ -80,6 +80,9 @@ type DataPersister interface {
 	GetIgnoredGuids(guid string) ([]string, error)
 	GetIgnoredPlayers(guid string) ([]IgnoredPlayer, error)
 
+	UpsertPreferences(guid string, commands []string) error
+	GetPreferences(guid string) (commands []string, found bool, err error)
+
 	AddBan(guid, ip, reason string) error
 	GetBan(guid, ip string) (reason string, banned bool, err error)
 	RemoveBan(playerDbId int) error

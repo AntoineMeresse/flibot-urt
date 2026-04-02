@@ -66,6 +66,13 @@ func replaceShortcutByKnownCommand(cmd *string) {
 	}
 }
 
+func IsKnownCommand(name string) bool {
+	n := strings.ToLower(name)
+	replaceShortcutByKnownCommand(&n)
+	_, ok := Commands[n]
+	return ok
+}
+
 func fuzzyMaxDistance(name string) int {
 	switch {
 	case len(name) <= 4:
@@ -222,11 +229,12 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 				isGlobal = true
 			}
 			args := appcontext.CommandsArgs{
-				Context:  c,
-				PlayerId: playerNumber,
-				Params:   commandInfos.params,
-				IsGlobal: isGlobal,
-				Usage:    commandInfos.command.Usage,
+				Context:       c,
+				PlayerId:      playerNumber,
+				Params:        commandInfos.params,
+				IsGlobal:      isGlobal,
+				Usage:         commandInfos.command.Usage,
+				CommandExists: IsKnownCommand,
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)
 			commandInfos.command.Function(&args)

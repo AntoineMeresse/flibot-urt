@@ -2,7 +2,9 @@ package actionslist
 
 import (
 	"strings"
+	"time"
 
+	"github.com/AntoineMeresse/flibot-urt/src/commands"
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 
 	log "github.com/sirupsen/logrus"
@@ -32,6 +34,10 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 			if currentPlayer == nil || currentPlayer.Guid != guid {
 				name := utils.DecolorString(info["name"])
 				currentPlayer = c.InitPlayer(playerNumber, guid, name, ip)
+				go func() {
+				time.Sleep(1 * time.Second)
+				applyPreferences(playerNumber, guid, c)
+			}()
 			} else {
 				// Same player: only update name/ip if changed
 				wasUpdated := c.Players.UpdatePlayer(currentPlayer, info)
@@ -43,6 +49,25 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 		} else {
 			log.Warn("Could not find guid in client user info")
 		}
+	}
+}
+
+func applyPreferences(playerNumber, guid string, c *appcontext.AppContext) {
+	saved, found, _ := c.DB.GetPreferences(guid)
+	if !found || len(saved) == 0 {
+		return
+	}
+	player, err := c.Players.GetPlayer(playerNumber)
+	if err != nil {
+		return
+	}
+	for _, cmd := range saved {
+		parts := strings.Fields(cmd)
+		if len(parts) == 0 {
+			continue
+		}
+		fakeParams := append([]string{playerNumber, player.Name + ":", "!" + parts[0]}, parts[1:]...)
+		commands.HandleCommand(fakeParams, c)
 	}
 }
 
