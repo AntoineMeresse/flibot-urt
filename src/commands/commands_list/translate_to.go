@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	log "github.com/sirupsen/logrus"
 )
 
-func TradTo(cmd *appcontext.CommandsArgs) {
+func TranslateTo(cmd *appcontext.CommandsArgs) {
 	if len(cmd.Params) < 2 {
 		cmd.RconUsage()
 		return
@@ -42,7 +43,7 @@ func TradTo(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
-	cmd.Context.RconText(true, "", "^7[^3%s^7->^3%s^7] ^8%s^7: ^8%s", result.Lang, target, player.Name, result.Translated)
+	cmd.Context.RconText(true, "", "^7[^3%s^7->^3%s^7] ^8%s^7: ^8%s", result.Lang, target, player.Name, utils.StripAccents(result.Translated))
 }
 
 // parseLangParam parses either "it" (target only) or "en->it" (source->target).

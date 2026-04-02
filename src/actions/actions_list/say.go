@@ -7,6 +7,7 @@ import (
 	"github.com/AntoineMeresse/flibot-urt/src/commands"
 	commandslist "github.com/AntoineMeresse/flibot-urt/src/commands/commands_list"
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -43,6 +44,6 @@ func autoTrad(actionParams []string, c *appcontext.AppContext) {
 	}
 	playerName := strings.TrimSuffix(actionParams[1], ":")
 	for _, playerNumber := range targets {
-		c.RconText(false, playerNumber, "^7[^3%s^7] ^8%s^7: ^8%s", result.Lang, playerName, result.Translated)
+		c.RconText(false, playerNumber, "^7[^3%s^7] ^8%s^7: ^8%s", result.Lang, playerName, utils.StripAccents(result.Translated))
 	}
 }

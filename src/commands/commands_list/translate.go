@@ -4,12 +4,13 @@ import (
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	"github.com/AntoineMeresse/flibot-urt/src/utils"
 )
 
 const MinConfidence = 70.0
 const MinConfidenceTradTo = 40.0
 
-func Trad(cmd *appcontext.CommandsArgs) {
+func Translate(cmd *appcontext.CommandsArgs) {
 	translateUrl := cmd.Context.UrtConfig.TranslateUrl
 	if translateUrl == "" {
 		cmd.RconText("^1Translation service not configured.")
@@ -42,5 +43,5 @@ func Trad(cmd *appcontext.CommandsArgs) {
 		cmd.RconText("^7Already in ^3English^7.")
 		return
 	}
-	cmd.Context.RconText(true, "", "^7[^3%s^7->^3en^7] ^8%s^7: ^8%s", result.Lang, player.Name, result.Translated)
+	cmd.Context.RconText(true, "", "^7[^3%s^7->^3en^7] ^8%s^7: ^8%s", result.Lang, player.Name, utils.StripAccents(result.Translated))
 }
