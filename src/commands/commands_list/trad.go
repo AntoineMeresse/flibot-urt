@@ -33,7 +33,7 @@ func Trad(cmd *appcontext.CommandsArgs) {
 	}
 
 	text := strings.Join(cmd.Params, " ")
-	result, translErr := cmd.Context.Translate(translateUrl, text, "en")
+	result, translErr := cmd.Context.Translate(translateUrl, text, "auto", "en")
 	if translErr != nil {
 		cmd.RconText("^1Translation service unavailable.")
 		return

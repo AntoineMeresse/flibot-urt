@@ -29,7 +29,7 @@ func autoTrad(actionParams []string, c *appcontext.AppContext) {
 	if len(targets) == 0 {
 		return
 	}
-	result, err := c.Translate(c.UrtConfig.TranslateUrl, message, "en")
+	result, err := c.Translate(c.UrtConfig.TranslateUrl, message, "auto", "en")
 	if err != nil {
 		log.Errorf("[trad] %v", err)
 		return

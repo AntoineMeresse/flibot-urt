@@ -89,8 +89,8 @@ type TranslateResult struct {
 	Confidence float64
 }
 
-func (c *AppContext) Translate(translateUrl, text, target string) (TranslateResult, error) {
-	body, _ := json.Marshal(translateRequest{Q: text, Source: "auto", Target: target})
+func (c *AppContext) Translate(translateUrl, text, source, target string) (TranslateResult, error) {
+	body, _ := json.Marshal(translateRequest{Q: text, Source: source, Target: target})
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Post(fmt.Sprintf("%s/translate", translateUrl), "application/json", bytes.NewReader(body))
 	if err != nil {
