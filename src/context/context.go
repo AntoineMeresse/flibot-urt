@@ -1,7 +1,9 @@
 package appcontext
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -37,6 +39,62 @@ type AppContext struct {
 	VoteActive  atomic.Bool
 	Runs        models.RunsInfo
 	lastCmds    sync.Map
+	tradEnabled sync.Map
+}
+
+func (c *AppContext) ToggleTrad(playerNumber string) bool {
+	v, _ := c.tradEnabled.LoadOrStore(playerNumber, false)
+	newVal := !v.(bool)
+	c.tradEnabled.Store(playerNumber, newVal)
+	return newVal
+}
+
+func (c *AppContext) IsTradEnabled(playerNumber string) bool {
+	v, ok := c.tradEnabled.Load(playerNumber)
+	return ok && v.(bool)
+}
+
+func (c *AppContext) ClearTrad(playerNumber string) {
+	c.tradEnabled.Delete(playerNumber)
+}
+
+type translateRequest struct {
+	Q      string `json:"q"`
+	Source string `json:"source"`
+	Target string `json:"target"`
+}
+
+type translateResponse struct {
+	DetectedLanguage struct {
+		Language   string  `json:"language"`
+		Confidence float64 `json:"confidence"`
+	} `json:"detectedLanguage"`
+	TranslatedText string `json:"translatedText"`
+}
+
+type TranslateResult struct {
+	Lang       string
+	Translated string
+	Confidence float64
+}
+
+func (c *AppContext) Translate(translateUrl, text, target string) (TranslateResult, error) {
+	body, _ := json.Marshal(translateRequest{Q: text, Source: "auto", Target: target})
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Post(fmt.Sprintf("%s/translate", translateUrl), "application/json", bytes.NewReader(body))
+	if err != nil {
+		return TranslateResult{}, err
+	}
+	defer resp.Body.Close()
+	var result translateResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return TranslateResult{}, err
+	}
+	return TranslateResult{
+		Lang:       result.DetectedLanguage.Language,
+		Translated: result.TranslatedText,
+		Confidence: result.DetectedLanguage.Confidence,
+	}, nil
 }
 
 func (c *AppContext) SetLastCmd(playerNumber, name string, params []string) {

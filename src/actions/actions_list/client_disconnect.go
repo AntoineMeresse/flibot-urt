@@ -16,6 +16,7 @@ func ClientDisconnect(actionParams []string, c *appcontext.AppContext) {
 			c.SendBridgeMessage(fmt.Sprintf("%s has left the game. Bye !", player.Name), "")
 		}
 		c.Runs.RunCanceled(playerNumber)
+		c.ClearTrad(playerNumber)
 		c.Players.RemovePlayer(playerNumber)
 	}
 	log.Debugf("[After] ClientDisconnect: %v", c.Players.PlayerMap)

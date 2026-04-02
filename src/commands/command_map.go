@@ -55,6 +55,8 @@ var Commands = map[string]Command{
 	"quote":      {Function: commandslist.Quote, Usage: "!quote [id]", forceGlobal: true},
 	"findquote":  {Function: commandslist.FindQuote, Usage: "!findquote [text]"},
 	"all":        {Function: commandslist.All, Usage: "!all [message]"},
+	"trad":       {Function: commandslist.Trad, Usage: "!trad [message]", excludeFromBridge: true},
+	"tradto":     {Function: commandslist.TradTo, Usage: "!tradto [lang] [message]", excludeFromBridge: true},
 	"extend":     {Function: commandslist.Extend, Usage: "!extend or !extend [1-999]"},
 	"redo":       {Function: commandslist.Redo, Usage: "!redo [extra params]"},
 

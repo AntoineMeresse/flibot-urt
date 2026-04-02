@@ -162,6 +162,7 @@ func (runs *RunsInfo) EnableCp(playerNumber string) {
 	runs.CpEnabled[playerNumber] = true
 }
 
+
 func (runs *RunsInfo) IsCpEnabled(playerNumber string) bool {
 	runs.RunMutex.RLock()
 	defer runs.RunMutex.RUnlock()

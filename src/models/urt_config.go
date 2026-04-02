@@ -41,6 +41,8 @@ type UrtConfig struct {
 	WelcomeMessage         string
 	DailyPbPenCoinLimit    int
 	SchemaPath             string
+	TranslateUrl   string
+	TranslateLangs []string
 }
 
 func (u *UrtConfig) LoadConfig() {
@@ -49,6 +51,8 @@ func (u *UrtConfig) LoadConfig() {
 	viper.SetDefault("botWorkerNumber", 1)
 	viper.SetDefault("dailyPbPenCoinLimit", 2)
 	viper.SetDefault("schemaPath", "./sqlc/postgres/schema.sql")
+
+	viper.SetDefault("translateLangs", []string{"fr", "en", "es", "it", "de"})
 	viper.SetDefault("resetOptions", []string{
 		"sv_fps 125",
 		"g_maxGameClients 0",
@@ -97,6 +101,8 @@ func (u *UrtConfig) LoadConfig() {
 	viper.BindEnv("welcomeMessage", "welcomeMessage")
 	viper.BindEnv("dailyPbPenCoinLimit", "dailyPbPenCoinLimit")
 	viper.BindEnv("schemaPath", "schemaPath")
+	viper.BindEnv("translateUrl", "translateUrl")
+	viper.BindEnv("translateLangs", "translateLangs")
 
 	u.BasePath = viper.GetString("urtPath")
 	if u.BasePath != "" {
@@ -135,6 +141,8 @@ func (u *UrtConfig) LoadConfig() {
 	u.WelcomeMessage = viper.GetString("welcomeMessage")
 	u.DailyPbPenCoinLimit = viper.GetInt("dailyPbPenCoinLimit")
 	u.SchemaPath = viper.GetString("schemaPath")
+	u.TranslateUrl = viper.GetString("translateUrl")
+	u.TranslateLangs = viper.GetStringSlice("translateLangs")
 
 	u.ResetOptions = parseStringSliceOption(viper.Get("resetOptions"))
 
