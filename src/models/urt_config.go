@@ -142,7 +142,7 @@ func (u *UrtConfig) LoadConfig() {
 	u.DailyPbPenCoinLimit = viper.GetInt("dailyPbPenCoinLimit")
 	u.SchemaPath = viper.GetString("schemaPath")
 	u.TranslateUrl = viper.GetString("translateUrl")
-	u.TranslateLangs = viper.GetStringSlice("translateLangs")
+	u.TranslateLangs = parseStringSliceOption(viper.Get("translateLangs"))
 
 	u.ResetOptions = parseStringSliceOption(viper.Get("resetOptions"))
 
@@ -178,7 +178,7 @@ func parseStringSliceOption(raw any) []string {
 		items = v
 	case string:
 		items = strings.Split(v, ",")
-	case []interface{}:
+	case []any:
 		for _, item := range v {
 			if s, ok := item.(string); ok {
 				items = append(items, s)

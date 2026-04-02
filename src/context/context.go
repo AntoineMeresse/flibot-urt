@@ -58,6 +58,17 @@ func (c *AppContext) ClearTrad(playerNumber string) {
 	c.tradEnabled.Delete(playerNumber)
 }
 
+func (c *AppContext) TradEnabledPlayers() []string {
+	var players []string
+	c.tradEnabled.Range(func(key, value any) bool {
+		if value.(bool) {
+			players = append(players, key.(string))
+		}
+		return true
+	})
+	return players
+}
+
 type translateRequest struct {
 	Q      string `json:"q"`
 	Source string `json:"source"`

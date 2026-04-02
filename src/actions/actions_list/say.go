@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/AntoineMeresse/flibot-urt/src/commands"
+	commandslist "github.com/AntoineMeresse/flibot-urt/src/commands/commands_list"
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 	log "github.com/sirupsen/logrus"
 )
 
-const minConfidence = 50.0
 
 func Say(actionParams []string, c *appcontext.AppContext) {
 	if len(actionParams) >= 3 {
@@ -21,11 +21,12 @@ func Say(actionParams []string, c *appcontext.AppContext) {
 }
 
 func autoTrad(actionParams []string, c *appcontext.AppContext) {
-	playerNumber := actionParams[0]
-	playerName := strings.TrimSuffix(actionParams[1], ":")
 	message := strings.Join(actionParams[2:], " ")
-
-	if strings.HasPrefix(message, "!") || !c.IsTradEnabled(playerNumber) {
+	if strings.HasPrefix(message, "!") {
+		return
+	}
+	targets := c.TradEnabledPlayers()
+	if len(targets) == 0 {
 		return
 	}
 	result, err := c.Translate(c.UrtConfig.TranslateUrl, message, "en")
@@ -33,16 +34,15 @@ func autoTrad(actionParams []string, c *appcontext.AppContext) {
 		log.Errorf("[trad] %v", err)
 		return
 	}
-	if result.Confidence < minConfidence {
-		c.RconText(false, playerNumber, "^7[trad] ^1Could not detect language with enough confidence ^7(%.0f%%)", result.Confidence)
+	if result.Confidence < commandslist.MinConfidence {
+		log.Debugf("[trad] skipped: confidence too low (%.0f%% < %.0f%%) — guessed lang: %s", result.Confidence, commandslist.MinConfidence, result.Lang)
 		return
 	}
-	if !slices.Contains(c.UrtConfig.TranslateLangs, result.Lang) {
-		c.RconText(false, playerNumber, "^7[trad] ^1Language ^3%s^1 is not supported.", result.Lang)
+	if result.Lang == "en" || !slices.Contains(c.UrtConfig.TranslateLangs, result.Lang) {
 		return
 	}
-	if result.Lang == "en" {
-		return
+	playerName := strings.TrimSuffix(actionParams[1], ":")
+	for _, playerNumber := range targets {
+		c.RconText(false, playerNumber, "^7[^3%s^7] ^8%s^7: ^8%s", result.Lang, playerName, result.Translated)
 	}
-	c.RconText(false, playerNumber, "^7[^3%s^7] ^8%s^7: ^8%s", result.Lang, playerName, result.Translated)
 }

@@ -6,6 +6,8 @@ import (
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
 )
 
+const MinConfidence = 70.0
+
 func Trad(cmd *appcontext.CommandsArgs) {
 	translateUrl := cmd.Context.UrtConfig.TranslateUrl
 	if translateUrl == "" {

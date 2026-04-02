@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
+	log "github.com/sirupsen/logrus"
 )
 
 func TradTo(cmd *appcontext.CommandsArgs) {
@@ -35,6 +36,10 @@ func TradTo(cmd *appcontext.CommandsArgs) {
 	result, err := cmd.Context.Translate(translateUrl, text, target)
 	if err != nil {
 		cmd.RconText("^1Translation service unavailable.")
+		return
+	}
+	if result.Confidence < MinConfidence {
+		log.Debugf("[tradto] skipped: confidence too low (%.0f%% < %.0f%%) — guessed lang: %s", result.Confidence, MinConfidence, result.Lang)
 		return
 	}
 
