@@ -60,7 +60,7 @@ var Commands = map[string]Command{
 	"translate":   {Function: commandslist.Translate, Usage: "!translate [message]", excludeFromBridge: true},
 	"translateto": {Function: commandslist.TranslateTo, Usage: "!translateto [lang|src->tgt] [message]", excludeFromBridge: true},
 	"extend":     {Function: commandslist.Extend, Usage: "!extend or !extend [1-999]"},
-	"redo":       {Usage: "!redo [extra params]"},
+	"redo":       {Usage: "!redo [extra params]", excludeFromGuess: true},
 
 	// Level: 40
 	"afk":        {Function: commandslist.Afk, Level: 40, Usage: "!afk [playerId/Name] (-f)", excludeFromGuess: true},

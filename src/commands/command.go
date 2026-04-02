@@ -237,6 +237,10 @@ func HandleCommand(actionParams []string, c *appcontext.AppContext) {
 				CommandExists: IsKnownCommand,
 			}
 			overrideParamsForCommands(commandInfos.name, role, &args)
+			if commandInfos.command.Function == nil {
+				log.Warnf("Command %q has no handler, skipping.", commandInfos.name)
+				return
+			}
 			commandInfos.command.Function(&args)
 			c.SetLastCmd(playerNumber, commandInfos.name, commandInfos.params)
 		} else {
