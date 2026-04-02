@@ -1,6 +1,9 @@
 # flibot-urt
 
-A bot for Urban Terror jump servers. Reads the server log file, parses events and executes commands via RCON.
+Administration and jump bot for Urban Terror servers.  
+Developed by Antoine Méresse (IG: Flirow)
+
+Reads the server log file, parses events and executes commands via RCON.
 
 ---
 
@@ -17,49 +20,52 @@ A bot for Urban Terror jump servers. Reads the server log file, parses events an
 
 ## Configuration
 
-Copy `config.yml` and fill in the values:
+Configuration can be provided via `config.yml` (placed next to the binary or in `/app`) or environment variables. Environment variables take precedence over the config file.
 
+| Key                   | Description                                          | Default                        |
+|-----------------------|------------------------------------------------------|--------------------------------|
+| `serverip`            | Server IP address                                    | —                              |
+| `serverport`          | Server port                                          | `27960`                        |
+| `password`            | Rcon password                                        | —                              |
+| `urtPath`             | Path to the UrbanTerror installation                 | —                              |
+| `logFilePath`         | Path to the server log file                          | —                              |
+| `botWorkerNumber`     | Number of log workers                                | `1`                            |
+| `dbUri`               | PostgreSQL connection URI                            | —                              |
+| `schemaPath`          | Path to the SQL schema file                          | `./sqlc/postgres/schema.sql`   |
+| `urtRepo`             | Map repository base URL                              | —                              |
+| `ujmUrl`              | UJM API base URL                                     | —                              |
+| `ujmApiKey`           | UJM API key                                          | —                              |
+| `discordWebhook`      | Discord webhook URL for notifications                | —                              |
+| `bridgeUrl`           | Bridge API URL (multi-server messaging)              | —                              |
+| `bridgeApiKey`        | Bridge API key                                       | —                              |
+| `channelId`           | Discord channel ID for this server                   | `0`                            |
+| `serverName`          | Display name for this server                         | `Server`                       |
+| `translateUrl`        | LibreTranslate instance URL                          | —                              |
+| `translateLangs`      | Comma-separated list of supported languages          | `fr,en,es,it,de`               |
+| `welcomeMessage`      | Welcome message (`{name}`, `{id}` placeholders)      | —                              |
+| `dailyPbPenCoinLimit` | Max pencoin per day                                  | `2`                            |
+| `resetOptions`        | Rcon commands applied on every map load              | see below                      |
+
+### resetOptions
+
+A list of rcon commands sent automatically each time a map loads, before any map-specific options.
+
+In `config.yml`:
 ```yaml
-serverip: 127.0.0.1
-serverport: 27960
-password: rconpassword
-urtPath: /path/to/UrbanTerror43
-logFilePath: /path/to/games.log
-botWorkerNumber: 1
-
-dbUri: postgresql://user:password@host:5432/dbname
-schemaPath: ./sqlc/postgres/schema.sql   # optional, default: ./sqlc/postgres/schema.sql
-
-# API
-urtRepo: https://your-repo/q3ut4
-ujmUrl: https://urtjumpmaps.com
-ujmApiKey: YOUR_KEY
-
-# Bridge (multi-server messaging)
-bridgeUrl: https://your-bridge
-bridgeApiKey: ""
-channelId: 0
-serverName: "Server"
-
-# Translation (libretranslate)
-translateUrl: http://your-host:5000
-translateLangs: fr,en,es,it,de       # languages loaded in your libretranslate instance
-
-# Misc
-welcomeMessage: "Welcome back ^5{name}^3 [{id}]."
-dailyPbPenCoinLimit: 2
+resetOptions:
+  - "sv_fps 125"
+  - "g_maxGameClients 0"
+  - "g_oldtriggers 0"
+  - "g_gear QS"
+  - "g_allownoclip 1"
+  - "g_flagreturntime 0"
+  - "g_nodamage 1"
+  - "g_novest 1"
 ```
 
-### Environment variables
-
-All config keys can be overridden via environment variables (same name).
-
-Useful for Docker:
-```yaml
-environment:
-  - dbUri=postgresql://...
-  - translateUrl=http://libretranslate:5000
-  - translateLangs=fr,en,es,it,de
+As an environment variable (comma-separated):
+```
+resetOptions="sv_fps 125,g_maxGameClients 0,g_oldtriggers 0"
 ```
 
 ### LibreTranslate (Docker)
@@ -81,15 +87,15 @@ services:
 
 ## Command levels
 
-| Level | Description |
-|-------|-------------|
-| 0 | Everyone |
-| 20 | Registered |
-| 40 | Moderator |
-| 60 | Admin |
-| 80 | Senior admin |
-| 90 | Head admin |
-| 100 | Super admin |
+| Level | Description  |
+|-------|--------------|
+| 0     | Everyone     |
+| 20    | Registered   |
+| 40    | Moderator    |
+| 60    | Admin        |
+| 80    | Senior admin |
+| 90    | Head admin   |
+| 100   | Super admin  |
 
 ---
 
@@ -148,8 +154,8 @@ services:
 | `!quote [id]` | Show a quote |
 | `!findquote [text]` | Search quotes |
 | `!all [message]` | Send message to all servers (bridge) |
-| `!trad [message]` | Toggle auto-translation / translate a message to English |
-| `!tradto [lang\|src->tgt] [message]` | Translate a message to a specific language |
+| `!translate [message]` / `!trad` | Toggle auto-translation / translate a message to English |
+| `!translateto [lang\|src->tgt] [message]` / `!tradto` | Translate a message to a specific language |
 | `!extend [1-999]` | Extend timelimit |
 | `!redo [extra params]` / `!lc` | Repeat last command |
 
@@ -213,15 +219,43 @@ services:
 
 ---
 
-## Translation feature (`!trad` / `!tradto`)
+## Map options
 
-- `!trad` — toggle auto-translation ON/OFF for yourself. When ON, every non-English message you send is automatically translated to English and sent as a PM to all players who also have `!trad` enabled.
-- `!trad [message]` — manually translate a message to English and broadcast it globally.
-- `!tradto [lang] [message]` — translate a message to the target language and broadcast globally (e.g. `!tradto fr Hello everyone`).
-- `!tradto [src->tgt] [message]` — explicit source and target (e.g. `!tradto en->it This is a test`). No confidence check when source is explicit.
+Per-map rcon commands stored in the database, applied after `resetOptions` on every map load.
 
-Requires a running [LibreTranslate](https://github.com/LibreTranslate/LibreTranslate) instance configured via `translateUrl`.  
-Auto-translation is silently skipped if confidence < 70%. `!tradto` with auto-detect skips if confidence < 40%.
+| Command | Level | Description |
+|---------|-------|-------------|
+| `!mapoptions` | 0 | Display options set for the current map |
+| `!setmapoptions [opt1, opt2, ...]` | 80 | Save options for the current map (comma-separated) |
+| `!removemapoptions` | 80 | Delete options for the current map |
+
+Options support shortcuts:
+
+| Shortcut | Expands to        |
+|----------|-------------------|
+| `fstam`  | `g_stamina 2`     |
+| `nstam`  | `g_stamina 1`     |
+| `noob`   | `g_overbounces 0` |
+| `ob`     | `g_overbounces 1` |
+
+Example:
+```
+!setmapoptions fstam, noob, g_walljumps 5
+```
+
+---
+
+## Translation (`!translate` / `!translateto`)
+
+- `!translate` / `!trad` — toggle auto-translation ON/OFF. When ON, every non-English message you send is automatically translated to English and sent as a PM to all players who also have it enabled.
+- `!translate [message]` / `!trad [message]` — manually translate a message to English and broadcast globally.
+- `!translateto [lang] [message]` / `!tradto` — translate to a target language and broadcast globally (e.g. `!translateto fr Hello`).
+- `!translateto [src->tgt] [message]` — explicit source and target (e.g. `!translateto en->it This is a test`). No confidence check when source is explicit.
+
+Translated text has accents stripped for compatibility with URT's chat.  
+Auto-translation is silently skipped if confidence < 70%. `!translateto` with auto-detect skips if confidence < 40%.
+
+Requires a running [LibreTranslate](https://github.com/LibreTranslate/LibreTranslate) instance.
 
 ---
 
@@ -261,3 +295,11 @@ Multi-server messaging via an external bridge API.
 - `!all [message]` — broadcast to all servers.
 - Server info (map, players) is pushed every 10s to the bridge.
 - Commands are forwarded to the bridge unless marked `excludeFromBridge`.
+
+---
+
+## Subprojects
+
+- [tail](https://github.com/nxadm/tail)
+- [quake3-rcon](https://github.com/AntoineMeresse/quake3-rcon-go)
+- [LibreTranslate](https://github.com/LibreTranslate/LibreTranslate)
