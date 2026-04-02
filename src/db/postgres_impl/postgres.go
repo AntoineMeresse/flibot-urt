@@ -649,12 +649,11 @@ func (db *PostGresqlDB) RegisterServer(ip string, port int, rconpassword string,
 	})
 }
 
-func (db *PostGresqlDB) GetBan(guid string) (string, bool, error) {
+func (db *PostGresqlDB) GetBan(guid, ip string) (string, bool, error) {
 	c, cancel := context.WithTimeout(db.ctx, dbTimeout*time.Second)
 	defer cancel()
-	reason, err := db.queries.GetBan(c, guid)
+	reason, err := db.queries.GetBan(c, guid, ip)
 	if err != nil {
-		// pgx returns an error when no row is found
 		return "", false, nil
 	}
 	return reason, true, nil

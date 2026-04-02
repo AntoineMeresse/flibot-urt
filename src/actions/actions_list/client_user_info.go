@@ -18,10 +18,12 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 		info := splitInfos(infoString)
 
 		if guid, ok := info["cl_guid"]; ok {
-			if reason, banned, _ := c.DB.GetBan(guid); banned {
+			ip := strings.Split(info["ip"], ":")[0]
+			banReason, banned, _ := c.DB.GetBan(guid, ip)
+			if banned {
 				msg := "You are banned from this server."
-				if reason != "" {
-					msg = "You are banned from this server. Reason: " + reason
+				if banReason != "" {
+					msg = "You are banned from this server. Reason: " + banReason
 				}
 				c.RconCommand("kick %s \"%s\"", playerNumber, msg)
 				return
@@ -29,7 +31,6 @@ func ClientUserinfo(actionParams []string, c *appcontext.AppContext) {
 			currentPlayer := c.Players.PlayerMap[playerNumber]
 			if currentPlayer == nil || currentPlayer.Guid != guid {
 				name := utils.DecolorString(info["name"])
-				ip := strings.Split(info["ip"], ":")[0]
 				currentPlayer = c.InitPlayer(playerNumber, guid, name, ip)
 			} else {
 				// Same player: only update name/ip if changed

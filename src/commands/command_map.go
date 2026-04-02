@@ -90,8 +90,8 @@ var Commands = map[string]Command{
 	"removemapoptions": {Function: commandslist.RemoveMapOptions, Level: 80, Usage: "!removemapoptions"},
 
 	// Level: 90
-	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name] [reason]", excludeFromGuess: true},
-	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [id]", excludeFromGuess: true},
+	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name/@dbId] [reason]", excludeFromGuess: true},
+	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [@dbId/banId]", excludeFromGuess: true},
 	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias] or !lookup @[id]"},
 	"resetgotos": {Function: commandslist.ResetGotos, Level: 90, Usage: "!resetgotos [map] (-f)"},
 

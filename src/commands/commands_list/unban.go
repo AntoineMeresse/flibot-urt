@@ -15,6 +15,19 @@ func Unban(cmd *appcontext.CommandsArgs) {
 		return
 	}
 
+	if strings.HasPrefix(cmd.Params[0], "@") {
+		r, ok := cmd.ResolveAtId(cmd.Params[0])
+		if !ok {
+			return
+		}
+		if err := cmd.Context.DB.RemoveBan(r.Id); err != nil {
+			cmd.RconText("^1Error removing ban: %s", err.Error())
+			return
+		}
+		cmd.RconText("^7%s^7 has been unbanned.", r.Name)
+		return
+	}
+
 	id, err := strconv.Atoi(cmd.Params[0])
 	if err != nil {
 		cmd.RconText("^1Invalid id: %s", cmd.Params[0])

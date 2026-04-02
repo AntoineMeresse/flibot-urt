@@ -16,11 +16,11 @@ func (q *Queries) AddBan(ctx context.Context, guid, ip, reason string) error {
 }
 
 const getBan = `-- name: GetBan :one
-SELECT reason FROM bans WHERE guid = $1 LIMIT 1`
+SELECT reason FROM bans WHERE guid = $1 OR ip = $2 LIMIT 1`
 
-func (q *Queries) GetBan(ctx context.Context, guid string) (string, error) {
+func (q *Queries) GetBan(ctx context.Context, guid, ip string) (string, error) {
 	var reason string
-	err := q.db.QueryRow(ctx, getBan, guid).Scan(&reason)
+	err := q.db.QueryRow(ctx, getBan, guid, ip).Scan(&reason)
 	return reason, err
 }
 
