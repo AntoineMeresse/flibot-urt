@@ -129,6 +129,9 @@ func extractCmdInfos(actionParams []string) (command commandInfo) {
 		if command, ok := Commands[name]; ok {
 			return commandInfo{command: command, isValid: true, isGlobal: isGlobal, name: name, params: params, message: message}
 		}
+		if utils.IsVoteCommand(text) {
+			return commandInfo{command: Command{}, message: message}
+		}
 		if matches := findClosestCommands(name); len(matches) > 0 {
 			if len(matches) == 1 {
 				command := Commands[matches[0]]
