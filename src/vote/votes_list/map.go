@@ -11,11 +11,9 @@ func MapVote(param string, c *appcontext.AppContext) {
 }
 
 func MapMessage(c *appcontext.AppContext, msg string, param string) (bool, string) {
-	mapname, err := c.GetMapWithCriteria(param)
-	if err != nil {
-		c.RconText(true, "", err.Error())
+	if !c.IsMapAlreadyDownloaded(param) {
+		c.RconText(true, "", "^3No map found using (^6%s^3)", param)
 		return false, ""
-	} else {
-		return true, fmt.Sprintf(msg, *mapname)
 	}
+	return true, fmt.Sprintf(msg, param)
 }
