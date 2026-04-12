@@ -106,7 +106,7 @@ func RunLog(actionParams []string, c *appcontext.AppContext) {
 			go func() {
 				handlePenCoin(c, *player, isPbImprovement, isWrImprovement)
 				sendToDiscordWebhook(c, runInfo, discordMsg)
-				sendDemoToBridge(c, runInfo)
+				sendDemoToBridge(c, runInfo, discordMsg)
 				moveDemoIfImprovement(c, runInfo, isPbImprovement || isWrImprovement)
 			}()
 		}
@@ -177,6 +177,7 @@ func processRunData(c *appcontext.AppContext, r api.SendDemoResponse, playerNumb
 	}
 
 	isGlobal := r.Added > 0
+	isPbImprovement = isPbImprovement || isGlobal
 	if gameMsg != "" {
 		gameMsg = fmt.Sprintf("^7[%s^7] %s", playerName, gameMsg)
 	}
@@ -205,7 +206,7 @@ func sendToDiscordWebhook(c *appcontext.AppContext, runInfo models.PlayerRunInfo
 	}
 }
 
-func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo) {
+func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo, discordMsg string) {
 	if c.Api.BridgeLocalUrl == "" {
 		return
 	}
@@ -223,7 +224,10 @@ func sendDemoToBridge(c *appcontext.AppContext, runInfo models.PlayerRunInfo) {
 
 	demo := strings.ReplaceAll(strings.TrimPrefix(runInfo.Demopath, "serverdemos/"), "\"", "")
 	msg := fmt.Sprintf("%s finished way %s of %s in %s", nameClean, runInfo.Way, runInfo.Mapname, formattedTime)
-	initialMessage := fmt.Sprintf("`%s (%s)`", msg, demo)
+	initialMessage := fmt.Sprintf("%s `(%s)`", msg, demo)
+	if discordMsg != "" {
+		initialMessage += fmt.Sprintf(" :stopwatch: `%s` :stopwatch:", discordMsg)
+	}
 
 	bridgeMsg := fmt.Sprintf(":cinema: `Serverside demo available for (%s | %s way%s | %s)`", nameClean, runInfo.Mapname, runInfo.Way, formattedTime)
 
