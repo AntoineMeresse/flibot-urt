@@ -1,7 +1,6 @@
 package actionslist
 
 import (
-	"encoding/json"
 	"strings"
 
 	appcontext "github.com/AntoineMeresse/flibot-urt/src/context"
@@ -18,25 +17,7 @@ func InitGame(actionParams []string, c *appcontext.AppContext) {
 			c.Runs.ClearRuns()
 			c.RollNextMap()
 			log.Debugf("InitGame: mapname set to %s", mapname)
-
-			for _, opt := range c.UrtConfig.ResetOptions {
-				c.RconCommand("%s", opt)
-			}
-			log.Debugf("InitGame: reset options applied: %v", c.UrtConfig.ResetOptions)
-
-			if raw, ok := c.DB.GetMapOptions(mapname); ok {
-				var options []string
-				if err := json.Unmarshal([]byte(raw), &options); err != nil {
-					log.Errorf("InitGame: failed to parse options for %s: %v", mapname, err)
-				} else {
-					log.Debugf("InitGame: map options for %s: %v", mapname, options)
-					for _, opt := range options {
-						c.RconCommand("%s", opt)
-					}
-				}
-			} else {
-				log.Debugf("InitGame: no options set for %s", mapname)
-			}
+			c.ApplyCurrentMapOptions()
 			return
 		}
 	}

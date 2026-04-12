@@ -1,6 +1,7 @@
 package appcontext
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"slices"
@@ -157,6 +158,27 @@ func (c *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap *strin
 		mapList = strings.Join(res, ", ")
 	}
 	return nil, fmt.Errorf("multiple maps found [^5%d^3] using (^6%s^3): %s ", len(res), searchCriteria, mapList)
+}
+
+func (c *AppContext) ApplyCurrentMapOptions() {
+	mapname := c.GetCurrentMap()
+	raw, ok := c.DB.GetMapOptions(mapname)
+	if !ok {
+		log.Debugf("applyCurrentMapOptions: no options for %s", mapname)
+		return
+	}
+	var options []string
+	if err := json.Unmarshal([]byte(raw), &options); err != nil {
+		log.Errorf("applyCurrentMapOptions: unmarshal error: %v", err)
+		return
+	}
+	for _, opt := range c.UrtConfig.ResetOptions {
+		c.RconCommand("%s", opt)
+	}
+	for _, opt := range options {
+		c.RconCommand("%s", opt)
+	}
+	log.Debugf("applyCurrentMapOptions: applied %d option(s) for %s", len(options), mapname)
 }
 
 ////////////////////////////////////////////////////////////////

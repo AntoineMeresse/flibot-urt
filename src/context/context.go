@@ -135,6 +135,7 @@ func (c *AppContext) Init() {
 	c.initRuns()
 	c.initApi()
 	c.initDb()
+	c.ApplyCurrentMapOptions()
 
 	c.SendEmbed(c.GetCurrentMap())
 
