@@ -73,13 +73,21 @@ func displayRunsInfos(cmd *appcontext.CommandsArgs, infos api.ToprunsInfos, disp
 			if !displayAll {
 				runinfos = runinfos[:1]
 			}
+			var prevMs int
 			for i, run := range runinfos {
 				log.Debugf("Iteration n°%d displayRunsInfos", i)
 				rank := fmt.Sprintf("%d", i+1)
 				if useApiRank {
 					rank = fmt.Sprintf("%d", run.Rank)
 				}
-				cmd.RconText("^7|-------->%2s) %s%s^7 | %s | %s", rank, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName)
+				diff := ""
+				if ms, err := utils.ParseRunTime(run.RunTime); err == nil {
+					if i > 0 {
+						diff = fmt.Sprintf("^7(^3+%s^7)", utils.FormatMs(ms-prevMs))
+					}
+					prevMs = ms
+				}
+				cmd.RconText("^7|-------->%2s) %s%s^7 | %s | %s %s", rank, utils.GetColorRun(i), run.RunTime, run.RunDate, run.PlayerName, diff)
 			}
 			if waysNumber != len(ways) {
 				cmd.RconText("^7|")

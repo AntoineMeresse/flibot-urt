@@ -167,6 +167,38 @@ func FormatRunTime(ms string) string {
 	return fmt.Sprintf("%d.%03d", seconds, milliseconds)
 }
 
+func FormatMs(ms int) string {
+	minutes := ms / 60000
+	seconds := (ms % 60000) / 1000
+	millis := ms % 1000
+	if minutes > 0 {
+		return fmt.Sprintf("%d:%02d.%03d", minutes, seconds, millis)
+	}
+	return fmt.Sprintf("%d.%03d", seconds, millis)
+}
+
+func ParseRunTime(s string) (int, error) {
+	var hours, minutes, seconds, millis int
+	switch strings.Count(s, ":") {
+	case 2:
+		_, err := fmt.Sscanf(s, "%d:%d:%d.%d", &hours, &minutes, &seconds, &millis)
+		if err != nil {
+			return 0, err
+		}
+	case 1:
+		_, err := fmt.Sscanf(s, "%d:%d.%d", &minutes, &seconds, &millis)
+		if err != nil {
+			return 0, err
+		}
+	default:
+		_, err := fmt.Sscanf(s, "%d.%d", &seconds, &millis)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return hours*3600000 + minutes*60000 + seconds*1000 + millis, nil
+}
+
 func FormatTimeToDate(t time.Time) string {
 	return fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
 }
