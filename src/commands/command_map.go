@@ -96,6 +96,7 @@ var Commands = map[string]Command{
 	"ban":        {Function: commandslist.Ban, Level: 90, Usage: "!ban [playerId/Name/@dbId] [reason]", excludeFromGuess: true},
 	"unban":      {Function: commandslist.Unban, Level: 90, Usage: "!unban [@dbId/banId]", excludeFromGuess: true},
 	"lookup":     {Function: commandslist.Lookup, Level: 90, Usage: "!lookup [name/alias] or !lookup @[id]"},
+	"sync":       {Function: commandslist.Sync, Level: 90, Usage: "!sync"},
 	"resetgotos": {Function: commandslist.ResetGotos, Level: 90, Usage: "!resetgotos [map] (-f)"},
 
 	// Level: 100
