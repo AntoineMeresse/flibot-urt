@@ -161,6 +161,10 @@ func (c *AppContext) GetMapWithCriteria(searchCriteria string) (uniqueMap *strin
 }
 
 func (c *AppContext) ApplyCurrentMapOptions() {
+	log.Debugf("[ApplyCurrentMapOptions] reset options before loading map specific one")
+	for _, opt := range c.UrtConfig.ResetOptions {
+		c.RconCommand("%s", opt)
+	}
 	mapname := c.GetCurrentMap()
 	raw, ok := c.DB.GetMapOptions(mapname)
 	if !ok {
@@ -171,9 +175,6 @@ func (c *AppContext) ApplyCurrentMapOptions() {
 	if err := json.Unmarshal([]byte(raw), &options); err != nil {
 		log.Errorf("applyCurrentMapOptions: unmarshal error: %v", err)
 		return
-	}
-	for _, opt := range c.UrtConfig.ResetOptions {
-		c.RconCommand("%s", opt)
 	}
 	for _, opt := range options {
 		c.RconCommand("%s", opt)
