@@ -12,6 +12,6 @@ func HandleAction(workerId int, action string, actionParams []string, c *appcont
 	if val, ok := Actions[action]; ok {
 		val(actionParams, c)
 	} else {
-		log.Errorf("----> Not a known action: %s\n", action)
+		log.Errorf("----> Not a known action: %s", action)
 	}
 }
